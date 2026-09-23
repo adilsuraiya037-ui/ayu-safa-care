@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ADMIN LOGIN | AYU SAFA CARE</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body class="admin-page">
+
+    <div class="login-card">
+
+        <div class="logo">
+            <span>AYU</span> SAFA CARE
+        </div>
+
+        <p class="admin-label">
+            PRIVATE ADMIN PANEL
+        </p>
+
+
+        <h1>
+            ADMIN LOGIN
+        </h1>
+
+
+        {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                <div class="error-message">
+
+                    {{ messages[0] }}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <form method="POST"
+              action="/admin">
+
+
+            <label>
+                USERNAME
+            </label>
+
+            <input
+                type="text"
+                name="username"
+                placeholder="Enter username"
+                required>
+
+
+            <label>
+                PASSWORD
+            </label>
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Enter password"
+                required>
+
+
+            <button
+                type="submit"
+                class="submit-button">
+
+                LOGIN →
+
+            </button>
+
+        </form>
+
+
+        <a href="/" class="back-link">
+            ← BACK TO WEBSITE
+        </a>
+
+    </div>
+
+</body>
+
+</html>

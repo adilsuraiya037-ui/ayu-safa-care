@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ORDER CONFIRMED | AYU SAFA CARE</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="success-page">
+
+    <div class="success-card">
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <div class="logo success-logo">
+            <span>AYU</span> SAFA CARE
+        </div>
+
+        <h1>
+            ORDER PLACED!
+        </h1>
+
+        <p class="success-message">
+            Thank you, {{ customer_name }}.
+        </p>
+
+        <p>
+            Your order has been successfully received.
+            We will contact you shortly to confirm your order.
+        </p>
+
+        <div class="order-number">
+
+            <span>
+                YOUR ORDER ID
+            </span>
+
+            <strong>
+                {{ order_id }}
+            </strong>
+
+        </div>
+
+        <a href="/" class="primary-button">
+            ← BACK TO WEBSITE
+        </a>
+
+    </div>
+
+</body>
+</html>

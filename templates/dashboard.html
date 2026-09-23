@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>ORDERS DASHBOARD | AYU SAFA CARE</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body class="dashboard-page">
+
+
+<header class="dashboard-header">
+
+    <div class="logo">
+        <span>AYU</span> SAFA CARE
+        <small>ADMIN PANEL</small>
+    </div>
+
+    <a href="/admin/logout" class="logout-button">
+        LOGOUT
+    </a>
+
+</header>
+
+
+<main class="dashboard-container">
+
+
+    <div class="dashboard-title">
+
+        <div>
+            <p class="admin-label">
+                PRIVATE ADMIN PANEL
+            </p>
+
+            <h1>
+                ORDERS DASHBOARD
+            </h1>
+        </div>
+
+    </div>
+
+
+    <!-- STATISTICS -->
+
+    <div class="stats-grid">
+
+
+        <div class="stat-card">
+
+            <span>
+                TOTAL ORDERS
+            </span>
+
+            <strong>
+                {{ total_orders }}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card new">
+
+            <span>
+                NEW
+            </span>
+
+            <strong>
+                {{ new_orders }}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card confirmed">
+
+            <span>
+                CONFIRMED
+            </span>
+
+            <strong>
+                {{ confirmed_orders }}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card shipped">
+
+            <span>
+                SHIPPED
+            </span>
+
+            <strong>
+                {{ shipped_orders }}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card delivered">
+
+            <span>
+                DELIVERED
+            </span>
+
+            <strong>
+                {{ delivered_orders }}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card cancelled">
+
+            <span>
+                CANCELLED
+            </span>
+
+            <strong>
+                {{ cancelled_orders }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ORDERS -->
+
+    <section class="orders-section">
+
+
+        <div class="orders-heading">
+
+            <h2>
+                CUSTOMER ORDERS
+            </h2>
+
+            <input
+                type="text"
+                id="searchOrders"
+                placeholder="Search customer / phone / order ID..."
+                onkeyup="searchOrders()">
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+
+            <table id="ordersTable">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ORDER ID
+                        </th>
+
+                        <th>
+                            DATE
+                        </th>
+
+                        <th>
+                            CUSTOMER
+                        </th>
+
+                        <th>
+                            PHONE
+                        </th>
+
+                        <th>
+                            PRODUCT
+                        </th>
+
+                        <th>
+                            QTY
+                        </th>
+
+                        <th>
+                            AMOUNT
+                        </th>
+
+                        <th>
+                            STATUS
+                        </th>
+
+                        <th>
+                            ACTION
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for order in orders %}
+
+                    <tr>
+
+                        <td class="order-id">
+
+                            {{ order["order_id"] }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ order["created_at"] }}
+
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                {{ order["customer_name"] }}
+                            </strong>
+
+                            <br>
+
+                            <small>
+                                {{ order["address"] }}
+                            </small>
+
+                        </td>
+
+
+                        <td>
+
+                            <a
+                                href="tel:{{ order['phone'] }}">
+
+                                {{ order["phone"] }}
+
+                            </a>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ order["product"] }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ order["quantity"] }}
+
+                        </td>
+
+
+                        <td>
+
+                            ₹{{ "%.2f"|format(order["amount"]) }}
+
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                class="status status-{{ order['status']|lower }}">
+
+                                {{ order["status"] }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <form
+                                action="/admin/update-status/{{ order['id'] }}"
+                                method="POST">
+
+                                <select
+                                    name="status"
+                                    onchange="this.form.submit()">
+
+                                    <option
+                                        value="NEW"
+                                        {% if order["status"] == "NEW" %}
+                                        selected
+                                        {% endif %}>
+                                        NEW
+                                    </option>
+
+                                    <option
+                                        value="CONFIRMED"
+                                        {% if order["status"] == "CONFIRMED" %}
+                                        selected
+                                        {% endif %}>
+                                        CONFIRMED
+                                    </option>
+
+                                    <option
+                                        value="SHIPPED"
+                                        {% if order["status"] == "SHIPPED" %}
+                                        selected
+                                        {% endif %}>
+                                        SHIPPED
+                                    </option>
+
+                                    <option
+                                        value="DELIVERED"
+                                        {% if order["status"] == "DELIVERED" %}
+                                        selected
+                                        {% endif %}>
+                                        DELIVERED
+                                    </option>
+
+                                    <option
+                                        value="CANCELLED"
+                                        {% if order["status"] == "CANCELLED" %}
+                                        selected
+                                        {% endif %}>
+                                        CANCELLED
+                                    </option>
+
+                                </select>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td colspan="9"
+                            class="no-orders">
+
+                            NO ORDERS YET
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<script>
+
+function searchOrders() {
+
+    const input =
+        document.getElementById("searchOrders");
+
+    const filter =
+        input.value.toLowerCase();
+
+    const table =
+        document.getElementById("ordersTable");
+
+    const rows =
+        table.getElementsByTagName("tr");
+
+
+    for (let i = 1; i < rows.length; i++) {
+
+        const text =
+            rows[i].innerText.toLowerCase();
+
+        if (text.includes(filter)) {
+
+            rows[i].style.display = "";
+
+        } else {
+
+            rows[i].style.display = "none";
+
+        }
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>
