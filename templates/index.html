@@ -14,9 +14,13 @@
 
 <header class="navbar">
 
-    <div class="logo">
-        <span>AYU</span> SAFA CARE
-        <small>HERBAL WELLNESS</small>
+    <div class="brand">
+        <div class="brand-mark">AS</div>
+
+        <div>
+            <h1>AYU SAFA CARE</h1>
+            <span>HERBAL WELLNESS</span>
+        </div>
     </div>
 
     <a href="#order" class="nav-button">
@@ -30,22 +34,22 @@
 
     <div class="hero-content">
 
-        <div class="badge">
-            🌿 HERBAL • NATURAL • CARE
-        </div>
+        <p class="small-title">
+            AYURVEDIC • HERBAL • CARE
+        </p>
 
-        <h1>
-            NATURAL CARE.<br>
-            <span>BETTER YOU.</span>
-        </h1>
+        <h2>
+            NATURAL CARE<br>
+            FOR EVERYDAY YOU
+        </h2>
 
         <p>
             Discover thoughtfully prepared herbal products
-            from AYU SAFA CARE.
+            designed for your everyday wellness and personal care.
         </p>
 
-        <a href="#order" class="primary-button">
-            SHOP NOW →
+        <a href="#products" class="primary-button">
+            EXPLORE PRODUCTS
         </a>
 
     </div>
@@ -53,11 +57,20 @@
 </section>
 
 
-<section class="products">
+<section id="products" class="products-section">
 
-    <div class="section-title">
-        <span>OUR PRODUCTS</span>
-        <h2>HERBAL CARE FOR EVERYDAY LIFE</h2>
+    <div class="section-heading">
+
+        <p>OUR PRODUCTS</p>
+
+        <h2>
+            SIMPLE HERBAL CARE
+        </h2>
+
+        <span>
+            QUALITY PRODUCTS FROM AYU SAFA CARE
+        </span>
+
     </div>
 
 
@@ -69,54 +82,22 @@
                 🌿
             </div>
 
-            <h3>AYU SAFA CARE</h3>
-
-            <p class="product-name">
+            <h3>
                 GOLD HERBAL HAIR OIL
-            </p>
+            </h3>
 
             <p>
-                Herbal hair care formulated with
-                traditional ingredients.
+                Herbal hair oil prepared with selected
+                herbs and traditional oils.
             </p>
 
             <div class="price">
                 ₹299
             </div>
 
-            <button
-                onclick="selectProduct('AYU SAFA CARE GOLD HERBAL HAIR OIL', 299)">
-                ORDER
-            </button>
-
-        </div>
-
-
-        <div class="product-card">
-
-            <div class="product-icon">
-                🧴
-            </div>
-
-            <h3>AYU SAFA CARE</h3>
-
-            <p class="product-name">
-                HERBAL HAIR SHAMPOO
-            </p>
-
-            <p>
-                Gentle herbal hair cleansing
-                for everyday care.
-            </p>
-
-            <div class="price">
-                ₹149
-            </div>
-
-            <button
-                onclick="selectProduct('AYU SAFA CARE HERBAL HAIR SHAMPOO', 149)">
-                ORDER
-            </button>
+            <a href="#order" class="card-button">
+                ORDER NOW
+            </a>
 
         </div>
 
@@ -127,25 +108,48 @@
                 🌱
             </div>
 
-            <h3>AYU SAFA CARE</h3>
-
-            <p class="product-name">
-                HERBAL MALAM
-            </p>
+            <h3>
+                HERBAL HAIR SHAMPOO
+            </h3>
 
             <p>
-                Traditional herbal topical care
-                for skin-related concerns.
+                Gentle herbal hair care for your
+                regular hair-washing routine.
             </p>
 
             <div class="price">
                 ₹149
             </div>
 
-            <button
-                onclick="selectProduct('AYU SAFA CARE HERBAL MALAM', 149)">
+            <a href="#order" class="card-button">
+                ORDER NOW
+            </a>
+
+        </div>
+
+
+        <div class="product-card">
+
+            <div class="product-icon">
+                🍃
+            </div>
+
+            <h3>
+                AYU SAFA CARE MALAM
+            </h3>
+
+            <p>
+                Herbal personal-care product from
+                the AYU SAFA CARE range.
+            </p>
+
+            <div class="price">
                 ORDER
-            </button>
+            </div>
+
+            <a href="#order" class="card-button">
+                ORDER NOW
+            </a>
 
         </div>
 
@@ -154,29 +158,27 @@
 </section>
 
 
-
-<section class="order-section" id="order">
+<section id="order" class="order-section">
 
     <div class="order-box">
 
-        <div class="section-title">
+        <div class="section-heading">
 
-            <span>PLACE YOUR ORDER</span>
+            <p>AYU SAFA CARE</p>
 
             <h2>
-                ORDER AYU SAFA CARE
+                PLACE YOUR ORDER
             </h2>
 
-            <p>
-                Fill in your details and we'll process
-                your order.
-            </p>
+            <span>
+                ENTER YOUR DETAILS BELOW
+            </span>
 
         </div>
 
 
-        <form action="/place-order" method="POST">
-
+        <form action="{{ url_for('place_order') }}"
+              method="POST">
 
             <label>
                 FULL NAME
@@ -185,8 +187,9 @@
             <input
                 type="text"
                 name="customer_name"
-                placeholder="Enter your name"
-                required>
+                placeholder="ENTER YOUR NAME"
+                required
+            >
 
 
             <label>
@@ -196,21 +199,20 @@
             <input
                 type="tel"
                 name="phone"
-                placeholder="Enter mobile number"
-                pattern="[0-9]{10}"
-                maxlength="10"
-                required>
+                placeholder="ENTER MOBILE NUMBER"
+                required
+            >
 
 
             <label>
-                ADDRESS
+                DELIVERY ADDRESS
             </label>
 
             <textarea
                 name="address"
-                rows="4"
-                placeholder="Enter complete delivery address"
-                required></textarea>
+                placeholder="ENTER COMPLETE DELIVERY ADDRESS"
+                required
+            ></textarea>
 
 
             <label>
@@ -220,35 +222,33 @@
             <select
                 name="product"
                 id="product"
+                required
                 onchange="updatePrice()"
-                required>
+            >
 
                 <option value="">
                     SELECT PRODUCT
                 </option>
 
                 <option
-                    value="AYU SAFA CARE GOLD HERBAL HAIR OIL"
-                    data-price="299">
-
+                    value="Gold Herbal Hair Oil"
+                    data-price="299"
+                >
                     GOLD HERBAL HAIR OIL — ₹299
-
                 </option>
 
                 <option
-                    value="AYU SAFA CARE HERBAL HAIR SHAMPOO"
-                    data-price="149">
-
+                    value="Herbal Hair Shampoo"
+                    data-price="149"
+                >
                     HERBAL HAIR SHAMPOO — ₹149
-
                 </option>
 
                 <option
-                    value="AYU SAFA CARE HERBAL MALAM"
-                    data-price="149">
-
-                    HERBAL MALAM — ₹149
-
+                    value="Ayu Safa Care Malam"
+                    data-price="0"
+                >
+                    AYU SAFA CARE MALAM
                 </option>
 
             </select>
@@ -264,14 +264,24 @@
                 id="quantity"
                 value="1"
                 min="1"
+                required
                 onchange="updatePrice()"
-                required>
+                oninput="updatePrice()"
+            >
+
+
+            <input
+                type="hidden"
+                name="amount"
+                id="amount"
+                value="0"
+            >
 
 
             <div class="total-box">
 
                 <span>
-                    TOTAL AMOUNT
+                    TOTAL
                 </span>
 
                 <strong id="total">
@@ -281,19 +291,11 @@
             </div>
 
 
-            <input
-                type="hidden"
-                name="amount"
-                id="amount"
-                value="0">
-
-
             <button
                 type="submit"
-                class="submit-button">
-
-                PLACE ORDER ✓
-
+                class="submit-button"
+            >
+                PLACE ORDER
             </button>
 
         </form>
@@ -303,15 +305,14 @@
 </section>
 
 
-
 <footer>
 
-    <div class="logo">
-        <span>AYU</span> SAFA CARE
-    </div>
+    <h3>
+        AYU SAFA CARE
+    </h3>
 
     <p>
-        HERBAL CARE • TRUST • QUALITY
+        HERBAL CARE • EVERYDAY WELLNESS
     </p>
 
     <p>
@@ -321,7 +322,6 @@
 </footer>
 
 
-
 <script>
 
 function updatePrice() {
@@ -329,42 +329,44 @@ function updatePrice() {
     const product =
         document.getElementById("product");
 
-    const selected =
-        product.options[product.selectedIndex];
-
-    const price =
-        parseFloat(selected.dataset.price || 0);
-
     const quantity =
-        parseInt(document.getElementById("quantity").value || 1);
+        document.getElementById("quantity");
 
     const total =
-        price * quantity;
+        document.getElementById("total");
 
-    document.getElementById("total").innerText =
-        "₹" + total;
+    const amount =
+        document.getElementById("amount");
 
-    document.getElementById("amount").value =
-        total;
+
+    const option =
+        product.options[product.selectedIndex];
+
+
+    const price =
+        Number(option.dataset.price || 0);
+
+
+    const qty =
+        Number(quantity.value || 1);
+
+
+    const finalAmount =
+        price * qty;
+
+
+    total.textContent =
+        "₹" + finalAmount;
+
+
+    amount.value =
+        finalAmount;
 }
 
 
-function selectProduct(productName, price) {
-
-    document.getElementById("product").value =
-        productName;
-
-    document.getElementById("quantity").value = 1;
-
-    updatePrice();
-
-    document.getElementById("order").scrollIntoView({
-        behavior: "smooth"
-    });
-}
+updatePrice();
 
 </script>
-
 
 </body>
 </html>
