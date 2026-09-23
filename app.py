@@ -1,47 +1,437 @@
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from functools import wraps
+from datetime import datetime
 import os
-from flask import Flask, render_template, request
+import sqlite3
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+try:
+    import psycopg2
+except ImportError:
+    psycopg2 = None
 
-app = Flask(
-    __name__,
-    static_folder=os.path.join(BASE_DIR, "static"),
-    static_url_path="/static"
+app = Flask(__name__)
+
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "local-secret-key"
 )
+
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+
+def get_db():
+
+    if DATABASE_URL and psycopg2:
+
+        url = DATABASE_URL
+
+        if url.startswith("postgres://"):
+            url = url.replace(
+                "postgres://",
+                "postgresql://",
+                1
+            )
+
+        return psycopg2.connect(url)
+
+    conn = sqlite3.connect("orders.db")
+    conn.row_factory = sqlite3.Row
+
+    return conn
+
+
+def init_db():
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    if DATABASE_URL and psycopg2:
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS orders (
+                id SERIAL PRIMARY KEY,
+                order_id VARCHAR(60) UNIQUE NOT NULL,
+                customer_name TEXT NOT NULL,
+                phone TEXT NOT NULL,
+                address TEXT NOT NULL,
+                product TEXT NOT NULL,
+                quantity INTEGER NOT NULL,
+                amount REAL NOT NULL,
+                status VARCHAR(20) DEFAULT 'NEW',
+                created_at TEXT NOT NULL
+            )
+        """)
+
+    else:
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS orders (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                order_id TEXT UNIQUE NOT NULL,
+                customer_name TEXT NOT NULL,
+                phone TEXT NOT NULL,
+                address TEXT NOT NULL,
+                product TEXT NOT NULL,
+                quantity INTEGER NOT NULL,
+                amount REAL NOT NULL,
+                status TEXT DEFAULT 'NEW',
+                created_at TEXT NOT NULL
+            )
+        """)
+
+    conn.commit()
+    conn.close()
+
+
+def admin_required(function):
+
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+
+        if not session.get("admin_logged_in"):
+            return redirect(url_for("admin_login"))
+
+        return function(*args, **kwargs)
+
+    return wrapper
 
 
 @app.route("/")
-def home():
+def index():
+
     return render_template("index.html")
 
 
-@app.route("/order", methods=["POST"])
-def order():
-    name = request.form.get("name", "")
-    phone = request.form.get("phone", "")
-    address = request.form.get("address", "")
-    product = request.form.get("product", "")
-    quantity = request.form.get("quantity", "1")
+@app.route("/place-order", methods=["POST"])
+def place_order():
 
-    prices = {
-        "Hair Oil": 299,
-        "Herbal Shampoo": 149,
-        "Malam": 199
-    }
+    customer_name = request.form.get(
+        "customer_name",
+        ""
+    ).strip()
 
-    price = prices.get(product, 0)
-    total = price * int(quantity)
+    phone = request.form.get(
+        "phone",
+        ""
+    ).strip()
 
-    return render_template(
-        "thankyou.html",
-        name=name,
-        phone=phone,
-        address=address,
-        product=product,
-        quantity=quantity,
-        total=total
+    address = request.form.get(
+        "address",
+        ""
+    ).strip()
+
+    product = request.form.get(
+        "product",
+        ""
+    ).strip()
+
+    try:
+
+        quantity = int(
+            request.form.get("quantity", "1")
+        )
+
+        amount = float(
+            request.form.get("amount", "0")
+        )
+
+    except ValueError:
+
+        return "Invalid order information", 400
+
+
+    if not customer_name or not phone or not address or not product:
+
+        return "Please fill all required fields", 400
+
+
+    if quantity < 1 or amount < 0:
+
+        return "Invalid quantity or amount", 400
+
+
+    now = datetime.now()
+
+    order_id = (
+        "ASC"
+        + now.strftime("%Y%m%d%H%M%S")
+        + str(now.microsecond)[:3]
     )
 
 
+    conn = get_db()
+    cursor = conn.cursor()
+
+
+    if DATABASE_URL and psycopg2:
+
+        cursor.execute("""
+            INSERT INTO orders
+            (
+                order_id,
+                customer_name,
+                phone,
+                address,
+                product,
+                quantity,
+                amount,
+                status,
+                created_at
+            )
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """, (
+            order_id,
+            customer_name,
+            phone,
+            address,
+            product,
+            quantity,
+            amount,
+            "NEW",
+            now.strftime("%d-%m-%Y %I:%M %p")
+        ))
+
+    else:
+
+        cursor.execute("""
+            INSERT INTO orders
+            (
+                order_id,
+                customer_name,
+                phone,
+                address,
+                product,
+                quantity,
+                amount,
+                status,
+                created_at
+            )
+            VALUES (?,?,?,?,?,?,?,?,?)
+        """, (
+            order_id,
+            customer_name,
+            phone,
+            address,
+            product,
+            quantity,
+            amount,
+            "NEW",
+            now.strftime("%d-%m-%Y %I:%M %p")
+        ))
+
+
+    conn.commit()
+    conn.close()
+
+
+    return render_template(
+        "order_success.html",
+        order_id=order_id,
+        customer_name=customer_name
+    )
+
+
+@app.route("/admin", methods=["GET", "POST"])
+def admin_login():
+
+    if session.get("admin_logged_in"):
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+
+    if request.method == "POST":
+
+        username = request.form.get(
+            "username",
+            ""
+        )
+
+        password = request.form.get(
+            "password",
+            ""
+        )
+
+
+        if (
+            username == ADMIN_USERNAME
+            and password == ADMIN_PASSWORD
+        ):
+
+            session["admin_logged_in"] = True
+
+            return redirect(
+                url_for("dashboard")
+            )
+
+
+        flash("Invalid username or password.")
+
+
+    return render_template(
+        "admin_login.html"
+    )
+
+
+@app.route("/admin/dashboard")
+@admin_required
+def dashboard():
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+        SELECT *
+        FROM orders
+        ORDER BY id DESC
+    """)
+
+    orders = cursor.fetchall()
+
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM orders"
+    )
+    total_orders = cursor.fetchone()[0]
+
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM orders WHERE status='NEW'"
+    )
+    new_orders = cursor.fetchone()[0]
+
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM orders WHERE status='CONFIRMED'"
+    )
+    confirmed_orders = cursor.fetchone()[0]
+
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM orders WHERE status='SHIPPED'"
+    )
+    shipped_orders = cursor.fetchone()[0]
+
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM orders WHERE status='DELIVERED'"
+    )
+    delivered_orders = cursor.fetchone()[0]
+
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM orders WHERE status='CANCELLED'"
+    )
+    cancelled_orders = cursor.fetchone()[0]
+
+
+    conn.close()
+
+
+    return render_template(
+        "dashboard.html",
+        orders=orders,
+        total_orders=total_orders,
+        new_orders=new_orders,
+        confirmed_orders=confirmed_orders,
+        shipped_orders=shipped_orders,
+        delivered_orders=delivered_orders,
+        cancelled_orders=cancelled_orders
+    )
+
+
+@app.route(
+    "/admin/update-status/<int:order_id>",
+    methods=["POST"]
+)
+@admin_required
+def update_status(order_id):
+
+    status = request.form.get(
+        "status",
+        "NEW"
+    )
+
+
+    allowed = [
+        "NEW",
+        "CONFIRMED",
+        "SHIPPED",
+        "DELIVERED",
+        "CANCELLED"
+    ]
+
+
+    if status not in allowed:
+
+        return "Invalid status", 400
+
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+
+    if DATABASE_URL and psycopg2:
+
+        cursor.execute("""
+            UPDATE orders
+            SET status=%s
+            WHERE id=%s
+        """, (
+            status,
+            order_id
+        ))
+
+    else:
+
+        cursor.execute("""
+            UPDATE orders
+            SET status=?
+            WHERE id=?
+        """, (
+            status,
+            order_id
+        ))
+
+
+    conn.commit()
+    conn.close()
+
+
+    return redirect(
+        url_for("dashboard")
+    )
+
+
+@app.route("/admin/logout")
+def admin_logout():
+
+    session.clear()
+
+    return redirect(
+        url_for("admin_login")
+    )
+
+
+init_db()
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+
+    port = int(
+        os.environ.get(
+            "PORT",
+            5000
+        )
+    )
+
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=False
+    )
