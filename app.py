@@ -224,7 +224,8 @@ def place_order():
 
 
     conn.commit()
-    conn.close()
+    conn.close() 
+
     return f"""
 <!DOCTYPE html>
 <html lang="en">
