@@ -227,11 +227,74 @@ def place_order():
     conn.close()
 
 
-    return render_template(
-        "order_success.html",
-        order_id=order_id,
-        customer_name=customer_name
-    )
+   return f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed - AYU SAFA CARE</title>
+
+    <link rel="stylesheet"
+          href="/static/style.css">
+</head>
+
+<body>
+
+<section class="order-section">
+
+    <div class="order-box" style="text-align:center;">
+
+        <div style="
+            font-size:60px;
+            margin-bottom:20px;
+        ">
+            ✓
+        </div>
+
+        <h2 style="
+            color:#123d2d;
+            margin-bottom:15px;
+        ">
+            ORDER RECEIVED
+        </h2>
+
+        <p style="
+            color:#68756f;
+            margin-bottom:10px;
+        ">
+            Thank you, {customer_name}.
+        </p>
+
+        <p style="
+            color:#68756f;
+            margin-bottom:25px;
+        ">
+            Your order has been successfully placed.
+        </p>
+
+        <div class="total-box">
+
+            <span>ORDER ID</span>
+
+            <strong style="font-size:18px;">
+                {order_id}
+            </strong>
+
+        </div>
+
+        <a href="/"
+           class="primary-button">
+            CONTINUE SHOPPING
+        </a>
+
+    </div>
+
+</section>
+
+</body>
+</html>
+""" 
 
 
 @app.route("/admin", methods=["GET", "POST"])
