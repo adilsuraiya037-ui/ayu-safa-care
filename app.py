@@ -1,4 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    session,
+    flash
+)
 from functools import wraps
 from datetime import datetime
 import os
@@ -9,21 +17,38 @@ try:
 except ImportError:
     psycopg2 = None
 
+
 app = Flask(__name__)
+
+# --------------------------------------------------
+# CONFIGURATION
+# --------------------------------------------------
 
 app.secret_key = os.environ.get(
     "SECRET_KEY",
     "local-secret-key"
 )
 
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
+ADMIN_USERNAME = os.environ.get(
+    "ADMIN_USERNAME",
+    "admin"
+)
+
+ADMIN_PASSWORD = os.environ.get(
+    "ADMIN_PASSWORD",
+    "admin123"
+)
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 
+# --------------------------------------------------
+# DATABASE CONNECTION
+# --------------------------------------------------
+
 def get_db():
 
+    # Render PostgreSQL
     if DATABASE_URL and psycopg2:
 
         url = DATABASE_URL
@@ -37,17 +62,23 @@ def get_db():
 
         return psycopg2.connect(url)
 
+    # Local SQLite
     conn = sqlite3.connect("orders.db")
     conn.row_factory = sqlite3.Row
 
     return conn
 
 
+# --------------------------------------------------
+# INITIALIZE DATABASE
+# --------------------------------------------------
+
 def init_db():
 
     conn = get_db()
     cursor = conn.cursor()
 
+    # PostgreSQL
     if DATABASE_URL and psycopg2:
 
         cursor.execute("""
@@ -65,6 +96,7 @@ def init_db():
             )
         """)
 
+    # SQLite
     else:
 
         cursor.execute("""
@@ -86,26 +118,45 @@ def init_db():
     conn.close()
 
 
+# --------------------------------------------------
+# ADMIN LOGIN PROTECTION
+# --------------------------------------------------
+
 def admin_required(function):
 
     @wraps(function)
     def wrapper(*args, **kwargs):
 
         if not session.get("admin_logged_in"):
-            return redirect(url_for("admin_login"))
+            return redirect(
+                url_for("admin_login")
+            )
 
         return function(*args, **kwargs)
 
     return wrapper
 
 
+# --------------------------------------------------
+# HOME PAGE
+# --------------------------------------------------
+
 @app.route("/")
 def index():
 
-    return render_template("index.html")
+    return render_template(
+        "index.html"
+    )
 
 
-@app.route("/place-order", methods=["POST"])
+# --------------------------------------------------
+# PLACE ORDER
+# --------------------------------------------------
+
+@app.route(
+    "/place-order",
+    methods=["POST"]
+)
 def place_order():
 
     customer_name = request.form.get(
@@ -131,41 +182,60 @@ def place_order():
     try:
 
         quantity = int(
-            request.form.get("quantity", "1")
+            request.form.get(
+                "quantity",
+                "1"
+            )
         )
 
         amount = float(
-            request.form.get("amount", "0")
+            request.form.get(
+                "amount",
+                "0"
+            )
         )
 
     except ValueError:
 
-        return "Invalid order information", 400
+        return (
+            "Invalid order information",
+            400
+        )
 
-
+    # Required fields
     if not customer_name or not phone or not address or not product:
 
-        return "Please fill all required fields", 400
-
+        return (
+            "Please fill all required fields",
+            400
+        )
 
     if quantity < 1 or amount < 0:
 
-        return "Invalid quantity or amount", 400
+        return (
+            "Invalid quantity or amount",
+            400
+        )
 
-
+    # Create unique order ID
     now = datetime.now()
 
     order_id = (
         "ASC"
-        + now.strftime("%Y%m%d%H%M%S")
+        + now.strftime(
+            "%Y%m%d%H%M%S"
+        )
         + str(now.microsecond)[:3]
     )
 
+    created_at = now.strftime(
+        "%d-%m-%Y %I:%M %p"
+    )
 
     conn = get_db()
     cursor = conn.cursor()
 
-
+    # PostgreSQL
     if DATABASE_URL and psycopg2:
 
         cursor.execute("""
@@ -181,7 +251,17 @@ def place_order():
                 status,
                 created_at
             )
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            VALUES (
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s
+            )
         """, (
             order_id,
             customer_name,
@@ -191,9 +271,10 @@ def place_order():
             quantity,
             amount,
             "NEW",
-            now.strftime("%d-%m-%Y %I:%M %p")
+            created_at
         ))
 
+    # SQLite
     else:
 
         cursor.execute("""
@@ -209,7 +290,17 @@ def place_order():
                 status,
                 created_at
             )
-            VALUES (?,?,?,?,?,?,?,?,?)
+            VALUES (
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?
+            )
         """, (
             order_id,
             customer_name,
@@ -219,84 +310,122 @@ def place_order():
             quantity,
             amount,
             "NEW",
-            now.strftime("%d-%m-%Y %I:%M %p")
+            created_at
         ))
 
-
     conn.commit()
-    conn.close() 
+    conn.close()
 
+    # Order confirmation page
     return f"""
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmed - AYU SAFA CARE</title>
+    <!DOCTYPE html>
 
-    <link rel="stylesheet"
-          href="/static/style.css">
-</head>
+    <html lang="en">
 
-<body>
+    <head>
 
-<section class="order-section">
+        <meta charset="UTF-8">
 
-    <div class="order-box" style="text-align:center;">
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        >
 
-        <div style="
-            font-size:60px;
-            margin-bottom:20px;
-        ">
-            ✓
-        </div>
+        <title>
+            Order Confirmed - AYU SAFA CARE
+        </title>
 
-        <h2 style="
-            color:#123d2d;
-            margin-bottom:15px;
-        ">
-            ORDER RECEIVED
-        </h2>
+        <link
+            rel="stylesheet"
+            href="/static/style.css"
+        >
 
-        <p style="
-            color:#68756f;
-            margin-bottom:10px;
-        ">
-            Thank you, {customer_name}.
-        </p>
+    </head>
 
-        <p style="
-            color:#68756f;
-            margin-bottom:25px;
-        ">
-            Your order has been successfully placed.
-        </p>
+    <body>
 
-        <div class="total-box">
+        <section class="order-section">
 
-            <span>ORDER ID</span>
+            <div
+                class="order-box"
+                style="text-align:center;"
+            >
 
-            <strong style="font-size:18px;">
-                {order_id}
-            </strong>
+                <div
+                    style="
+                        font-size:60px;
+                        margin-bottom:20px;
+                    "
+                >
+                    ✓
+                </div>
 
-        </div>
+                <h2
+                    style="
+                        color:#123d2d;
+                        margin-bottom:15px;
+                    "
+                >
+                    ORDER RECEIVED
+                </h2>
 
-        <a href="/"
-           class="primary-button">
-            CONTINUE SHOPPING
-        </a>
+                <p
+                    style="
+                        color:#68756f;
+                        margin-bottom:10px;
+                    "
+                >
+                    Thank you, {customer_name}.
+                </p>
 
-    </div>
+                <p
+                    style="
+                        color:#68756f;
+                        margin-bottom:25px;
+                    "
+                >
+                    Your order has been successfully placed.
+                </p>
 
-</section>
+                <div class="total-box">
 
-</body>
-</html>
-""" 
+                    <span>
+                        ORDER ID
+                    </span>
+
+                    <strong
+                        style="font-size:18px;"
+                    >
+                        {order_id}
+                    </strong>
+
+                </div>
+
+                <a
+                    href="/"
+                    class="primary-button"
+                >
+                    CONTINUE SHOPPING
+                </a>
+
+            </div>
+
+        </section>
+
+    </body>
+
+    </html>
+    """
 
 
-@app.route("/track-order", methods=["GET", "POST"])
+# --------------------------------------------------
+# TRACK ORDER
+# --------------------------------------------------
+
+@app.route(
+    "/track-order",
+    methods=["GET", "POST"]
+)
 def track_order():
 
     order = None
@@ -316,13 +445,16 @@ def track_order():
 
         if not order_id or not phone:
 
-            error = "Please enter Order ID and phone number."
+            error = (
+                "Please enter Order ID and phone number."
+            )
 
         else:
 
             conn = get_db()
             cursor = conn.cursor()
 
+            # PostgreSQL
             if DATABASE_URL and psycopg2:
 
                 cursor.execute("""
@@ -343,6 +475,7 @@ def track_order():
                     phone
                 ))
 
+            # SQLite
             else:
 
                 cursor.execute("""
@@ -379,10 +512,17 @@ def track_order():
         "track_order.html",
         order=order,
         error=error
+    )
 
 
+# --------------------------------------------------
+# ADMIN LOGIN
+# --------------------------------------------------
 
-@app.route("/admin", methods=["GET", "POST"])
+@app.route(
+    "/admin",
+    methods=["GET", "POST"]
+)
 def admin_login():
 
     if session.get("admin_logged_in"):
@@ -390,7 +530,6 @@ def admin_login():
         return redirect(
             url_for("dashboard")
         )
-
 
     if request.method == "POST":
 
@@ -404,26 +543,31 @@ def admin_login():
             ""
         )
 
-
         if (
             username == ADMIN_USERNAME
             and password == ADMIN_PASSWORD
         ):
 
-            session["admin_logged_in"] = True
+            session[
+                "admin_logged_in"
+            ] = True
 
             return redirect(
                 url_for("dashboard")
             )
 
-
-        flash("Invalid username or password.")
-
+        flash(
+            "Invalid username or password."
+        )
 
     return render_template(
         "admin_login.html"
     )
 
+
+# --------------------------------------------------
+# ADMIN DASHBOARD
+# --------------------------------------------------
 
 @app.route("/admin/dashboard")
 @admin_required
@@ -431,7 +575,6 @@ def dashboard():
 
     conn = get_db()
     cursor = conn.cursor()
-
 
     cursor.execute("""
         SELECT *
@@ -441,45 +584,69 @@ def dashboard():
 
     orders = cursor.fetchall()
 
-
+    # Total orders
     cursor.execute(
         "SELECT COUNT(*) FROM orders"
     )
+
     total_orders = cursor.fetchone()[0]
 
-
+    # New
     cursor.execute(
-        "SELECT COUNT(*) FROM orders WHERE status='NEW'"
+        """
+        SELECT COUNT(*)
+        FROM orders
+        WHERE status = 'NEW'
+        """
     )
+
     new_orders = cursor.fetchone()[0]
 
-
+    # Confirmed
     cursor.execute(
-        "SELECT COUNT(*) FROM orders WHERE status='CONFIRMED'"
+        """
+        SELECT COUNT(*)
+        FROM orders
+        WHERE status = 'CONFIRMED'
+        """
     )
+
     confirmed_orders = cursor.fetchone()[0]
 
-
+    # Shipped
     cursor.execute(
-        "SELECT COUNT(*) FROM orders WHERE status='SHIPPED'"
+        """
+        SELECT COUNT(*)
+        FROM orders
+        WHERE status = 'SHIPPED'
+        """
     )
+
     shipped_orders = cursor.fetchone()[0]
 
-
+    # Delivered
     cursor.execute(
-        "SELECT COUNT(*) FROM orders WHERE status='DELIVERED'"
+        """
+        SELECT COUNT(*)
+        FROM orders
+        WHERE status = 'DELIVERED'
+        """
     )
+
     delivered_orders = cursor.fetchone()[0]
 
-
+    # Cancelled
     cursor.execute(
-        "SELECT COUNT(*) FROM orders WHERE status='CANCELLED'"
+        """
+        SELECT COUNT(*)
+        FROM orders
+        WHERE status = 'CANCELLED'
+        """
     )
+
     cancelled_orders = cursor.fetchone()[0]
 
-
     conn.close()
-
 
     return render_template(
         "dashboard.html",
@@ -493,6 +660,10 @@ def dashboard():
     )
 
 
+# --------------------------------------------------
+# UPDATE ORDER STATUS
+# --------------------------------------------------
+
 @app.route(
     "/admin/update-status/<int:order_id>",
     methods=["POST"]
@@ -505,7 +676,6 @@ def update_status(order_id):
         "NEW"
     )
 
-
     allowed = [
         "NEW",
         "CONFIRMED",
@@ -514,47 +684,51 @@ def update_status(order_id):
         "CANCELLED"
     ]
 
-
     if status not in allowed:
 
-        return "Invalid status", 400
-
+        return (
+            "Invalid status",
+            400
+        )
 
     conn = get_db()
     cursor = conn.cursor()
 
-
+    # PostgreSQL
     if DATABASE_URL and psycopg2:
 
         cursor.execute("""
             UPDATE orders
-            SET status=%s
-            WHERE id=%s
+            SET status = %s
+            WHERE id = %s
         """, (
             status,
             order_id
         ))
 
+    # SQLite
     else:
 
         cursor.execute("""
             UPDATE orders
-            SET status=?
-            WHERE id=?
+            SET status = ?
+            WHERE id = ?
         """, (
             status,
             order_id
         ))
 
-
     conn.commit()
     conn.close()
-
 
     return redirect(
         url_for("dashboard")
     )
 
+
+# --------------------------------------------------
+# ADMIN LOGOUT
+# --------------------------------------------------
 
 @app.route("/admin/logout")
 def admin_logout():
@@ -565,6 +739,10 @@ def admin_logout():
         url_for("admin_login")
     )
 
+
+# --------------------------------------------------
+# STARTUP
+# --------------------------------------------------
 
 init_db()
 
