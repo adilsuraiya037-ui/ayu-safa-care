@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>TRACK ORDER | AYU SAFA CARE</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .tracking-page {
+            min-height: calc(100vh - 78px);
+            padding: 70px 20px;
+            background: #f7f3e9;
+        }
+
+        .tracking-card {
+            width: 100%;
+            max-width: 650px;
+            margin: auto;
+            padding: 40px;
+            background: #ffffff;
+            border-radius: 22px;
+            box-shadow: 0 20px 55px rgba(18,61,45,0.10);
+        }
+
+        .tracking-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .tracking-title p {
+            color: #b18c39;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
+        .tracking-title h2 {
+            color: #123d2d;
+            font-size: 34px;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .tracking-title span {
+            color: #68756f;
+            font-size: 14px;
+        }
+
+        .tracking-form label {
+            display: block;
+            margin-bottom: 7px;
+            color: #234638;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .tracking-form input {
+            width: 100%;
+            height: 50px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            border: 1px solid #d9dfda;
+            border-radius: 10px;
+            background: #fbfcfa;
+            color: #18352b;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .tracking-form input:focus {
+            border-color: #789b89;
+            box-shadow: 0 0 0 3px rgba(120,155,137,0.12);
+        }
+
+        .tracking-button {
+            width: 100%;
+            min-height: 52px;
+            border: 0;
+            border-radius: 28px;
+            background: #123d2d;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+
+        .tracking-button:hover {
+            background: #1e5b42;
+        }
+
+        .tracking-error {
+            margin-bottom: 20px;
+            padding: 13px 15px;
+            border-radius: 10px;
+            background: #fff0ef;
+            color: #a33a32;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .order-result {
+            margin-top: 35px;
+            padding-top: 30px;
+            border-top: 1px solid #e6dfcf;
+        }
+
+        .order-result h3 {
+            margin-bottom: 20px;
+            color: #123d2d;
+            font-size: 22px;
+            text-align: center;
+        }
+
+        .order-info {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 35px;
+        }
+
+        .order-info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 13px 15px;
+            background: #f5f8f4;
+            border-radius: 9px;
+        }
+
+        .order-info-row span:first-child {
+            color: #68756f;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .order-info-row span:last-child {
+            color: #123d2d;
+            font-size: 13px;
+            font-weight: 900;
+            text-align: right;
+        }
+
+        .status-title {
+            margin-bottom: 25px;
+            color: #123d2d;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .status-line {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            margin: 0 5px 10px;
+        }
+
+        .status-line::before {
+            content: "";
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            top: 14px;
+            height: 3px;
+            background: #dfe5df;
+            z-index: 0;
+        }
+
+        .status-step {
+            position: relative;
+            z-index: 1;
+            width: 25%;
+            text-align: center;
+        }
+
+        .status-dot {
+            width: 30px;
+            height: 30px;
+            margin: 0 auto 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #dfe5df;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .status-step.active .status-dot {
+            background: #123d2d;
+        }
+
+        .status-step.current .status-dot {
+            background: #b18c39;
+        }
+
+        .status-step span {
+            display: block;
+            color: #68756f;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .cancelled-status {
+            padding: 15px;
+            border-radius: 10px;
+            background: #fff0ef;
+            color: #a33a32;
+            text-align: center;
+            font-weight: 900;
+        }
+
+        @media (max-width: 600px) {
+
+            .tracking-page {
+                padding: 45px 15px;
+            }
+
+            .tracking-card {
+                padding: 28px 20px;
+            }
+
+            .tracking-title h2 {
+                font-size: 29px;
+            }
+
+            .order-info-row {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .order-info-row span:last-child {
+                text-align: left;
+            }
+
+            .status-step span {
+                font-size: 8px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header class="navbar">
+
+    <div class="brand">
+
+        <div class="brand-mark">
+            AS
+        </div>
+
+        <div>
+
+            <h1>AYU SAFA CARE</h1>
+
+            <span>
+                HERBAL WELLNESS
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <a href="/"
+       class="nav-button">
+
+        HOME
+
+    </a>
+
+</header>
+
+
+
+<section class="tracking-page">
+
+
+    <div class="tracking-card">
+
+
+        <div class="tracking-title">
+
+            <p>
+                AYU SAFA CARE
+            </p>
+
+            <h2>
+                TRACK YOUR ORDER
+            </h2>
+
+            <span>
+                ENTER YOUR ORDER ID AND PHONE NUMBER
+            </span>
+
+        </div>
+
+
+
+        {% if error %}
+
+        <div class="tracking-error">
+
+            {{ error }}
+
+        </div>
+
+        {% endif %}
+
+
+
+        <form
+            class="tracking-form"
+            method="POST"
+            action="{{ url_for('track_order') }}"
+        >
+
+
+            <label>
+                ORDER ID
+            </label>
+
+
+            <input
+                type="text"
+                name="order_id"
+                placeholder="ENTER YOUR ORDER ID"
+                required
+            >
+
+
+
+            <label>
+                PHONE NUMBER
+            </label>
+
+
+            <input
+                type="tel"
+                name="phone"
+                placeholder="ENTER PHONE NUMBER USED FOR ORDER"
+                required
+            >
+
+
+
+            <button
+                type="submit"
+                class="tracking-button"
+            >
+
+                TRACK ORDER
+
+            </button>
+
+
+        </form>
+
+
+
+        {% if order %}
+
+
+        <div class="order-result">
+
+
+            <h3>
+                ORDER FOUND ✓
+            </h3>
+
+
+            <div class="order-info">
+
+
+                <div class="order-info-row">
+
+                    <span>
+                        ORDER ID
+                    </span>
+
+                    <span>
+                        {{ order[0] }}
+                    </span>
+
+                </div>
+
+
+
+                <div class="order-info-row">
+
+                    <span>
+                        PRODUCT
+                    </span>
+
+                    <span>
+                        {{ order[3] }}
+                    </span>
+
+                </div>
+
+
+
+                <div class="order-info-row">
+
+                    <span>
+                        QUANTITY
+                    </span>
+
+                    <span>
+                        {{ order[4] }}
+                    </span>
+
+                </div>
+
+
+
+                <div class="order-info-row">
+
+                    <span>
+                        AMOUNT
+                    </span>
+
+                    <span>
+                        ₹{{ order[5] }}
+                    </span>
+
+                </div>
+
+
+
+                <div class="order-info-row">
+
+                    <span>
+                        ORDER DATE
+                    </span>
+
+                    <span>
+                        {{ order[7] }}
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+
+            {% if order[6] == "CANCELLED" %}
+
+
+            <div class="cancelled-status">
+
+                ORDER CANCELLED
+
+            </div>
+
+
+            {% else %}
+
+
+            <div class="status-title">
+
+                ORDER STATUS
+
+            </div>
+
+
+            {% set statuses = [
+                "NEW",
+                "CONFIRMED",
+                "SHIPPED",
+                "DELIVERED"
+            ] %}
+
+
+            {% set current_index =
+                statuses.index(order[6])
+                if order[6] in statuses
+                else 0
+            %}
+
+
+            <div class="status-line">
+
+
+                {% for status in statuses %}
+
+                {% set status_index = loop.index0 %}
+
+
+                <div class="status-step
+                    {% if status_index <= current_index %}
+                        active
+                    {% endif %}
+                    {% if status == order[6] %}
+                        current
+                    {% endif %}
+                ">
+
+
+                    <div class="status-dot">
+
+                        {% if status_index <= current_index %}
+                            ✓
+                        {% else %}
+                            {{ loop.index }}
+                        {% endif %}
+
+                    </div>
+
+
+                    <span>
+                        {{ status }}
+                    </span>
+
+
+                </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</section>
+
+
+
+<footer>
+
+    <h3>
+        AYU SAFA CARE
+    </h3>
+
+    <p>
+        HERBAL CARE • EVERYDAY WELLNESS
+    </p>
+
+</footer>
+
+
+</body>
+
+</html>
