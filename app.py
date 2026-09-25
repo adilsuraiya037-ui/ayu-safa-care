@@ -227,7 +227,7 @@ def place_order():
     conn.close()
 
 
-   return f"""
+    return f"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
