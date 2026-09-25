@@ -297,6 +297,92 @@ def place_order():
 """ 
 
 
+@app.route("/track-order", methods=["GET", "POST"])
+def track_order():
+
+    order = None
+    error = None
+
+    if request.method == "POST":
+
+        order_id = request.form.get(
+            "order_id",
+            ""
+        ).strip()
+
+        phone = request.form.get(
+            "phone",
+            ""
+        ).strip()
+
+        if not order_id or not phone:
+
+            error = "Please enter Order ID and phone number."
+
+        else:
+
+            conn = get_db()
+            cursor = conn.cursor()
+
+            if DATABASE_URL and psycopg2:
+
+                cursor.execute("""
+                    SELECT
+                        order_id,
+                        customer_name,
+                        phone,
+                        product,
+                        quantity,
+                        amount,
+                        status,
+                        created_at
+                    FROM orders
+                    WHERE order_id = %s
+                    AND phone = %s
+                """, (
+                    order_id,
+                    phone
+                ))
+
+            else:
+
+                cursor.execute("""
+                    SELECT
+                        order_id,
+                        customer_name,
+                        phone,
+                        product,
+                        quantity,
+                        amount,
+                        status,
+                        created_at
+                    FROM orders
+                    WHERE order_id = ?
+                    AND phone = ?
+                """, (
+                    order_id,
+                    phone
+                ))
+
+            order = cursor.fetchone()
+
+            conn.close()
+
+            if not order:
+
+                error = (
+                    "Order not found. "
+                    "Please check your Order ID "
+                    "and phone number."
+                )
+
+    return render_template(
+        "track_order.html",
+        order=order,
+        error=error
+
+
+
 @app.route("/admin", methods=["GET", "POST"])
 def admin_login():
 
