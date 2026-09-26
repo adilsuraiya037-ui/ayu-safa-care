@@ -371,259 +371,103 @@
     </p>
 
 </footer>
-
-
 <script>
-
-function updatePrice() {
-
-    const product =
-        document.getElementById("product");
-
-    const quantity =
-        document.getElementById("quantity");
-
-    const total =
-        document.getElementById("total");
-
-    const amount =
-        document.getElementById("amount");
-
-
-    const option =
-        product.options[product.selectedIndex];
-
-
-    const price =
-        Number(option.dataset.price || 0);
-
-
-    const qty =
-        Number(quantity.value || 1);
-
-
-    const finalAmount =
-        price * qty;
-
-
-    total.textContent =
-        "₹" + finalAmount;
-
-
-    amount.value =
-        finalAmount;
-}
-
-
-updatePrice();
-
-</script>
-<!-- PRODUCT DETAILS POPUP -->
-
-<div id="productModal" class="product-modal">
-
-    <div class="product-modal-box">
-
-        <button class="modal-close"
-                onclick="closeProduct()">
-            ×
-        </button>
-
-        <div class="modal-image">
-            <img id="modalProductImage"
-                 src=""
-                 alt="">
-        </div>
-
-        <div class="modal-content">
-
-            <span id="modalCategory"
-                  class="product-category">
-            </span>
-
-            <h2 id="modalProductName">
-            </h2>
-
-            <div id="modalPrice"
-                 class="price">
-            </div>
-
-            <p id="modalDescription">
-            </p>
-
-            <h4>
-                BENEFITS
-            </h4>
-
-            <ul id="modalBenefits">
-            </ul>
-
-            <a href="#order"
-               onclick="closeProduct()"
-               class="card-button">
-                ORDER NOW
-            </a>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<script>
-
 const products = {
-
     oil: {
-
-        image:
-            "{{ url_for('static', filename='images/hair-oil.jpg') }}",
-
-        category:
-            "HAIR CARE",
-
-        name:
-            "GOLD HERBAL HAIR OIL",
-
-        price:
-            "₹299",
-
-        description:
-            "Ayu Safa Care Gold Herbal Hair Oil is prepared with selected herbs and traditional oils for everyday hair care.",
-
+        image: "{{ url_for('static', filename='images/hair-oil.jpg') }}",
+        category: "HAIR CARE",
+        name: "GOLD HERBAL HAIR OIL",
+        price: "₹299",
+        description: "Ayu Safa Care Gold Herbal Hair Oil is prepared with selected 11 herbs and 3 oil andit is traditional oils for everyday hair care.",
         benefits: [
             "Helps support stronger-looking hair",
             "Helps maintain healthy-looking hair",
             "Helps care for dry scalp and hair",
             "Provides a relaxing hair-oiling experience"
         ]
-
     },
 
-
     shampoo: {
-
-        image:
-            "{{ url_for('static', filename='images/Shampoo.jpg') }}",
-
-        category:
-            "HAIR CARE",
-
-        name:
-            "AYU SAFA CARE HERBAL SHAMPOO",
-
-        price:
-            "₹149",
-
-        description:
-            "A herbal shampoo formulated with aloe vera, methi, flax seed and neem for regular hair cleansing and care.",
-
+        image: "{{ url_for('static', filename='images/shampoo.jpg') }}",
+        category: "HAIR CARE",
+        name: "AYU SAFA CARE HERBAL SHAMPOO",
+        price: "₹149",
+        description: "A herbal shampoo formulated with aloe vera, methi, flax seed and neem for regular hair cleansing and care.",
         benefits: [
             "Gentle everyday hair cleansing",
             "Helps remove excess oil and buildup",
             "Helps maintain clean-looking hair",
             "Herbal hair-care formulation"
         ]
-
     },
 
-
     malam: {
-
-        image:
-            "{{ url_for('static', filename='images/Malam.jpg') }}",
-
-        category:
-            "SKIN CARE",
-
-        name:
-            "AYU SAFA CARE MALAM",
-
-        price:
-            "CONTACT FOR PRICE",
-
-        description:
-            "Ayu Safa Care Malam is a herbal topical-care product intended for selected skin-care needs.",
-
+        image: "{{ url_for('static', filename='images/Malam.jpg') }}",
+        category: "SKIN CARE",
+        name: "AYU SAFA CARE MALAM",
+        price: "╣149",
+        description: "Ayu Safa Care Malam is a herbal topical-care product.",
         benefits: [
             "Convenient topical application",
             "Herbal topical-care formulation",
             "Suitable for targeted skin-care use"
         ]
-
     }
-
 };
-
 
 function openProduct(productId) {
 
     const product = products[productId];
 
-    if (!product) {
-        return;
-    }
+    if (!product) return;
 
-    document.getElementById("modalProductImage").src =
-        product.image;
+    document.getElementById("modalProductImage").src = product.image;
+    document.getElementById("modalProductImage").alt = product.name;
+    document.getElementById("modalCategory").textContent = product.category;
+    document.getElementById("modalProductName").textContent = product.name;
+    document.getElementById("modalPrice").textContent = product.price;
+    document.getElementById("modalDescription").textContent = product.description;
 
-    document.getElementById("modalProductImage").alt =
-        product.name;
-
-    document.getElementById("modalCategory").textContent =
-        product.category;
-
-    document.getElementById("modalProductName").textContent =
-        product.name;
-
-    document.getElementById("modalPrice").textContent =
-        product.price;
-
-    document.getElementById("modalDescription").textContent =
-        product.description;
-
-
-    const benefits =
-        document.getElementById("modalBenefits");
+    const benefits = document.getElementById("modalBenefits");
 
     benefits.innerHTML = "";
 
     product.benefits.forEach(function(benefit) {
 
-        const li =
-            document.createElement("li");
+        const li = document.createElement("li");
 
         li.textContent = benefit;
 
         benefits.appendChild(li);
-
     });
 
-
-    document.getElementById("productModal")
-        .classList.add("show");
-
+    document.getElementById("productModal").classList.add("show");
 }
-
 
 function closeProduct() {
 
-    document.getElementById("productModal")
-        .classList.remove("show");
-
+    document.getElementById("productModal").classList.remove("show");
 }
 
+document.addEventListener("DOMContentLoaded", function() {
 
-document.getElementById("productModal")
-    .addEventListener("click", function(event) {
+    const modal = document.getElementById("productModal");
 
-        if (event.target === this) {
-            closeProduct();
-        }
+    if (modal) {
 
-    });
+        modal.addEventListener("click", function(event) {
 
+            if (event.target === modal) {
+                closeProduct();
+            }
+
+        });
+
+    }
+
+});
 </script>
+
+
 </body>
 </html>
