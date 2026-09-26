@@ -76,84 +76,135 @@
 
     <div class="product-grid">
 
-        <div class="product-card">
+    <!-- HAIR OIL -->
 
-            <div class="product-icon">
-                🌿
-            </div>
+    <div class="product-card">
+
+        <div class="product-image">
+            <img src="{{ url_for('static', filename='images/hair-oil.jpg') }}"
+                 alt="Ayu Safa Care Gold Herbal Hair Oil">
+        </div>
+
+        <div class="product-content">
+
+            <span class="product-category">
+                HAIR CARE
+            </span>
 
             <h3>
                 GOLD HERBAL HAIR OIL
             </h3>
 
             <p>
-                Herbal hair oil prepared with selected
-                herbs and traditional oils.
+                BHRINGRAJ AMLA NEEM SHIKAKAI FLAXSEEEDS FENUGREEK BHRAMI HEENA GILOY YASHTIMADHU INDIGO
+                CASTOR OIL SEASUM OIL AND COCONUT OIL
             </p>
 
             <div class="price">
                 ₹299
             </div>
 
-            <a href="#order" class="card-button">
-                ORDER NOW
-            </a>
+            <button class="card-button"
+                    onclick="openProduct('oil')">
+                VIEW DETAILS
+            </button>
 
-        </div>
-
-
-        <div class="product-card">
-
-            <div class="product-icon">
-                🌱
-            </div>
-
-            <h3>
-                HERBAL HAIR SHAMPOO
-            </h3>
-
-            <p>
-                Gentle herbal hair care for your
-                regular hair-washing routine.
-            </p>
-
-            <div class="price">
-                ₹149
-            </div>
-
-            <a href="#order" class="card-button">
-                ORDER NOW
-            </a>
-
-        </div>
-
-
-        <div class="product-card">
-
-            <div class="product-icon">
-                🍃
-            </div>
-
-            <h3>
-                AYU SAFA CARE MALAM
-            </h3>
-
-            <p>
-                Herbal personal-care product from
-                the AYU SAFA CARE range.
-            </p>
-
-            <div class="price">
-                ORDER
-            </div>
-
-            <a href="#order" class="card-button">
+            <a href="#order"
+               class="card-button secondary-button">
                 ORDER NOW
             </a>
 
         </div>
 
     </div>
+
+
+    <!-- SHAMPOO -->
+
+    <div class="product-card">
+
+        <div class="product-image">
+            <img src="{{ url_for('static', filename='images/Shampoo.jpg') }}"
+                 alt="Ayu Safa Care Herbal Shampoo">
+        </div>
+
+        <div class="product-content">
+
+            <span class="product-category">
+                HAIR CARE
+            </span>
+
+            <h3>
+                AYU SAFA CARE HERBAL SHAMPOO
+            </h3>
+
+            <p>
+                Herbal shampoo with aloe vera, methi,
+                flax seed and neem.
+            </p>
+
+            <div class="price">
+                ₹149
+            </div>
+
+            <button class="card-button"
+                    onclick="openProduct('shampoo')">
+                VIEW DETAILS
+            </button>
+
+            <a href="#order"
+               class="card-button secondary-button">
+                ORDER NOW
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- MALAM -->
+
+    <div class="product-card">
+
+        <div class="product-image">
+            <img src="{{ url_for('static', filename='images/Malam.jpg') }}"
+                 alt="Ayu Safa Care Malam">
+        </div>
+
+        <div class="product-content">
+
+            <span class="product-category">
+                SKIN CARE
+            </span>
+
+            <h3>
+                AYU SAFA CARE MALAM
+            </h3>
+
+            <p>
+                Herbal topical care product designed
+                for selected skin-care needs.
+            </p>
+
+            <div class="price">
+                149
+            </div>
+
+            <button class="card-button"
+                    onclick="openProduct('malam')">
+                VIEW DETAILS
+            </button>
+
+            <a href="#order"
+               class="card-button secondary-button">
+                ORDER NOW
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
 
 </section>
 
