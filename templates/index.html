@@ -418,6 +418,212 @@ function updatePrice() {
 updatePrice();
 
 </script>
+<!-- PRODUCT DETAILS POPUP -->
 
+<div id="productModal" class="product-modal">
+
+    <div class="product-modal-box">
+
+        <button class="modal-close"
+                onclick="closeProduct()">
+            ×
+        </button>
+
+        <div class="modal-image">
+            <img id="modalProductImage"
+                 src=""
+                 alt="">
+        </div>
+
+        <div class="modal-content">
+
+            <span id="modalCategory"
+                  class="product-category">
+            </span>
+
+            <h2 id="modalProductName">
+            </h2>
+
+            <div id="modalPrice"
+                 class="price">
+            </div>
+
+            <p id="modalDescription">
+            </p>
+
+            <h4>
+                BENEFITS
+            </h4>
+
+            <ul id="modalBenefits">
+            </ul>
+
+            <a href="#order"
+               onclick="closeProduct()"
+               class="card-button">
+                ORDER NOW
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const products = {
+
+    oil: {
+
+        image:
+            "{{ url_for('static', filename='images/hair-oil.jpg') }}",
+
+        category:
+            "HAIR CARE",
+
+        name:
+            "GOLD HERBAL HAIR OIL",
+
+        price:
+            "₹299",
+
+        description:
+            "Ayu Safa Care Gold Herbal Hair Oil is prepared with selected herbs and traditional oils for everyday hair care.",
+
+        benefits: [
+            "Helps support stronger-looking hair",
+            "Helps maintain healthy-looking hair",
+            "Helps care for dry scalp and hair",
+            "Provides a relaxing hair-oiling experience"
+        ]
+
+    },
+
+
+    shampoo: {
+
+        image:
+            "{{ url_for('static', filename='images/Shampoo.jpg') }}",
+
+        category:
+            "HAIR CARE",
+
+        name:
+            "AYU SAFA CARE HERBAL SHAMPOO",
+
+        price:
+            "₹149",
+
+        description:
+            "A herbal shampoo formulated with aloe vera, methi, flax seed and neem for regular hair cleansing and care.",
+
+        benefits: [
+            "Gentle everyday hair cleansing",
+            "Helps remove excess oil and buildup",
+            "Helps maintain clean-looking hair",
+            "Herbal hair-care formulation"
+        ]
+
+    },
+
+
+    malam: {
+
+        image:
+            "{{ url_for('static', filename='images/Malam.jpg') }}",
+
+        category:
+            "SKIN CARE",
+
+        name:
+            "AYU SAFA CARE MALAM",
+
+        price:
+            "CONTACT FOR PRICE",
+
+        description:
+            "Ayu Safa Care Malam is a herbal topical-care product intended for selected skin-care needs.",
+
+        benefits: [
+            "Convenient topical application",
+            "Herbal topical-care formulation",
+            "Suitable for targeted skin-care use"
+        ]
+
+    }
+
+};
+
+
+function openProduct(productId) {
+
+    const product = products[productId];
+
+    if (!product) {
+        return;
+    }
+
+    document.getElementById("modalProductImage").src =
+        product.image;
+
+    document.getElementById("modalProductImage").alt =
+        product.name;
+
+    document.getElementById("modalCategory").textContent =
+        product.category;
+
+    document.getElementById("modalProductName").textContent =
+        product.name;
+
+    document.getElementById("modalPrice").textContent =
+        product.price;
+
+    document.getElementById("modalDescription").textContent =
+        product.description;
+
+
+    const benefits =
+        document.getElementById("modalBenefits");
+
+    benefits.innerHTML = "";
+
+    product.benefits.forEach(function(benefit) {
+
+        const li =
+            document.createElement("li");
+
+        li.textContent = benefit;
+
+        benefits.appendChild(li);
+
+    });
+
+
+    document.getElementById("productModal")
+        .classList.add("show");
+
+}
+
+
+function closeProduct() {
+
+    document.getElementById("productModal")
+        .classList.remove("show");
+
+}
+
+
+document.getElementById("productModal")
+    .addEventListener("click", function(event) {
+
+        if (event.target === this) {
+            closeProduct();
+        }
+
+    });
+
+</script>
 </body>
 </html>
