@@ -9,6 +9,7 @@ from flask import (
 )
 from functools import wraps
 from datetime import datetime
+from decimal import Decimal
 import os
 import sqlite3
 
@@ -22,6 +23,7 @@ except ImportError:
 
 app = Flask(__name__)
 
+
 # ==================================================
 # CONFIGURATION
 # ==================================================
@@ -33,34 +35,51 @@ app.secret_key = os.environ.get(
 
 ADMIN_USERNAME = os.environ.get(
     "ADMIN_USERNAME",
-    "admin"
+    "dr.adil"
 )
 
 ADMIN_PASSWORD = os.environ.get(
     "ADMIN_PASSWORD",
-    "admin123"
+    "ayusafa786"
 )
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 
 # ==================================================
-# DATABASE CONNECTION
+# PRODUCT PRICES
+# ==================================================
+
+PRODUCT_PRICES = {
+    "Gold Herbal Hair Oil": Decimal("299.00"),
+    "Herbal Hair Shampoo": Decimal("149.00"),
+    "Ayu Safa Care Malam": Decimal("149.00")
+}
+
+
+# ==================================================
+# DATABASE TYPE
 # ==================================================
 
 def using_postgresql():
-    return bool(DATABASE_URL and psycopg2)
+    return bool(
+        DATABASE_URL and psycopg2
+    )
 
+
+# ==================================================
+# DATABASE CONNECTION
+# ==================================================
 
 def get_db():
 
     # ----------------------------------------------
-    # RENDER POSTGRESQL
+    # POSTGRESQL
     # ----------------------------------------------
 
     if using_postgresql():
 
-        url = DATABASE_URL
+        url = DATABASE_URL.strip()
 
         if url.startswith("postgres://"):
             url = url.replace(
@@ -69,19 +88,24 @@ def get_db():
                 1
             )
 
+        if url.startswith("postgresql://"):
+            pass
+
         conn = psycopg2.connect(
             url,
-            cursor_factory=RealDictCursor
+            cursor_factory=RealDictCursor,
+            connect_timeout=10
         )
 
         return conn
 
     # ----------------------------------------------
-    # LOCAL SQLITE
+    # SQLITE
     # ----------------------------------------------
 
     conn = sqlite3.connect(
-        "orders.db"
+        "orders.db",
+        timeout=10
     )
 
     conn.row_factory = sqlite3.Row
@@ -95,10 +119,13 @@ def get_db():
 
 def init_db():
 
-    conn = get_db()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
 
     try:
+
+        conn = get_db()
+        cursor = conn.cursor()
 
         if using_postgresql():
 
@@ -136,15 +163,33 @@ def init_db():
 
         conn.commit()
 
-    except Exception:
+        print("DATABASE INITIALIZATION: SUCCESS")
+        print(
+            "DATABASE TYPE:",
+            "POSTGRESQL"
+            if using_postgresql()
+            else "SQLITE"
+        )
 
-        conn.rollback()
+    except Exception as e:
+
+        if conn:
+            conn.rollback()
+
+        print("======================================")
+        print("DATABASE INITIALIZATION ERROR")
+        print(str(e))
+        print("======================================")
+
         raise
 
     finally:
 
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+
+        if conn:
+            conn.close()
 
 
 # ==================================================
@@ -173,7 +218,7 @@ def admin_required(function):
 
 
 # ==================================================
-# HOME
+# HOME PAGE
 # ==================================================
 
 @app.route("/")
@@ -193,6 +238,10 @@ def index():
     methods=["POST"]
 )
 def place_order():
+
+    # ----------------------------------------------
+    # RECEIVE CUSTOMER INFORMATION
+    # ----------------------------------------------
 
     customer_name = request.form.get(
         "customer_name",
@@ -214,31 +263,8 @@ def place_order():
         ""
     ).strip()
 
-    try:
-
-        quantity = int(
-            request.form.get(
-                "quantity",
-                "1"
-            )
-        )
-
-        amount = float(
-            request.form.get(
-                "amount",
-                "0"
-            )
-        )
-
-    except (ValueError, TypeError):
-
-        return (
-            "Invalid order information",
-            400
-        )
-
     # ----------------------------------------------
-    # VALIDATION
+    # BASIC VALIDATION
     # ----------------------------------------------
 
     if not customer_name:
@@ -269,6 +295,37 @@ def place_order():
             400
         )
 
+    # ----------------------------------------------
+    # CHECK PRODUCT
+    # ----------------------------------------------
+
+    if product not in PRODUCT_PRICES:
+
+        return (
+            "Invalid product selected.",
+            400
+        )
+
+    # ----------------------------------------------
+    # QUANTITY
+    # ----------------------------------------------
+
+    try:
+
+        quantity = int(
+            request.form.get(
+                "quantity",
+                "1"
+            )
+        )
+
+    except (ValueError, TypeError):
+
+        return (
+            "Invalid quantity.",
+            400
+        )
+
     if quantity < 1:
 
         return (
@@ -276,15 +333,25 @@ def place_order():
             400
         )
 
-    if amount < 0:
+    if quantity > 100:
 
         return (
-            "Invalid amount.",
+            "Maximum quantity allowed is 100.",
             400
         )
 
     # ----------------------------------------------
-    # ORDER ID
+    # CALCULATE TOTAL ON SERVER
+    # ----------------------------------------------
+
+    unit_price = PRODUCT_PRICES[product]
+
+    total_amount = (
+        unit_price * quantity
+    )
+
+    # ----------------------------------------------
+    # CREATE ORDER ID
     # ----------------------------------------------
 
     now = datetime.now()
@@ -312,8 +379,28 @@ def place_order():
 
     try:
 
+        print("======================================")
+        print("NEW ORDER RECEIVED")
+        print("Customer:", customer_name)
+        print("Phone:", phone)
+        print("Product:", product)
+        print("Quantity:", quantity)
+        print("Amount:", total_amount)
+        print("Order ID:", order_id)
+        print(
+            "Database:",
+            "POSTGRESQL"
+            if using_postgresql()
+            else "SQLITE"
+        )
+        print("======================================")
+
         conn = get_db()
         cursor = conn.cursor()
+
+        # ------------------------------------------
+        # POSTGRESQL
+        # ------------------------------------------
 
         if using_postgresql():
 
@@ -340,6 +427,7 @@ def place_order():
                     %s,
                     %s
                 )
+                RETURNING id
             """, (
                 order_id,
                 customer_name,
@@ -347,10 +435,16 @@ def place_order():
                 address,
                 product,
                 quantity,
-                amount,
+                total_amount,
                 "NEW",
                 created_at
             ))
+
+            inserted_row = cursor.fetchone()
+
+        # ------------------------------------------
+        # SQLITE
+        # ------------------------------------------
 
         else:
 
@@ -366,7 +460,9 @@ def place_order():
                     status,
                     created_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?
+                )
             """, (
                 order_id,
                 customer_name,
@@ -374,39 +470,64 @@ def place_order():
                 address,
                 product,
                 quantity,
-                amount,
+                float(total_amount),
                 "NEW",
                 created_at
             ))
 
+            inserted_row = {
+                "id": cursor.lastrowid
+            }
+
         conn.commit()
+
+        print("ORDER SAVED SUCCESSFULLY")
+        print(
+            "DATABASE ORDER ID:",
+            inserted_row["id"]
+        )
 
     except Exception as e:
 
         if conn:
-            conn.rollback()
 
-        print(
-            "ORDER DATABASE ERROR:",
-            str(e)
-        )
+            try:
+                conn.rollback()
+            except Exception:
+                pass
 
-        return (
-            "Unable to save your order. "
-            "Please try again.",
-            500
-        )
+        print("======================================")
+        print("ORDER DATABASE ERROR")
+        print(str(e))
+        print("======================================")
+
+        return render_template(
+            "order_success.html",
+            error=True,
+            error_message=(
+                "We could not save your order. "
+                "Please try again."
+            )
+        ), 500
 
     finally:
 
         if cursor:
-            cursor.close()
+
+            try:
+                cursor.close()
+            except Exception:
+                pass
 
         if conn:
-            conn.close()
+
+            try:
+                conn.close()
+            except Exception:
+                pass
 
     # ----------------------------------------------
-    # CONFIRMATION
+    # SUCCESS
     # ----------------------------------------------
 
     return render_template(
@@ -415,7 +536,7 @@ def place_order():
         order_id=order_id,
         product=product,
         quantity=quantity,
-        amount=amount
+        amount=float(total_amount)
     )
 
 
@@ -518,10 +639,18 @@ def track_order():
             finally:
 
                 if cursor:
-                    cursor.close()
+
+                    try:
+                        cursor.close()
+                    except Exception:
+                        pass
 
                 if conn:
-                    conn.close()
+
+                    try:
+                        conn.close()
+                    except Exception:
+                        pass
 
             if not order and not error:
 
@@ -561,7 +690,7 @@ def admin_login():
         username = request.form.get(
             "username",
             ""
-        )
+        ).strip()
 
         password = request.form.get(
             "password",
@@ -631,14 +760,19 @@ def dashboard():
         orders = cursor.fetchall()
 
         # ------------------------------------------
-        # COUNTS
+        # TOTAL
         # ------------------------------------------
 
-        cursor.execute(
-            "SELECT COUNT(*) AS count FROM orders"
-        )
+        cursor.execute("""
+            SELECT COUNT(*) AS count
+            FROM orders
+        """)
 
         total_orders = cursor.fetchone()["count"]
+
+        # ------------------------------------------
+        # NEW
+        # ------------------------------------------
 
         cursor.execute("""
             SELECT COUNT(*) AS count
@@ -648,6 +782,10 @@ def dashboard():
 
         new_orders = cursor.fetchone()["count"]
 
+        # ------------------------------------------
+        # CONFIRMED
+        # ------------------------------------------
+
         cursor.execute("""
             SELECT COUNT(*) AS count
             FROM orders
@@ -655,6 +793,10 @@ def dashboard():
         """)
 
         confirmed_orders = cursor.fetchone()["count"]
+
+        # ------------------------------------------
+        # SHIPPED
+        # ------------------------------------------
 
         cursor.execute("""
             SELECT COUNT(*) AS count
@@ -664,6 +806,10 @@ def dashboard():
 
         shipped_orders = cursor.fetchone()["count"]
 
+        # ------------------------------------------
+        # DELIVERED
+        # ------------------------------------------
+
         cursor.execute("""
             SELECT COUNT(*) AS count
             FROM orders
@@ -671,6 +817,10 @@ def dashboard():
         """)
 
         delivered_orders = cursor.fetchone()["count"]
+
+        # ------------------------------------------
+        # CANCELLED
+        # ------------------------------------------
 
         cursor.execute("""
             SELECT COUNT(*) AS count
@@ -682,10 +832,10 @@ def dashboard():
 
     except Exception as e:
 
-        print(
-            "DASHBOARD DATABASE ERROR:",
-            str(e)
-        )
+        print("======================================")
+        print("DASHBOARD DATABASE ERROR")
+        print(str(e))
+        print("======================================")
 
         return (
             "Unable to load orders. "
@@ -696,10 +846,18 @@ def dashboard():
     finally:
 
         if cursor:
-            cursor.close()
+
+            try:
+                cursor.close()
+            except Exception:
+                pass
 
         if conn:
-            conn.close()
+
+            try:
+                conn.close()
+            except Exception:
+                pass
 
     return render_template(
         "dashboard.html",
@@ -727,7 +885,7 @@ def update_status(order_id):
     status = request.form.get(
         "status",
         "NEW"
-    )
+    ).strip().upper()
 
     allowed = [
         "NEW",
@@ -779,7 +937,11 @@ def update_status(order_id):
     except Exception as e:
 
         if conn:
-            conn.rollback()
+
+            try:
+                conn.rollback()
+            except Exception:
+                pass
 
         print(
             "STATUS UPDATE ERROR:",
@@ -794,10 +956,18 @@ def update_status(order_id):
     finally:
 
         if cursor:
-            cursor.close()
+
+            try:
+                cursor.close()
+            except Exception:
+                pass
 
         if conn:
-            conn.close()
+
+            try:
+                conn.close()
+            except Exception:
+                pass
 
     return redirect(
         url_for("dashboard")
@@ -821,14 +991,14 @@ def admin_logout():
 
 
 # ==================================================
-# START DATABASE
+# DATABASE STARTUP
 # ==================================================
 
 init_db()
 
 
 # ==================================================
-# START FLASK
+# FLASK START
 # ==================================================
 
 if __name__ == "__main__":
