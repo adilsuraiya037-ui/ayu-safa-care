@@ -14,15 +14,17 @@ import sqlite3
 
 try:
     import psycopg2
+    from psycopg2.extras import RealDictCursor
 except ImportError:
     psycopg2 = None
+    RealDictCursor = None
 
 
 app = Flask(__name__)
 
-# --------------------------------------------------
+# ==================================================
 # CONFIGURATION
-# --------------------------------------------------
+# ==================================================
 
 app.secret_key = os.environ.get(
     "SECRET_KEY",
@@ -42,14 +44,21 @@ ADMIN_PASSWORD = os.environ.get(
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 
-# --------------------------------------------------
+# ==================================================
 # DATABASE CONNECTION
-# --------------------------------------------------
+# ==================================================
+
+def using_postgresql():
+    return bool(DATABASE_URL and psycopg2)
+
 
 def get_db():
 
-    # Render PostgreSQL
-    if DATABASE_URL and psycopg2:
+    # ----------------------------------------------
+    # RENDER POSTGRESQL
+    # ----------------------------------------------
+
+    if using_postgresql():
 
         url = DATABASE_URL
 
@@ -60,86 +69,112 @@ def get_db():
                 1
             )
 
-        return psycopg2.connect(url)
+        conn = psycopg2.connect(
+            url,
+            cursor_factory=RealDictCursor
+        )
 
-    # Local SQLite
-    conn = sqlite3.connect("orders.db")
+        return conn
+
+    # ----------------------------------------------
+    # LOCAL SQLITE
+    # ----------------------------------------------
+
+    conn = sqlite3.connect(
+        "orders.db"
+    )
+
     conn.row_factory = sqlite3.Row
 
     return conn
 
 
-# --------------------------------------------------
+# ==================================================
 # INITIALIZE DATABASE
-# --------------------------------------------------
+# ==================================================
 
 def init_db():
 
     conn = get_db()
     cursor = conn.cursor()
 
-    # PostgreSQL
-    if DATABASE_URL and psycopg2:
+    try:
 
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS orders (
-                id SERIAL PRIMARY KEY,
-                order_id VARCHAR(60) UNIQUE NOT NULL,
-                customer_name TEXT NOT NULL,
-                phone TEXT NOT NULL,
-                address TEXT NOT NULL,
-                product TEXT NOT NULL,
-                quantity INTEGER NOT NULL,
-                amount REAL NOT NULL,
-                status VARCHAR(20) DEFAULT 'NEW',
-                created_at TEXT NOT NULL
-            )
-        """)
+        if using_postgresql():
 
-    # SQLite
-    else:
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS orders (
+                    id SERIAL PRIMARY KEY,
+                    order_id VARCHAR(60) UNIQUE NOT NULL,
+                    customer_name TEXT NOT NULL,
+                    phone TEXT NOT NULL,
+                    address TEXT NOT NULL,
+                    product TEXT NOT NULL,
+                    quantity INTEGER NOT NULL,
+                    amount NUMERIC(10,2) NOT NULL,
+                    status VARCHAR(20) DEFAULT 'NEW',
+                    created_at TEXT NOT NULL
+                )
+            """)
 
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS orders (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                order_id TEXT UNIQUE NOT NULL,
-                customer_name TEXT NOT NULL,
-                phone TEXT NOT NULL,
-                address TEXT NOT NULL,
-                product TEXT NOT NULL,
-                quantity INTEGER NOT NULL,
-                amount REAL NOT NULL,
-                status TEXT DEFAULT 'NEW',
-                created_at TEXT NOT NULL
-            )
-        """)
+        else:
 
-    conn.commit()
-    conn.close()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS orders (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    order_id TEXT UNIQUE NOT NULL,
+                    customer_name TEXT NOT NULL,
+                    phone TEXT NOT NULL,
+                    address TEXT NOT NULL,
+                    product TEXT NOT NULL,
+                    quantity INTEGER NOT NULL,
+                    amount REAL NOT NULL,
+                    status TEXT DEFAULT 'NEW',
+                    created_at TEXT NOT NULL
+                )
+            """)
+
+        conn.commit()
+
+    except Exception:
+
+        conn.rollback()
+        raise
+
+    finally:
+
+        cursor.close()
+        conn.close()
 
 
-# --------------------------------------------------
+# ==================================================
 # ADMIN LOGIN PROTECTION
-# --------------------------------------------------
+# ==================================================
 
 def admin_required(function):
 
     @wraps(function)
     def wrapper(*args, **kwargs):
 
-        if not session.get("admin_logged_in"):
+        if not session.get(
+            "admin_logged_in"
+        ):
+
             return redirect(
                 url_for("admin_login")
             )
 
-        return function(*args, **kwargs)
+        return function(
+            *args,
+            **kwargs
+        )
 
     return wrapper
 
 
-# --------------------------------------------------
-# HOME PAGE
-# --------------------------------------------------
+# ==================================================
+# HOME
+# ==================================================
 
 @app.route("/")
 def index():
@@ -149,9 +184,9 @@ def index():
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # PLACE ORDER
-# --------------------------------------------------
+# ==================================================
 
 @app.route(
     "/place-order",
@@ -195,29 +230,63 @@ def place_order():
             )
         )
 
-    except ValueError:
+    except (ValueError, TypeError):
 
         return (
             "Invalid order information",
             400
         )
 
-    # Required fields
-    if not customer_name or not phone or not address or not product:
+    # ----------------------------------------------
+    # VALIDATION
+    # ----------------------------------------------
+
+    if not customer_name:
 
         return (
-            "Please fill all required fields",
+            "Please enter your name.",
             400
         )
 
-    if quantity < 1 or amount < 0:
+    if not phone:
 
         return (
-            "Invalid quantity or amount",
+            "Please enter your phone number.",
             400
         )
 
-    # Create unique order ID
+    if not address:
+
+        return (
+            "Please enter your delivery address.",
+            400
+        )
+
+    if not product:
+
+        return (
+            "Please select a product.",
+            400
+        )
+
+    if quantity < 1:
+
+        return (
+            "Invalid quantity.",
+            400
+        )
+
+    if amount < 0:
+
+        return (
+            "Invalid amount.",
+            400
+        )
+
+    # ----------------------------------------------
+    # ORDER ID
+    # ----------------------------------------------
+
     now = datetime.now()
 
     order_id = (
@@ -225,22 +294,53 @@ def place_order():
         + now.strftime(
             "%Y%m%d%H%M%S"
         )
-        + str(now.microsecond)[:3]
+        + str(
+            now.microsecond
+        )[:3]
     )
 
     created_at = now.strftime(
         "%d-%m-%Y %I:%M %p"
     )
 
-    conn = get_db()
-    cursor = conn.cursor()
+    # ----------------------------------------------
+    # SAVE ORDER
+    # ----------------------------------------------
 
-    # PostgreSQL
-    if DATABASE_URL and psycopg2:
+    conn = None
+    cursor = None
 
-        cursor.execute("""
-            INSERT INTO orders
-            (
+    try:
+
+        conn = get_db()
+        cursor = conn.cursor()
+
+        if using_postgresql():
+
+            cursor.execute("""
+                INSERT INTO orders (
+                    order_id,
+                    customer_name,
+                    phone,
+                    address,
+                    product,
+                    quantity,
+                    amount,
+                    status,
+                    created_at
+                )
+                VALUES (
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s
+                )
+            """, (
                 order_id,
                 customer_name,
                 phone,
@@ -248,38 +348,26 @@ def place_order():
                 product,
                 quantity,
                 amount,
-                status,
+                "NEW",
                 created_at
-            )
-            VALUES (
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s,
-                %s
-            )
-        """, (
-            order_id,
-            customer_name,
-            phone,
-            address,
-            product,
-            quantity,
-            amount,
-            "NEW",
-            created_at
-        ))
+            ))
 
-    # SQLite
-    else:
+        else:
 
-        cursor.execute("""
-            INSERT INTO orders
-            (
+            cursor.execute("""
+                INSERT INTO orders (
+                    order_id,
+                    customer_name,
+                    phone,
+                    address,
+                    product,
+                    quantity,
+                    amount,
+                    status,
+                    created_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
                 order_id,
                 customer_name,
                 phone,
@@ -287,140 +375,53 @@ def place_order():
                 product,
                 quantity,
                 amount,
-                status,
+                "NEW",
                 created_at
-            )
-            VALUES (
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?
-            )
-        """, (
-            order_id,
-            customer_name,
-            phone,
-            address,
-            product,
-            quantity,
-            amount,
-            "NEW",
-            created_at
-        ))
+            ))
 
-    conn.commit()
-    conn.close()
+        conn.commit()
 
-    # Order confirmation page
-    return f"""
-    <!DOCTYPE html>
+    except Exception as e:
 
-    <html lang="en">
+        if conn:
+            conn.rollback()
 
-    <head>
+        print(
+            "ORDER DATABASE ERROR:",
+            str(e)
+        )
 
-        <meta charset="UTF-8">
+        return (
+            "Unable to save your order. "
+            "Please try again.",
+            500
+        )
 
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-        >
+    finally:
 
-        <title>
-            Order Confirmed - AYU SAFA CARE
-        </title>
+        if cursor:
+            cursor.close()
 
-        <link
-            rel="stylesheet"
-            href="/static/style.css"
-        >
+        if conn:
+            conn.close()
 
-    </head>
+    # ----------------------------------------------
+    # CONFIRMATION
+    # ----------------------------------------------
 
-    <body>
-
-        <section class="order-section">
-
-            <div
-                class="order-box"
-                style="text-align:center;"
-            >
-
-                <div
-                    style="
-                        font-size:60px;
-                        margin-bottom:20px;
-                    "
-                >
-                    ✓
-                </div>
-
-                <h2
-                    style="
-                        color:#123d2d;
-                        margin-bottom:15px;
-                    "
-                >
-                    ORDER RECEIVED
-                </h2>
-
-                <p
-                    style="
-                        color:#68756f;
-                        margin-bottom:10px;
-                    "
-                >
-                    Thank you, {customer_name}.
-                </p>
-
-                <p
-                    style="
-                        color:#68756f;
-                        margin-bottom:25px;
-                    "
-                >
-                    Your order has been successfully placed.
-                </p>
-
-                <div class="total-box">
-
-                    <span>
-                        ORDER ID
-                    </span>
-
-                    <strong
-                        style="font-size:18px;"
-                    >
-                        {order_id}
-                    </strong>
-
-                </div>
-
-                <a
-                    href="/"
-                    class="primary-button"
-                >
-                    CONTINUE SHOPPING
-                </a>
-
-            </div>
-
-        </section>
-
-    </body>
-
-    </html>
-    """
+    return render_template(
+        "order_success.html",
+        customer_name=customer_name,
+        order_id=order_id,
+        product=product,
+        quantity=quantity,
+        amount=amount
+    )
 
 
-# --------------------------------------------------
+# ==================================================
 # TRACK ORDER
-# --------------------------------------------------
+# ==================================================
 
 @app.route(
     "/track-order",
@@ -446,61 +447,83 @@ def track_order():
         if not order_id or not phone:
 
             error = (
-                "Please enter Order ID and phone number."
+                "Please enter Order ID "
+                "and phone number."
             )
 
         else:
 
-            conn = get_db()
-            cursor = conn.cursor()
+            conn = None
+            cursor = None
 
-            # PostgreSQL
-            if DATABASE_URL and psycopg2:
+            try:
 
-                cursor.execute("""
-                    SELECT
+                conn = get_db()
+                cursor = conn.cursor()
+
+                if using_postgresql():
+
+                    cursor.execute("""
+                        SELECT
+                            order_id,
+                            customer_name,
+                            phone,
+                            product,
+                            quantity,
+                            amount,
+                            status,
+                            created_at
+                        FROM orders
+                        WHERE order_id = %s
+                        AND phone = %s
+                    """, (
                         order_id,
-                        customer_name,
-                        phone,
-                        product,
-                        quantity,
-                        amount,
-                        status,
-                        created_at
-                    FROM orders
-                    WHERE order_id = %s
-                    AND phone = %s
-                """, (
-                    order_id,
-                    phone
-                ))
+                        phone
+                    ))
 
-            # SQLite
-            else:
+                else:
 
-                cursor.execute("""
-                    SELECT
+                    cursor.execute("""
+                        SELECT
+                            order_id,
+                            customer_name,
+                            phone,
+                            product,
+                            quantity,
+                            amount,
+                            status,
+                            created_at
+                        FROM orders
+                        WHERE order_id = ?
+                        AND phone = ?
+                    """, (
                         order_id,
-                        customer_name,
-                        phone,
-                        product,
-                        quantity,
-                        amount,
-                        status,
-                        created_at
-                    FROM orders
-                    WHERE order_id = ?
-                    AND phone = ?
-                """, (
-                    order_id,
-                    phone
-                ))
+                        phone
+                    ))
 
-            order = cursor.fetchone()
+                order = cursor.fetchone()
 
-            conn.close()
+            except Exception as e:
 
-            if not order:
+                print(
+                    "TRACK ORDER ERROR:",
+                    str(e)
+                )
+
+                error = (
+                    "Unable to check order "
+                    "right now."
+                )
+
+            finally:
+
+                if cursor:
+                    cursor.close()
+
+                if conn:
+                    conn.close()
+
+            if not order and not error:
 
                 error = (
                     "Order not found. "
@@ -515,9 +538,9 @@ def track_order():
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # ADMIN LOGIN
-# --------------------------------------------------
+# ==================================================
 
 @app.route(
     "/admin",
@@ -525,7 +548,9 @@ def track_order():
 )
 def admin_login():
 
-    if session.get("admin_logged_in"):
+    if session.get(
+        "admin_logged_in"
+    ):
 
         return redirect(
             url_for("dashboard")
@@ -565,88 +590,116 @@ def admin_login():
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # ADMIN DASHBOARD
-# --------------------------------------------------
+# ==================================================
 
-@app.route("/admin/dashboard")
+@app.route(
+    "/admin/dashboard"
+)
 @admin_required
 def dashboard():
 
-    conn = get_db()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
 
-    cursor.execute("""
-        SELECT *
-        FROM orders
-        ORDER BY id DESC
-    """)
+    try:
 
-    orders = cursor.fetchall()
+        conn = get_db()
+        cursor = conn.cursor()
 
-    # Total orders
-    cursor.execute(
-        "SELECT COUNT(*) FROM orders"
-    )
+        # ------------------------------------------
+        # ALL ORDERS
+        # ------------------------------------------
 
-    total_orders = cursor.fetchone()[0]
+        cursor.execute("""
+            SELECT
+                id,
+                order_id,
+                customer_name,
+                phone,
+                address,
+                product,
+                quantity,
+                amount,
+                status,
+                created_at
+            FROM orders
+            ORDER BY id DESC
+        """)
 
-    # New
-    cursor.execute(
-        """
-        SELECT COUNT(*)
-        FROM orders
-        WHERE status = 'NEW'
-        """
-    )
+        orders = cursor.fetchall()
 
-    new_orders = cursor.fetchone()[0]
+        # ------------------------------------------
+        # COUNTS
+        # ------------------------------------------
 
-    # Confirmed
-    cursor.execute(
-        """
-        SELECT COUNT(*)
-        FROM orders
-        WHERE status = 'CONFIRMED'
-        """
-    )
+        cursor.execute(
+            "SELECT COUNT(*) AS count FROM orders"
+        )
 
-    confirmed_orders = cursor.fetchone()[0]
+        total_orders = cursor.fetchone()["count"]
 
-    # Shipped
-    cursor.execute(
-        """
-        SELECT COUNT(*)
-        FROM orders
-        WHERE status = 'SHIPPED'
-        """
-    )
+        cursor.execute("""
+            SELECT COUNT(*) AS count
+            FROM orders
+            WHERE status = 'NEW'
+        """)
 
-    shipped_orders = cursor.fetchone()[0]
+        new_orders = cursor.fetchone()["count"]
 
-    # Delivered
-    cursor.execute(
-        """
-        SELECT COUNT(*)
-        FROM orders
-        WHERE status = 'DELIVERED'
-        """
-    )
+        cursor.execute("""
+            SELECT COUNT(*) AS count
+            FROM orders
+            WHERE status = 'CONFIRMED'
+        """)
 
-    delivered_orders = cursor.fetchone()[0]
+        confirmed_orders = cursor.fetchone()["count"]
 
-    # Cancelled
-    cursor.execute(
-        """
-        SELECT COUNT(*)
-        FROM orders
-        WHERE status = 'CANCELLED'
-        """
-    )
+        cursor.execute("""
+            SELECT COUNT(*) AS count
+            FROM orders
+            WHERE status = 'SHIPPED'
+        """)
 
-    cancelled_orders = cursor.fetchone()[0]
+        shipped_orders = cursor.fetchone()["count"]
 
-    conn.close()
+        cursor.execute("""
+            SELECT COUNT(*) AS count
+            FROM orders
+            WHERE status = 'DELIVERED'
+        """)
+
+        delivered_orders = cursor.fetchone()["count"]
+
+        cursor.execute("""
+            SELECT COUNT(*) AS count
+            FROM orders
+            WHERE status = 'CANCELLED'
+        """)
+
+        cancelled_orders = cursor.fetchone()["count"]
+
+    except Exception as e:
+
+        print(
+            "DASHBOARD DATABASE ERROR:",
+            str(e)
+        )
+
+        return (
+            "Unable to load orders. "
+            "Please check the database connection.",
+            500
+        )
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if conn:
+            conn.close()
 
     return render_template(
         "dashboard.html",
@@ -660,9 +713,9 @@ def dashboard():
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # UPDATE ORDER STATUS
-# --------------------------------------------------
+# ==================================================
 
 @app.route(
     "/admin/update-status/<int:order_id>",
@@ -691,46 +744,73 @@ def update_status(order_id):
             400
         )
 
-    conn = get_db()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
 
-    # PostgreSQL
-    if DATABASE_URL and psycopg2:
+    try:
 
-        cursor.execute("""
-            UPDATE orders
-            SET status = %s
-            WHERE id = %s
-        """, (
-            status,
-            order_id
-        ))
+        conn = get_db()
+        cursor = conn.cursor()
 
-    # SQLite
-    else:
+        if using_postgresql():
 
-        cursor.execute("""
-            UPDATE orders
-            SET status = ?
-            WHERE id = ?
-        """, (
-            status,
-            order_id
-        ))
+            cursor.execute("""
+                UPDATE orders
+                SET status = %s
+                WHERE id = %s
+            """, (
+                status,
+                order_id
+            ))
 
-    conn.commit()
-    conn.close()
+        else:
+
+            cursor.execute("""
+                UPDATE orders
+                SET status = ?
+                WHERE id = ?
+            """, (
+                status,
+                order_id
+            ))
+
+        conn.commit()
+
+    except Exception as e:
+
+        if conn:
+            conn.rollback()
+
+        print(
+            "STATUS UPDATE ERROR:",
+            str(e)
+        )
+
+        return (
+            "Unable to update order status.",
+            500
+        )
+
+    finally:
+
+        if cursor:
+            cursor.close()
+
+        if conn:
+            conn.close()
 
     return redirect(
         url_for("dashboard")
     )
 
 
-# --------------------------------------------------
+# ==================================================
 # ADMIN LOGOUT
-# --------------------------------------------------
+# ==================================================
 
-@app.route("/admin/logout")
+@app.route(
+    "/admin/logout"
+)
 def admin_logout():
 
     session.clear()
@@ -740,12 +820,16 @@ def admin_logout():
     )
 
 
-# --------------------------------------------------
-# STARTUP
-# --------------------------------------------------
+# ==================================================
+# START DATABASE
+# ==================================================
 
 init_db()
 
+
+# ==================================================
+# START FLASK
+# ==================================================
 
 if __name__ == "__main__":
 
