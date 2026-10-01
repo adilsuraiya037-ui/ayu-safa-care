@@ -1,6 +1,7 @@
 from flask import (
     Flask,
     render_template,
+    render_template_string,
     request,
     redirect,
     url_for,
@@ -19,6 +20,8 @@ try:
 except ImportError:
     psycopg2 = None
     RealDictCursor = None
+
+from jinja2 import TemplateNotFound
 
 
 app = Flask(__name__)
@@ -62,6 +65,7 @@ PRODUCT_PRICES = {
 # ==================================================
 
 def using_postgresql():
+
     return bool(
         DATABASE_URL and psycopg2
     )
@@ -82,14 +86,12 @@ def get_db():
         url = DATABASE_URL.strip()
 
         if url.startswith("postgres://"):
+
             url = url.replace(
                 "postgres://",
                 "postgresql://",
                 1
             )
-
-        if url.startswith("postgresql://"):
-            pass
 
         conn = psycopg2.connect(
             url,
@@ -186,10 +188,383 @@ def init_db():
     finally:
 
         if cursor:
-            cursor.close()
+
+            try:
+                cursor.close()
+            except Exception:
+                pass
 
         if conn:
-            conn.close()
+
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+
+# ==================================================
+# SAFE ORDER SUCCESS PAGE
+# ==================================================
+
+def show_order_success(
+    customer_name=None,
+    order_id=None,
+    product=None,
+    quantity=None,
+    amount=None,
+    error=False,
+    error_message=None
+):
+
+    """
+    First tries to use the normal order_success.html.
+
+    If Render cannot find the template, a built-in
+    success/error page is shown instead of returning
+    Internal Server Error.
+    """
+
+    try:
+
+        return render_template(
+            "order_success.html",
+            customer_name=customer_name,
+            order_id=order_id,
+            product=product,
+            quantity=quantity,
+            amount=amount,
+            error=error,
+            error_message=error_message
+        )
+
+    except TemplateNotFound:
+
+        print(
+            "WARNING: order_success.html was not found."
+        )
+
+        # ------------------------------------------
+        # FALLBACK SUCCESS PAGE
+        # ------------------------------------------
+
+        if not error:
+
+            return render_template_string("""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Order Successful - Ayu Safa Care</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7f4;
+            color: #222;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 35px 25px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+        }
+
+        .success-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #198754;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            font-weight: bold;
+        }
+
+        h1 {
+            color: #176b3a;
+            margin-bottom: 10px;
+        }
+
+        .message {
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .order-box {
+            text-align: left;
+            background: #f5f7f5;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 9px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .value {
+            text-align: right;
+        }
+
+        .order-id {
+            color: #176b3a;
+            font-weight: bold;
+            word-break: break-all;
+        }
+
+        .buttons {
+            margin-top: 25px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 13px 22px;
+            margin: 5px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .home {
+            background: #176b3a;
+            color: white;
+        }
+
+        .track {
+            background: #222;
+            color: white;
+        }
+
+        @media(max-width: 500px) {
+
+            .container {
+                margin: 20px auto;
+            }
+
+            .row {
+                flex-direction: column;
+                gap: 3px;
+            }
+
+            .value {
+                text-align: left;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <h1>Order Placed Successfully!</h1>
+
+        <p class="message">
+            Thank you, {{ customer_name }}.
+            Your order has been received successfully.
+        </p>
+
+        <div class="order-box">
+
+            <div class="row">
+                <span class="label">
+                    Order ID
+                </span>
+
+                <span class="value order-id">
+                    {{ order_id }}
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    Product
+                </span>
+
+                <span class="value">
+                    {{ product }}
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    Quantity
+                </span>
+
+                <span class="value">
+                    {{ quantity }}
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    Total Amount
+                </span>
+
+                <span class="value">
+                    ₹{{ "%.2f"|format(amount) }}
+                </span>
+            </div>
+
+        </div>
+
+        <div class="buttons">
+
+            <a
+                href="{{ url_for('index') }}"
+                class="btn home"
+            >
+                Continue Shopping
+            </a>
+
+            <a
+                href="{{ url_for('track_order') }}"
+                class="btn track"
+            >
+                Track Order
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+            """,
+                customer_name=customer_name,
+                order_id=order_id,
+                product=product,
+                quantity=quantity,
+                amount=amount
+            )
+
+        # ------------------------------------------
+        # FALLBACK ERROR PAGE
+        # ------------------------------------------
+
+        return render_template_string("""
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Order Error - Ayu Safa Care</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .box {
+            max-width: 550px;
+            margin: 50px auto;
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.10);
+        }
+
+        h1 {
+            color: #b02a37;
+        }
+
+        p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 22px;
+            background: #176b3a;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="box">
+
+        <h1>Order Could Not Be Saved</h1>
+
+        <p>
+            {{ error_message }}
+        </p>
+
+        <a href="{{ url_for('index') }}">
+            Return to Website
+        </a>
+
+    </div>
+
+</body>
+
+</html>
+        """,
+            error_message=error_message
+        )
 
 
 # ==================================================
@@ -501,8 +876,7 @@ def place_order():
         print(str(e))
         print("======================================")
 
-        return render_template(
-            "order_success.html",
+        return show_order_success(
             error=True,
             error_message=(
                 "We could not save your order. "
@@ -530,8 +904,7 @@ def place_order():
     # SUCCESS
     # ----------------------------------------------
 
-    return render_template(
-        "order_success.html",
+    return show_order_success(
         customer_name=customer_name,
         order_id=order_id,
         product=product,
