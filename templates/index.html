@@ -1,22 +1,25 @@
+```html
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <meta name="theme-color" content="#123d2d">
 
-```
-<title>AYU SAFA CARE | HERBAL WELLNESS</title>
+    <title>AYU SAFA CARE | HERBAL WELLNESS</title>
 
-<link rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}">
-```
+    <!-- Flask static CSS -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}?v=20261001">
 
 </head>
 
 <body>
+
 
 <!-- =========================================================
      NAVBAR
@@ -24,36 +27,40 @@
 
 <header class="navbar">
 
-```
-<div class="brand">
+    <div class="brand">
 
-    <div class="brand-mark">
-        DR.ADIL<br>SURAIYA
+        <div class="brand-mark">
+            DR.ADIL<br>SURAIYA
+        </div>
+
+        <div class="brand-text">
+
+            <h1>AYU SAFA CARE</h1>
+
+            <span>HERBAL WELLNESS</span>
+
+        </div>
+
     </div>
 
-    <div class="brand-text">
-        <h1>AYU SAFA CARE</h1>
-        <span>HERBAL WELLNESS</span>
+
+    <div class="nav-actions">
+
+        <a href="{{ url_for('track_order') }}"
+           class="track-nav-button">
+            TRACK ORDER
+        </a>
+
+        <a href="#order"
+           class="nav-button">
+            ORDER NOW
+        </a>
+
     </div>
-
-</div>
-
-<div class="nav-actions">
-
-    <a href="{{ url_for('track_order') }}"
-       class="track-nav-button">
-        TRACK ORDER
-    </a>
-
-    <a href="#order"
-       class="nav-button">
-        ORDER NOW
-    </a>
-
-</div>
-```
 
 </header>
+
+
 
 <!-- =========================================================
      HERO
@@ -61,41 +68,41 @@
 
 <section class="hero">
 
-```
-<div class="hero-content">
+    <div class="hero-content">
 
-    <p class="small-title">
-        AYURVEDIC • HERBAL • CARE
-    </p>
+        <p class="small-title">
+            AYURVEDIC • HERBAL • CARE
+        </p>
 
-    <h2>
-        NATURAL CARE<br>
-        FOR EVERYDAY YOU
-    </h2>
+        <h2>
+            NATURAL CARE<br>
+            FOR EVERYDAY YOU
+        </h2>
 
-    <p class="hero-description">
-        Discover thoughtfully prepared herbal products
-        designed for your everyday wellness and personal care.
-    </p>
+        <p class="hero-description">
+            Discover thoughtfully prepared herbal products
+            designed for your everyday wellness and personal care.
+        </p>
 
-    <div class="hero-buttons">
+        <div class="hero-buttons">
 
-        <a href="#products"
-           class="primary-button">
-            EXPLORE PRODUCTS
-        </a>
+            <a href="#products"
+               class="primary-button">
+                EXPLORE PRODUCTS
+            </a>
 
-        <a href="{{ url_for('track_order') }}"
-           class="track-order-button">
-            TRACK MY ORDER
-        </a>
+            <a href="{{ url_for('track_order') }}"
+               class="track-order-button">
+                TRACK MY ORDER
+            </a>
+
+        </div>
 
     </div>
 
-</div>
-```
-
 </section>
+
+
 
 <!-- =========================================================
      PRODUCTS
@@ -104,187 +111,204 @@
 <section id="products"
          class="products-section">
 
-```
-<div class="section-heading">
+    <div class="section-heading">
 
-    <p>OUR PRODUCTS</p>
+        <p>OUR PRODUCTS</p>
 
-    <h2>SIMPLE HERBAL CARE</h2>
+        <h2>SIMPLE HERBAL CARE</h2>
 
-    <span>
-        QUALITY PRODUCTS FROM AYU SAFA CARE
-    </span>
+        <span>
+            QUALITY PRODUCTS FROM AYU SAFA CARE
+        </span>
 
-</div>
-
-
-<div class="product-grid">
+    </div>
 
 
-    <!-- =================================================
-         HAIR OIL
-    ================================================== -->
+    <div class="product-grid">
 
-    <article class="product-card">
 
-        <div class="product-image">
+        <!-- =================================================
+             HAIR OIL
+        ================================================== -->
 
-            <img
-                src="{{ url_for('static', filename='images/hair-oil.jpg') }}"
-                alt="Ayu Safa Care Gold Herbal Hair Oil"
-                loading="lazy"
-            >
+        <article class="product-card">
 
-        </div>
+            <div class="product-image">
 
-        <div class="product-content">
+                <img
+                    src="{{ url_for('static', filename='images/hair-oil.jpg') }}"
+                    alt="Ayu Safa Care Gold Herbal Hair Oil"
+                    loading="lazy"
+                >
 
-            <span class="product-category">
-                HAIR CARE
-            </span>
-
-            <h3>
-                GOLD HERBAL HAIR OIL
-            </h3>
-
-            <p>
-                Bhringraj, Amla, Neem, Shikakai,
-                Flaxseed, Fenugreek, Brahmi,
-                Heena, Giloy and Yashtimadhu
-                with traditional oils.
-            </p>
-
-            <div class="price">
-                ₹299
             </div>
 
-            <button
-                type="button"
-                class="card-button"
-                onclick="openProduct('oil')">
-                VIEW DETAILS
-            </button>
 
-            <a
-                href="#order"
-                class="card-button secondary-button">
-                ORDER NOW
-            </a>
+            <div class="product-content">
 
-        </div>
+                <span class="product-category">
+                    HAIR CARE
+                </span>
 
-    </article>
+                <h3>
+                    GOLD HERBAL HAIR OIL
+                </h3>
 
+                <p>
+                    Bhringraj, Amla, Neem, Shikakai,
+                    Flaxseed, Fenugreek, Brahmi,
+                    Heena and traditional oils.
+                </p>
 
-    <!-- =================================================
-         SHAMPOO
-    ================================================== -->
+                <div class="product-bottom">
 
-    <article class="product-card">
+                    <div class="price">
+                        ₹299
+                    </div>
 
-        <div class="product-image">
+                    <button
+                        type="button"
+                        class="card-button"
+                        onclick="openProduct('oil')">
+                        VIEW DETAILS
+                    </button>
 
-            <img
-                src="{{ url_for('static', filename='images/shampoo.jpg') }}"
-                alt="Ayu Safa Care Herbal Shampoo"
-                loading="lazy"
-            >
+                    <a
+                        href="#order"
+                        class="card-button secondary-button">
+                        ORDER NOW
+                    </a>
 
-        </div>
+                </div>
 
-        <div class="product-content">
-
-            <span class="product-category">
-                HAIR CARE
-            </span>
-
-            <h3>
-                AYU SAFA CARE HERBAL SHAMPOO
-            </h3>
-
-            <p>
-                Herbal shampoo with Aloe Vera,
-                Methi, Flaxseed and Neem.
-            </p>
-
-            <div class="price">
-                ₹149
             </div>
 
-            <button
-                type="button"
-                class="card-button"
-                onclick="openProduct('shampoo')">
-                VIEW DETAILS
-            </button>
-
-            <a
-                href="#order"
-                class="card-button secondary-button">
-                ORDER NOW
-            </a>
-
-        </div>
-
-    </article>
+        </article>
 
 
-    <!-- =================================================
-         MALAM
-    ================================================== -->
 
-    <article class="product-card">
+        <!-- =================================================
+             SHAMPOO
+        ================================================== -->
 
-        <div class="product-image">
+        <article class="product-card">
 
-            <img
-                src="{{ url_for('static', filename='images/Malam.jpg') }}"
-                alt="Ayu Safa Care Malam"
-                loading="lazy"
-            >
+            <div class="product-image">
 
-        </div>
+                <img
+                    src="{{ url_for('static', filename='images/shampoo.jpg') }}"
+                    alt="Ayu Safa Care Herbal Shampoo"
+                    loading="lazy"
+                >
 
-        <div class="product-content">
-
-            <span class="product-category">
-                SKIN CARE
-            </span>
-
-            <h3>
-                AYU SAFA CARE MALAM
-            </h3>
-
-            <p>
-                Herbal topical care product designed
-                for selected skin-care needs.
-            </p>
-
-            <div class="price">
-                ₹149
             </div>
 
-            <button
-                type="button"
-                class="card-button"
-                onclick="openProduct('malam')">
-                VIEW DETAILS
-            </button>
 
-            <a
-                href="#order"
-                class="card-button secondary-button">
-                ORDER NOW
-            </a>
+            <div class="product-content">
 
-        </div>
+                <span class="product-category">
+                    HAIR CARE
+                </span>
 
-    </article>
+                <h3>
+                    AYU SAFA CARE HERBAL SHAMPOO
+                </h3>
 
-</div>
-```
+                <p>
+                    Herbal shampoo with Aloe Vera,
+                    Methi, Flaxseed and Neem.
+                </p>
+
+                <div class="product-bottom">
+
+                    <div class="price">
+                        ₹149
+                    </div>
+
+                    <button
+                        type="button"
+                        class="card-button"
+                        onclick="openProduct('shampoo')">
+                        VIEW DETAILS
+                    </button>
+
+                    <a
+                        href="#order"
+                        class="card-button secondary-button">
+                        ORDER NOW
+                    </a>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- =================================================
+             MALAM
+        ================================================== -->
+
+        <article class="product-card">
+
+            <div class="product-image">
+
+                <img
+                    src="{{ url_for('static', filename='images/Malam.jpg') }}"
+                    alt="Ayu Safa Care Malam"
+                    loading="lazy"
+                >
+
+            </div>
+
+
+            <div class="product-content">
+
+                <span class="product-category">
+                    SKIN CARE
+                </span>
+
+                <h3>
+                    AYU SAFA CARE MALAM
+                </h3>
+
+                <p>
+                    Herbal topical care product designed
+                    for selected skin-care needs.
+                </p>
+
+                <div class="product-bottom">
+
+                    <div class="price">
+                        ₹149
+                    </div>
+
+                    <button
+                        type="button"
+                        class="card-button"
+                        onclick="openProduct('malam')">
+                        VIEW DETAILS
+                    </button>
+
+                    <a
+                        href="#order"
+                        class="card-button secondary-button">
+                        ORDER NOW
+                    </a>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+    </div>
 
 </section>
+
+
 
 <!-- =========================================================
      TRACK ORDER PROMO
@@ -292,35 +316,35 @@
 
 <section class="track-section">
 
-```
-<div class="track-box">
+    <div class="track-box">
 
-    <div class="track-content">
+        <div>
 
-        <p class="track-small">
-            AYU SAFA CARE
-        </p>
+            <p class="track-small">
+                AYU SAFA CARE
+            </p>
 
-        <h2>
-            ALREADY PLACED AN ORDER?
-        </h2>
+            <h2>
+                ALREADY PLACED AN ORDER?
+            </h2>
 
-        <p>
-            Check your order status using your
-            Order ID and mobile number.
-        </p>
+            <p>
+                Check your order status using your
+                Order ID and mobile number.
+            </p>
+
+        </div>
+
+        <a href="{{ url_for('track_order') }}"
+           class="track-large-button">
+            TRACK ORDER
+        </a>
 
     </div>
 
-    <a href="{{ url_for('track_order') }}"
-       class="track-large-button">
-        TRACK ORDER
-    </a>
-
-</div>
-```
-
 </section>
+
+
 
 <!-- =========================================================
      ORDER SECTION
@@ -329,176 +353,171 @@
 <section id="order"
          class="order-section">
 
-```
-<div class="order-box">
+    <div class="order-box">
 
-    <div class="section-heading">
+        <div class="section-heading">
 
-        <p>AYU SAFA CARE</p>
+            <p>AYU SAFA CARE</p>
 
-        <h2>PLACE YOUR ORDER</h2>
-
-        <span>
-            ENTER YOUR DETAILS BELOW
-        </span>
-
-    </div>
-
-
-    <form
-        action="{{ url_for('place_order') }}"
-        method="POST"
-    >
-
-        <!-- NAME -->
-
-        <label for="customer_name">
-            FULL NAME
-        </label>
-
-        <input
-            type="text"
-            id="customer_name"
-            name="customer_name"
-            placeholder="ENTER YOUR NAME"
-            autocomplete="name"
-            required
-        >
-
-
-        <!-- PHONE -->
-
-        <label for="phone">
-            MOBILE NUMBER
-        </label>
-
-        <input
-            type="tel"
-            id="phone"
-            name="phone"
-            placeholder="ENTER MOBILE NUMBER"
-            inputmode="numeric"
-            autocomplete="tel"
-            maxlength="15"
-            required
-        >
-
-
-        <!-- ADDRESS -->
-
-        <label for="address">
-            DELIVERY ADDRESS
-        </label>
-
-        <textarea
-            id="address"
-            name="address"
-            placeholder="ENTER COMPLETE DELIVERY ADDRESS"
-            autocomplete="street-address"
-            required
-        ></textarea>
-
-
-        <!-- PRODUCT -->
-
-        <label for="product">
-            SELECT PRODUCT
-        </label>
-
-        <select
-            name="product"
-            id="product"
-            required
-            onchange="updatePrice()"
-        >
-
-            <option value="">
-                SELECT PRODUCT
-            </option>
-
-            <option
-                value="Gold Herbal Hair Oil"
-                data-price="299"
-            >
-                GOLD HERBAL HAIR OIL — ₹299
-            </option>
-
-            <option
-                value="Herbal Hair Shampoo"
-                data-price="149"
-            >
-                HERBAL HAIR SHAMPOO — ₹149
-            </option>
-
-            <option
-                value="Ayu Safa Care Malam"
-                data-price="149"
-            >
-                AYU SAFA CARE MALAM — ₹149
-            </option>
-
-        </select>
-
-
-        <!-- QUANTITY -->
-
-        <label for="quantity">
-            QUANTITY
-        </label>
-
-        <input
-            type="number"
-            name="quantity"
-            id="quantity"
-            value="1"
-            min="1"
-            step="1"
-            required
-            onchange="updatePrice()"
-            oninput="updatePrice()"
-        >
-
-
-        <!-- HIDDEN AMOUNT -->
-
-        <input
-            type="hidden"
-            name="amount"
-            id="amount"
-            value="0"
-        >
-
-
-        <!-- TOTAL -->
-
-        <div class="total-box">
+            <h2>PLACE YOUR ORDER</h2>
 
             <span>
-                TOTAL
+                ENTER YOUR DETAILS BELOW
             </span>
-
-            <strong id="total">
-                ₹0
-            </strong>
 
         </div>
 
 
-        <!-- SUBMIT -->
-
-        <button
-            type="submit"
-            class="submit-button"
+        <form
+            action="{{ url_for('place_order') }}"
+            method="POST"
         >
-            PLACE ORDER
-        </button>
 
-    </form>
 
-</div>
-```
+            <!-- NAME -->
+
+            <label for="customer_name">
+                FULL NAME
+            </label>
+
+            <input
+                type="text"
+                id="customer_name"
+                name="customer_name"
+                placeholder="ENTER YOUR NAME"
+                autocomplete="name"
+                required
+            >
+
+
+            <!-- PHONE -->
+
+            <label for="phone">
+                MOBILE NUMBER
+            </label>
+
+            <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="ENTER MOBILE NUMBER"
+                inputmode="numeric"
+                autocomplete="tel"
+                required
+            >
+
+
+            <!-- ADDRESS -->
+
+            <label for="address">
+                DELIVERY ADDRESS
+            </label>
+
+            <textarea
+                id="address"
+                name="address"
+                placeholder="ENTER COMPLETE DELIVERY ADDRESS"
+                autocomplete="street-address"
+                required
+            ></textarea>
+
+
+            <!-- PRODUCT -->
+
+            <label for="product">
+                SELECT PRODUCT
+            </label>
+
+            <select
+                name="product"
+                id="product"
+                required
+                onchange="updatePrice()"
+            >
+
+                <option value="">
+                    SELECT PRODUCT
+                </option>
+
+                <option
+                    value="Gold Herbal Hair Oil"
+                    data-price="299">
+                    GOLD HERBAL HAIR OIL — ₹299
+                </option>
+
+                <option
+                    value="Herbal Hair Shampoo"
+                    data-price="149">
+                    HERBAL HAIR SHAMPOO — ₹149
+                </option>
+
+                <option
+                    value="Ayu Safa Care Malam"
+                    data-price="149">
+                    AYU SAFA CARE MALAM — ₹149
+                </option>
+
+            </select>
+
+
+            <!-- QUANTITY -->
+
+            <label for="quantity">
+                QUANTITY
+            </label>
+
+            <input
+                type="number"
+                name="quantity"
+                id="quantity"
+                value="1"
+                min="1"
+                required
+                onchange="updatePrice()"
+                oninput="updatePrice()"
+            >
+
+
+            <!-- HIDDEN AMOUNT -->
+
+            <input
+                type="hidden"
+                name="amount"
+                id="amount"
+                value="0"
+            >
+
+
+            <!-- TOTAL -->
+
+            <div class="total-box">
+
+                <span>
+                    TOTAL
+                </span>
+
+                <strong id="total">
+                    ₹0
+                </strong>
+
+            </div>
+
+
+            <!-- SUBMIT -->
+
+            <button
+                type="submit"
+                class="submit-button">
+                PLACE ORDER
+            </button>
+
+        </form>
+
+    </div>
 
 </section>
+
+
 
 <!-- =========================================================
      PRODUCT DETAILS MODAL
@@ -508,76 +527,73 @@
     id="productModal"
     class="product-modal"
     aria-hidden="true"
-    role="dialog"
-    aria-modal="true"
 >
 
-```
-<div class="product-modal-box">
-
-    <!-- CLOSE -->
-
-    <button
-        type="button"
-        class="modal-close"
-        onclick="closeProduct()"
-        aria-label="Close product details"
-    >
-        ×
-    </button>
+    <div class="product-modal-box">
 
 
-    <!-- IMAGE -->
+        <!-- CLOSE -->
 
-    <div class="modal-image">
-
-        <img
-            id="modalProductImage"
-            src=""
-            alt=""
-        >
-
-    </div>
-
-
-    <!-- DETAILS -->
-
-    <div class="modal-content">
-
-        <span
-            id="modalCategory"
-            class="product-category"
-        ></span>
-
-        <h2 id="modalProductName"></h2>
-
-        <div
-            id="modalPrice"
-            class="price"
-        ></div>
-
-        <p id="modalDescription"></p>
-
-        <h4>
-            BENEFITS
-        </h4>
-
-        <ul id="modalBenefits"></ul>
-
-        <a
-            href="#order"
+        <button
+            type="button"
+            class="modal-close"
             onclick="closeProduct()"
-            class="modal-order-button"
-        >
-            ORDER NOW
-        </a>
+            aria-label="Close">
+            ×
+        </button>
+
+
+        <!-- IMAGE -->
+
+        <div class="modal-image">
+
+            <img
+                id="modalProductImage"
+                src=""
+                alt=""
+            >
+
+        </div>
+
+
+        <!-- DETAILS -->
+
+        <div class="modal-content">
+
+            <span
+                id="modalCategory"
+                class="product-category">
+            </span>
+
+            <h2 id="modalProductName"></h2>
+
+            <div
+                id="modalPrice"
+                class="price">
+            </div>
+
+            <p id="modalDescription"></p>
+
+            <h4>
+                BENEFITS
+            </h4>
+
+            <ul id="modalBenefits"></ul>
+
+            <a
+                href="#order"
+                onclick="closeProduct()"
+                class="modal-order-button">
+                ORDER NOW
+            </a>
+
+        </div>
 
     </div>
 
 </div>
-```
 
-</div>
+
 
 <!-- =========================================================
      FOOTER
@@ -585,21 +601,21 @@
 
 <footer>
 
-```
-<h3>
-    AYU SAFA CARE
-</h3>
+    <h3>
+        AYU SAFA CARE
+    </h3>
 
-<p>
-    HERBAL CARE • EVERYDAY WELLNESS
-</p>
+    <p>
+        HERBAL CARE • EVERYDAY WELLNESS
+    </p>
 
-<p>
-    © 2026 AYU SAFA CARE
-</p>
-```
+    <p>
+        © 2026 AYU SAFA CARE
+    </p>
 
 </footer>
+
+
 
 <!-- =========================================================
      JAVASCRIPT
@@ -615,13 +631,17 @@ const products = {
 
     oil: {
 
-        image: "{{ url_for('static', filename='images/hair-oil.jpg') }}",
+        image:
+            "{{ url_for('static', filename='images/hair-oil.jpg') }}",
 
-        category: "HAIR CARE",
+        category:
+            "HAIR CARE",
 
-        name: "GOLD HERBAL HAIR OIL",
+        name:
+            "GOLD HERBAL HAIR OIL",
 
-        price: "₹299",
+        price:
+            "₹299",
 
         description:
             "Ayu Safa Care Gold Herbal Hair Oil is prepared with selected herbs and traditional oils for everyday hair care.",
@@ -632,18 +652,23 @@ const products = {
             "Helps care for dry scalp and hair",
             "Provides a relaxing hair-oiling experience"
         ]
+
     },
 
 
     shampoo: {
 
-        image: "{{ url_for('static', filename='images/shampoo.jpg') }}",
+        image:
+            "{{ url_for('static', filename='images/shampoo.jpg') }}",
 
-        category: "HAIR CARE",
+        category:
+            "HAIR CARE",
 
-        name: "AYU SAFA CARE HERBAL SHAMPOO",
+        name:
+            "AYU SAFA CARE HERBAL SHAMPOO",
 
-        price: "₹149",
+        price:
+            "₹149",
 
         description:
             "A herbal shampoo formulated with Aloe Vera, Methi, Flaxseed and Neem for regular hair cleansing and care.",
@@ -654,18 +679,23 @@ const products = {
             "Helps maintain clean-looking hair",
             "Herbal hair-care formulation"
         ]
+
     },
 
 
     malam: {
 
-        image: "{{ url_for('static', filename='images/Malam.jpg') }}",
+        image:
+            "{{ url_for('static', filename='images/Malam.jpg') }}",
 
-        category: "SKIN CARE",
+        category:
+            "SKIN CARE",
 
-        name: "AYU SAFA CARE MALAM",
+        name:
+            "AYU SAFA CARE MALAM",
 
-        price: "₹149",
+        price:
+            "₹149",
 
         description:
             "Ayu Safa Care Malam is a herbal topical-care product.",
@@ -675,9 +705,11 @@ const products = {
             "Herbal topical-care formulation",
             "Suitable for targeted skin-care use"
         ]
+
     }
 
 };
+
 
 
 /* =========================================================
@@ -730,10 +762,17 @@ function openProduct(productId) {
     image.src = product.image;
     image.alt = product.name;
 
-    category.textContent = product.category;
-    name.textContent = product.name;
-    price.textContent = product.price;
-    description.textContent = product.description;
+    category.textContent =
+        product.category;
+
+    name.textContent =
+        product.name;
+
+    price.textContent =
+        product.price;
+
+    description.textContent =
+        product.description;
 
 
     benefits.innerHTML = "";
@@ -744,7 +783,8 @@ function openProduct(productId) {
         const li =
             document.createElement("li");
 
-        li.textContent = benefit;
+        li.textContent =
+            benefit;
 
         benefits.appendChild(li);
 
@@ -758,9 +798,11 @@ function openProduct(productId) {
         "false"
     );
 
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow =
+        "hidden";
 
 }
+
 
 
 /* =========================================================
@@ -783,13 +825,15 @@ function closeProduct() {
         "true"
     );
 
-    document.body.style.overflow = "";
+    document.body.style.overflow =
+        "";
 
 }
 
 
+
 /* =========================================================
-   UPDATE ORDER TOTAL
+   UPDATE TOTAL
 ========================================================= */
 
 function updatePrice() {
@@ -825,7 +869,9 @@ function updatePrice() {
 
     let price =
         parseFloat(
-            selectedOption.getAttribute("data-price")
+            selectedOption.getAttribute(
+                "data-price"
+            )
         );
 
 
@@ -867,6 +913,7 @@ function updatePrice() {
 }
 
 
+
 /* =========================================================
    MODAL BACKDROP
 ========================================================= */
@@ -879,7 +926,9 @@ document.addEventListener(
 
 
         const modal =
-            document.getElementById("productModal");
+            document.getElementById(
+                "productModal"
+            );
 
 
         if (modal) {
@@ -888,8 +937,12 @@ document.addEventListener(
                 "click",
                 function(event) {
 
-                    if (event.target === modal) {
+                    if (
+                        event.target === modal
+                    ) {
+
                         closeProduct();
+
                     }
 
                 }
@@ -901,16 +954,21 @@ document.addEventListener(
 );
 
 
+
 /* =========================================================
-   ESCAPE KEY
+   ESC KEY
 ========================================================= */
 
 document.addEventListener(
     "keydown",
     function(event) {
 
-        if (event.key === "Escape") {
+        if (
+            event.key === "Escape"
+        ) {
+
             closeProduct();
+
         }
 
     }
@@ -918,5 +976,7 @@ document.addEventListener(
 
 </script>
 
+
 </body>
 </html>
+```
