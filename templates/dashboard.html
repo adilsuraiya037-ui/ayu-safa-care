@@ -1,1070 +1,582 @@
+```html
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
 
-      
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<meta name="theme-color" content="#123d2d">
+    <meta name="theme-color"
+          content="#123d2d">
 
-<title>AYU SAFA CARE | ADMIN PANEL</title>
+    <title>
+        ADMIN DASHBOARD | AYU SAFA CARE
+    </title>
 
-<style>
+    <style>
 
-    /* =====================================================
-       AYU SAFA CARE
-       PREMIUM ADMIN PANEL
-    ===================================================== */
+        /* =====================================================
+           RESET
+        ===================================================== */
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: Arial, Helvetica, sans-serif;
-        background: #f4f6f2;
-        color: #24352d;
-        min-height: 100vh;
-    }
-
-    a {
-        color: inherit;
-    }
-
-
-    /* =====================================================
-       HEADER
-    ===================================================== */
-
-    .dashboard-header {
-        width: 100%;
-        min-height: 76px;
-
-        padding: 12px 5%;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        background: #ffffff;
-
-        border-bottom: 1px solid #dfe6df;
-
-        box-shadow: 0 3px 18px rgba(18, 61, 45, 0.06);
-
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-    }
-
-
-    .logo {
-        color: #123d2d;
-
-        font-size: 20px;
-        font-weight: 900;
-
-        letter-spacing: 2px;
-
-        line-height: 1.2;
-    }
-
-    .logo span {
-        color: #527260;
-    }
-
-    .logo small {
-        display: block;
-
-        margin-top: 4px;
-
-        color: #849189;
-
-        font-size: 9px;
-        font-weight: 800;
-
-        letter-spacing: 2px;
-    }
-
-
-    .logout-button {
-        min-height: 40px;
-
-        padding: 0 20px;
-
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-
-        background: #ffffff;
-        color: #123d2d;
-
-        border: 1px solid #123d2d;
-        border-radius: 22px;
-
-        text-decoration: none;
-
-        font-size: 10px;
-        font-weight: 900;
-
-        letter-spacing: 1px;
-
-        transition: 0.2s ease;
-    }
-
-    .logout-button:hover {
-        background: #123d2d;
-        color: #ffffff;
-    }
-
-
-    /* =====================================================
-       MAIN
-    ===================================================== */
-
-    .dashboard-container {
-        width: 100%;
-        max-width: 1400px;
-
-        margin: 0 auto;
-
-        padding: 40px 5% 70px;
-    }
-
-
-    /* =====================================================
-       TITLE
-    ===================================================== */
-
-    .dashboard-title {
-        margin-bottom: 30px;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .admin-label {
-        margin-bottom: 7px;
-
-        color: #6d806f;
-
-        font-size: 10px;
-        font-weight: 900;
-
-        letter-spacing: 3px;
-    }
-
-    .dashboard-title h1 {
-        color: #123d2d;
-
-        font-size: 34px;
-        font-weight: 900;
-
-        letter-spacing: 1px;
-    }
-
-
-    /* =====================================================
-       STATISTICS
-    ===================================================== */
-
-    .stats-grid {
-        width: 100%;
-
-        display: grid;
-
-        grid-template-columns:
-            repeat(6, minmax(0, 1fr));
-
-        gap: 15px;
-
-        margin-bottom: 35px;
-    }
-
-
-    .stat-card {
-        min-height: 125px;
-
-        padding: 22px 18px;
-
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-
-        background: #ffffff;
-
-        border: 1px solid #e1e7e1;
-
-        border-radius: 16px;
-
-        box-shadow:
-            0 6px 22px rgba(18, 61, 45, 0.06);
-
-        position: relative;
-
-        overflow: hidden;
-    }
-
-    .stat-card::before {
-        content: "";
-
-        position: absolute;
-
-        left: 0;
-        top: 0;
-
-        width: 100%;
-        height: 4px;
-
-        background: #123d2d;
-    }
-
-    .stat-card.new::before {
-        background: #c49a4a;
-    }
-
-    .stat-card.confirmed::before {
-        background: #527260;
-    }
-
-    .stat-card.shipped::before {
-        background: #6b7fa3;
-    }
-
-    .stat-card.delivered::before {
-        background: #3d8060;
-    }
-
-    .stat-card.cancelled::before {
-        background: #a85a5a;
-    }
-
-
-    .stat-card span {
-        color: #738078;
-
-        font-size: 9px;
-        font-weight: 900;
-
-        letter-spacing: 1.5px;
-    }
-
-    .stat-card strong {
-        color: #123d2d;
-
-        font-size: 30px;
-        font-weight: 900;
-
-        line-height: 1;
-    }
-
-
-    /* =====================================================
-       ORDERS SECTION
-    ===================================================== */
-
-    .orders-section {
-        width: 100%;
-
-        background: #ffffff;
-
-        border: 1px solid #e0e6df;
-
-        border-radius: 20px;
-
-        box-shadow:
-            0 10px 35px rgba(18, 61, 45, 0.07);
-
-        overflow: hidden;
-    }
-
-
-    .orders-heading {
-        padding: 25px 28px;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        gap: 20px;
-
-        background: #ffffff;
-
-        border-bottom: 1px solid #e4e9e4;
-    }
-
-    .orders-heading h2 {
-        color: #123d2d;
-
-        font-size: 18px;
-        font-weight: 900;
-
-        letter-spacing: 1px;
-    }
-
-
-    /* SEARCH */
-
-    #searchOrders {
-        width: 330px;
-
-        min-height: 42px;
-
-        padding: 0 16px;
-
-        background: #f7f9f6;
-
-        color: #24352d;
-
-        border: 1px solid #d9e1da;
-
-        border-radius: 22px;
-
-        outline: none;
-
-        font-size: 12px;
-
-        transition: 0.2s ease;
-    }
-
-    #searchOrders::placeholder {
-        color: #9aa49e;
-    }
-
-    #searchOrders:focus {
-        background: #ffffff;
-
-        border-color: #527260;
-
-        box-shadow:
-            0 0 0 3px rgba(82, 114, 96, 0.10);
-    }
-
-
-    /* =====================================================
-       TABLE
-    ===================================================== */
-
-    .table-wrapper {
-        width: 100%;
-
-        overflow-x: auto;
-    }
-
-    #ordersTable {
-        width: 100%;
-
-        min-width: 1050px;
-
-        border-collapse: collapse;
-    }
-
-
-    #ordersTable thead {
-        background: #f1f5f1;
-    }
-
-
-    #ordersTable th {
-        padding: 15px 14px;
-
-        color: #496154;
-
-        font-size: 9px;
-        font-weight: 900;
-
-        letter-spacing: 1.2px;
-
-        text-align: left;
-
-        white-space: nowrap;
-
-        border-bottom: 1px solid #dfe6df;
-    }
-
-
-    #ordersTable td {
-        padding: 16px 14px;
-
-        color: #52615a;
-
-        font-size: 12px;
-
-        vertical-align: middle;
-
-        border-bottom: 1px solid #edf0ec;
-    }
-
-
-    #ordersTable tbody tr {
-        background: #ffffff;
-
-        transition: background 0.15s ease;
-    }
-
-    #ordersTable tbody tr:hover {
-        background: #f8faf7;
-    }
-
-
-    #ordersTable tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-
-    /* ORDER ID */
-
-    #ordersTable td.order-id {
-        color: #123d2d;
-
-        font-weight: 900;
-
-        white-space: nowrap;
-    }
-
-
-    /* CUSTOMER */
-
-    #ordersTable td strong {
-        color: #24352d;
-
-        font-size: 13px;
-    }
-
-    #ordersTable td small {
-        display: block;
-
-        max-width: 220px;
-
-        margin-top: 4px;
-
-        color: #89948e;
-
-        font-size: 10px;
-
-        line-height: 1.5;
-    }
-
-
-    /* PHONE */
-
-    #ordersTable td a {
-        color: #527260;
-
-        font-weight: 800;
-
-        text-decoration: none;
-    }
-
-    #ordersTable td a:hover {
-        color: #123d2d;
-
-        text-decoration: underline;
-    }
-
-
-    /* =====================================================
-       STATUS
-    ===================================================== */
-
-    .status {
-        min-width: 90px;
-
-        padding: 6px 10px;
-
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-
-        border-radius: 20px;
-
-        font-size: 9px;
-        font-weight: 900;
-
-        letter-spacing: 0.8px;
-
-        white-space: nowrap;
-    }
-
-
-    .status-new {
-        background: #f5ead1;
-        color: #86651f;
-    }
-
-    .status-confirmed {
-        background: #e0eee5;
-        color: #34634b;
-    }
-
-    .status-shipped {
-        background: #e2e8f2;
-        color: #50647f;
-    }
-
-    .status-delivered {
-        background: #dceee3;
-        color: #2d6847;
-    }
-
-    .status-cancelled {
-        background: #f2dddd;
-        color: #8c4848;
-    }
-
-
-    /* =====================================================
-       STATUS SELECT
-    ===================================================== */
-
-    #ordersTable select {
-        min-height: 36px;
-
-        padding: 0 10px;
-
-        background: #ffffff;
-
-        color: #345243;
-
-        border: 1px solid #d4ddd5;
-
-        border-radius: 9px;
-
-        outline: none;
-
-        font-size: 10px;
-        font-weight: 800;
-
-        cursor: pointer;
-    }
-
-    #ordersTable select:focus {
-        border-color: #527260;
-
-        box-shadow:
-            0 0 0 3px rgba(82, 114, 96, 0.10);
-    }
-
-
-    /* =====================================================
-       NO ORDERS
-    ===================================================== */
-
-    .no-orders {
-        padding: 50px !important;
-
-        text-align: center;
-
-        color: #8a958e !important;
-
-        font-size: 12px !important;
-        font-weight: 900;
-
-        letter-spacing: 1.5px;
-    }
-
-
-    /* =====================================================
-       MOBILE
-    ===================================================== */
-
-    @media (max-width: 900px) {
-
-        .stats-grid {
-            grid-template-columns:
-                repeat(3, minmax(0, 1fr));
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .dashboard-container {
-            padding: 30px 4% 50px;
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f4f6f2;
+
+            color: #24352d;
+
+            min-height: 100vh;
+
+            line-height: 1.5;
         }
 
-    }
 
-
-    @media (max-width: 650px) {
-
-        .dashboard-header {
-            padding: 12px 4%;
+        button,
+        input,
+        select {
+            font-family: inherit;
         }
 
-        .logo {
-            font-size: 16px;
+
+        /* =====================================================
+           TOP BAR
+        ===================================================== */
+
+        .admin-header {
+
+            width: 100%;
+
+            min-height: 76px;
+
+            padding: 12px 5%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            background: #ffffff;
+
+            border-bottom:
+                1px solid #e0e6df;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 1000;
+
+            box-shadow:
+                0 3px 15px
+                rgba(18,61,45,0.05);
         }
 
-        .logo small {
+
+        /* =====================================================
+           BRAND
+        ===================================================== */
+
+        .admin-brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            min-width: 0;
+        }
+
+
+        .brand-logo {
+
+            width: 48px;
+
+            height: 48px;
+
+            flex: 0 0 48px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            background: #123d2d;
+
+            color: #ffffff;
+
+            font-size: 7px;
+
+            font-weight: 900;
+
+            line-height: 1.2;
+
+            letter-spacing: 0.3px;
+        }
+
+
+        .brand-info h1 {
+
+            color: #123d2d;
+
+            font-size: 18px;
+
+            font-weight: 900;
+
+            letter-spacing: 1.8px;
+
+            line-height: 1.2;
+        }
+
+
+        .brand-info p {
+
+            margin-top: 3px;
+
+            color: #78847e;
+
             font-size: 8px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.5px;
         }
+
+
+        /* =====================================================
+           HEADER ACTIONS
+        ===================================================== */
+
+        .header-actions {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+
+        .website-button,
+        .logout-button {
+
+            min-height: 40px;
+
+            padding: 0 16px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 22px;
+
+            text-decoration: none;
+
+            font-size: 10px;
+
+            font-weight: 900;
+
+            letter-spacing: 0.8px;
+
+            transition:
+                0.2s ease;
+        }
+
+
+        .website-button {
+
+            background: #f0eadc;
+
+            color: #123d2d;
+
+            border:
+                1px solid #ded6c5;
+        }
+
+
+        .website-button:hover {
+
+            background: #123d2d;
+
+            color: #ffffff;
+        }
+
 
         .logout-button {
-            min-height: 36px;
 
-            padding: 0 14px;
+            background: #123d2d;
+
+            color: #ffffff;
+
+            border:
+                1px solid #123d2d;
+        }
+
+
+        .logout-button:hover {
+
+            background: #1e5b42;
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .dashboard {
+
+            width: 100%;
+
+            max-width: 1450px;
+
+            margin: 0 auto;
+
+            padding: 38px 5% 60px;
+        }
+
+
+        /* =====================================================
+           PAGE TITLE
+        ===================================================== */
+
+        .page-heading {
+
+            margin-bottom: 28px;
+        }
+
+
+        .page-heading .small {
+
+            margin-bottom: 5px;
+
+            color: #6d806f;
 
             font-size: 9px;
+
+            font-weight: 900;
+
+            letter-spacing: 2.5px;
         }
 
 
-        .dashboard-container {
-            padding: 25px 3% 45px;
+        .page-heading h2 {
+
+            color: #123d2d;
+
+            font-size: 32px;
+
+            font-weight: 900;
+
+            line-height: 1.2;
         }
 
 
-        .dashboard-title h1 {
-            font-size: 25px;
+        .page-heading p {
+
+            margin-top: 7px;
+
+            color: #78847e;
+
+            font-size: 12px;
         }
 
+
+        /* =====================================================
+           STAT CARDS
+        ===================================================== */
 
         .stats-grid {
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
 
-            gap: 10px;
+            width: 100%;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(6, minmax(0, 1fr));
+
+            gap: 14px;
+
+            margin-bottom: 30px;
         }
 
 
         .stat-card {
-            min-height: 105px;
 
-            padding: 18px 15px;
+            min-width: 0;
+
+            padding: 20px 18px;
+
+            background: #ffffff;
+
+            border:
+                1px solid #e0e6df;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 7px 25px
+                rgba(18,61,45,0.05);
         }
 
 
-        .stat-card strong {
-            font-size: 25px;
+        .stat-label {
+
+            color: #78847e;
+
+            font-size: 9px;
+
+            font-weight: 900;
+
+            letter-spacing: 1.2px;
         }
 
 
-        .orders-heading {
-            padding: 20px 16px;
+        .stat-number {
 
-            align-items: stretch;
+            margin-top: 7px;
 
-            flex-direction: column;
+            color: #123d2d;
+
+            font-size: 27px;
+
+            font-weight: 900;
+
+            line-height: 1.1;
         }
 
 
-        #searchOrders {
+        .stat-card.new {
+
+            border-top:
+                4px solid #123d2d;
+        }
+
+
+        .stat-card.confirmed {
+
+            border-top:
+                4px solid #527260;
+        }
+
+
+        .stat-card.shipped {
+
+            border-top:
+                4px solid #718878;
+        }
+
+
+        .stat-card.delivered {
+
+            border-top:
+                4px solid #3f7658;
+        }
+
+
+        .stat-card.cancelled {
+
+            border-top:
+                4px solid #9b6b60;
+        }
+
+
+        .stat-card.total {
+
+            border-top:
+                4px solid #24352d;
+        }
+
+
+        /* =====================================================
+           ORDERS PANEL
+        ===================================================== */
+
+        .orders-panel {
+
+            background: #ffffff;
+
+            border:
+                1px solid #e0e6df;
+
+            border-radius: 20px;
+
+            box-shadow:
+                0 10px 35px
+                rgba(18,61,45,0.06);
+
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           PANEL HEADER
+        ===================================================== */
+
+        .panel-header {
+
+            padding: 22px 24px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            border-bottom:
+                1px solid #e7ebe5;
+        }
+
+
+        .panel-title h3 {
+
+            color: #123d2d;
+
+            font-size: 18px;
+
+            font-weight: 900;
+        }
+
+
+        .panel-title p {
+
+            margin-top: 3px;
+
+            color: #849089;
+
+            font-size: 10px;
+        }
+
+
+        /* =====================================================
+           SEARCH + FILTER
+        ===================================================== */
+
+        .filters {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+
+        .search-input,
+        .status-filter {
+
+            height: 40px;
+
+            border:
+                1px solid #d9dfda;
+
+            border-radius: 10px;
+
+            background: #fbfcfa;
+
+            color: #24352d;
+
+            outline: none;
+
+            font-size: 11px;
+        }
+
+
+        .search-input {
+
+            width: 230px;
+
+            padding: 0 13px;
+        }
+
+
+        .status-filter {
+
+            padding: 0 12px;
+
+            cursor: pointer;
+        }
+
+
+        .search-input:focus,
+        .status-filter:focus {
+
+            border-color: #527260;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(82,114,96,0.10);
+        }
+
+
+        /* =====================================================
+           TABLE
+        ===================================================== */
+
+        .table-wrapper {
+
             width: 100%;
+
+            overflow-x: auto;
         }
 
 
-        .orders-section {
-            border-radius: 15px;
+        .orders-table {
+
+            width: 100%;
+
+            min-width: 1050px;
+
+            border-collapse: collapse;
         }
 
-    }
 
+        .orders-table th {
 
-    @media (max-width: 400px) {
+            padding: 13px 15px;
 
-        .stats-grid {
-            grid-template-columns: 1fr;
-        }
+            text-align: left;
 
-        .dashboard-title h1 {
-            font-size: 22px;
-        }
+            background: #f7f8f5;
 
-    }
+            color: #65736b;
 
-</style>
+            border-bottom:
+                1px solid #e1e6e0;
+
+            font-size: 9px;
+
+            font-weight: 900;
+
+            letter-spacing: 1px;
+
+            white-space: nowrap;
 ```
-
-</head>
-
-<body>
-
-<!-- =====================================================
-     HEADER
-===================================================== -->
-
-<header class="dashboard-header">
-
-```
-<div class="logo">
-    <span>AYU</span> SAFA CARE
-    <small>PRIVATE ADMIN PANEL</small>
-</div>
-
-
-<a
-    href="{{ url_for('admin_logout') }}"
-    class="logout-button">
-    LOGOUT
-</a>
-```
-
-</header>
-
-<!-- =====================================================
-     MAIN
-===================================================== -->
-
-<main class="dashboard-container">
-
-```
-<!-- TITLE -->
-
-<div class="dashboard-title">
-
-    <div>
-
-        <p class="admin-label">
-            AYU SAFA CARE • ORDER MANAGEMENT
-        </p>
-
-        <h1>
-            ORDERS DASHBOARD
-        </h1>
-
-    </div>
-
-</div>
-
-
-
-<!-- =================================================
-     STATISTICS
-================================================== -->
-
-<div class="stats-grid">
-
-
-    <div class="stat-card">
-
-        <span>TOTAL ORDERS</span>
-
-        <strong>
-            {{ total_orders }}
-        </strong>
-
-    </div>
-
-
-    <div class="stat-card new">
-
-        <span>NEW ORDERS</span>
-
-        <strong>
-            {{ new_orders }}
-        </strong>
-
-    </div>
-
-
-    <div class="stat-card confirmed">
-
-        <span>CONFIRMED</span>
-
-        <strong>
-            {{ confirmed_orders }}
-        </strong>
-
-    </div>
-
-
-    <div class="stat-card shipped">
-
-        <span>SHIPPED</span>
-
-        <strong>
-            {{ shipped_orders }}
-        </strong>
-
-    </div>
-
-
-    <div class="stat-card delivered">
-
-        <span>DELIVERED</span>
-
-        <strong>
-            {{ delivered_orders }}
-        </strong>
-
-    </div>
-
-
-    <div class="stat-card cancelled">
-
-        <span>CANCELLED</span>
-
-        <strong>
-            {{ cancelled_orders }}
-        </strong>
-
-    </div>
-
-</div>
-
-
-
-<!-- =================================================
-     ORDERS
-================================================== -->
-
-<section class="orders-section">
-
-
-    <div class="orders-heading">
-
-        <h2>
-            CUSTOMER ORDERS
-        </h2>
-
-
-        <input
-            type="text"
-            id="searchOrders"
-            placeholder="Search customer / phone / order ID..."
-            onkeyup="searchOrders()">
-
-    </div>
-
-
-
-    <div class="table-wrapper">
-
-
-        <table id="ordersTable">
-
-
-            <thead>
-
-                <tr>
-
-                    <th>ORDER ID</th>
-
-                    <th>DATE</th>
-
-                    <th>CUSTOMER</th>
-
-                    <th>PHONE</th>
-
-                    <th>PRODUCT</th>
-
-                    <th>QTY</th>
-
-                    <th>AMOUNT</th>
-
-                    <th>STATUS</th>
-
-                    <th>ACTION</th>
-
-                </tr>
-
-            </thead>
-
-
-
-            <tbody>
-
-
-                {% for order in orders %}
-
-                <tr>
-
-
-                    <td class="order-id">
-                        {{ order["order_id"] }}
-                    </td>
-
-
-                    <td>
-                        {{ order["created_at"] }}
-                    </td>
-
-
-                    <td>
-
-                        <strong>
-                            {{ order["customer_name"] }}
-                        </strong>
-
-                        <small>
-                            {{ order["address"] }}
-                        </small>
-
-                    </td>
-
-
-                    <td>
-
-                        <a href="tel:{{ order['phone'] }}">
-                            {{ order["phone"] }}
-                        </a>
-
-                    </td>
-
-
-                    <td>
-                        {{ order["product"] }}
-                    </td>
-
-
-                    <td>
-                        {{ order["quantity"] }}
-                    </td>
-
-
-                    <td>
-
-                        <strong>
-                            ₹{{ "%.2f"|format(order["amount"]) }}
-                        </strong>
-
-                    </td>
-
-
-                    <td>
-
-                        <span
-                            class="status status-{{ order['status']|lower }}">
-
-                            {{ order["status"] }}
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        <form
-                            action="{{ url_for('update_status', order_id=order['id']) }}"
-                            method="POST">
-
-                            <select
-                                name="status"
-                                onchange="this.form.submit()">
-
-                                <option
-                                    value="NEW"
-                                    {% if order["status"] == "NEW" %}
-                                    selected
-                                    {% endif %}>
-                                    NEW
-                                </option>
-
-                                <option
-                                    value="CONFIRMED"
-                                    {% if order["status"] == "CONFIRMED" %}
-                                    selected
-                                    {% endif %}>
-                                    CONFIRMED
-                                </option>
-
-                                <option
-                                    value="SHIPPED"
-                                    {% if order["status"] == "SHIPPED" %}
-                                    selected
-                                    {% endif %}>
-                                    SHIPPED
-                                </option>
-
-                                <option
-                                    value="DELIVERED"
-                                    {% if order["status"] == "DELIVERED" %}
-                                    selected
-                                    {% endif %}>
-                                    DELIVERED
-                                </option>
-
-                                <option
-                                    value="CANCELLED"
-                                    {% if order["status"] == "CANCELLED" %}
-                                    selected
-                                    {% endif %}>
-                                    CANCELLED
-                                </option>
-
-                            </select>
-
-                        </form>
-
-                    </td>
-
-                </tr>
-
-                {% else %}
-
-                <tr>
-
-                    <td
-                        colspan="9"
-                        class="no-orders">
-
-                        NO ORDERS YET
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</section>
-```
-
-</main>
-
-<script>
-
-function searchOrders() {
-
-    const input =
-        document.getElementById("searchOrders");
-
-    const filter =
-        input.value.toLowerCase();
-
-    const table =
-        document.getElementById("ordersTable");
-
-    const rows =
-        table.getElementsByTagName("tr");
-
-
-    for (
-        let i = 1;
-        i < rows.length;
-        i++
-    ) {
-
-        const text =
-            rows[i].innerText.toLowerCase();
-
-        if (text.includes(filter)) {
-
-            rows[i].style.display = "";
-
-        } else {
-
-            rows[i].style.display = "none";
-
-        }
-
-    }
-
-}
-
-</script>
-
-</body>
-
-</html>
