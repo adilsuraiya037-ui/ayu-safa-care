@@ -1,378 +1,1027 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
+```
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <title>ORDERS DASHBOARD | AYU SAFA CARE</title>
+<meta name="theme-color" content="#123d2d">
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+<title>AYU SAFA CARE | ADMIN PANEL</title>
+
+<style>
+
+    /* =====================================================
+       AYU SAFA CARE
+       PREMIUM ADMIN PANEL
+    ===================================================== */
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f6f2;
+        color: #24352d;
+        min-height: 100vh;
+    }
+
+    a {
+        color: inherit;
+    }
+
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
+    .dashboard-header {
+        width: 100%;
+        min-height: 76px;
+
+        padding: 12px 5%;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        background: #ffffff;
+
+        border-bottom: 1px solid #dfe6df;
+
+        box-shadow: 0 3px 18px rgba(18, 61, 45, 0.06);
+
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+
+    .logo {
+        color: #123d2d;
+
+        font-size: 20px;
+        font-weight: 900;
+
+        letter-spacing: 2px;
+
+        line-height: 1.2;
+    }
+
+    .logo span {
+        color: #527260;
+    }
+
+    .logo small {
+        display: block;
+
+        margin-top: 4px;
+
+        color: #849189;
+
+        font-size: 9px;
+        font-weight: 800;
+
+        letter-spacing: 2px;
+    }
+
+
+    .logout-button {
+        min-height: 40px;
+
+        padding: 0 20px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        background: #ffffff;
+        color: #123d2d;
+
+        border: 1px solid #123d2d;
+        border-radius: 22px;
+
+        text-decoration: none;
+
+        font-size: 10px;
+        font-weight: 900;
+
+        letter-spacing: 1px;
+
+        transition: 0.2s ease;
+    }
+
+    .logout-button:hover {
+        background: #123d2d;
+        color: #ffffff;
+    }
+
+
+    /* =====================================================
+       MAIN
+    ===================================================== */
+
+    .dashboard-container {
+        width: 100%;
+        max-width: 1400px;
+
+        margin: 0 auto;
+
+        padding: 40px 5% 70px;
+    }
+
+
+    /* =====================================================
+       TITLE
+    ===================================================== */
+
+    .dashboard-title {
+        margin-bottom: 30px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .admin-label {
+        margin-bottom: 7px;
+
+        color: #6d806f;
+
+        font-size: 10px;
+        font-weight: 900;
+
+        letter-spacing: 3px;
+    }
+
+    .dashboard-title h1 {
+        color: #123d2d;
+
+        font-size: 34px;
+        font-weight: 900;
+
+        letter-spacing: 1px;
+    }
+
+
+    /* =====================================================
+       STATISTICS
+    ===================================================== */
+
+    .stats-grid {
+        width: 100%;
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(6, minmax(0, 1fr));
+
+        gap: 15px;
+
+        margin-bottom: 35px;
+    }
+
+
+    .stat-card {
+        min-height: 125px;
+
+        padding: 22px 18px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        background: #ffffff;
+
+        border: 1px solid #e1e7e1;
+
+        border-radius: 16px;
+
+        box-shadow:
+            0 6px 22px rgba(18, 61, 45, 0.06);
+
+        position: relative;
+
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: "";
+
+        position: absolute;
+
+        left: 0;
+        top: 0;
+
+        width: 100%;
+        height: 4px;
+
+        background: #123d2d;
+    }
+
+    .stat-card.new::before {
+        background: #c49a4a;
+    }
+
+    .stat-card.confirmed::before {
+        background: #527260;
+    }
+
+    .stat-card.shipped::before {
+        background: #6b7fa3;
+    }
+
+    .stat-card.delivered::before {
+        background: #3d8060;
+    }
+
+    .stat-card.cancelled::before {
+        background: #a85a5a;
+    }
+
+
+    .stat-card span {
+        color: #738078;
+
+        font-size: 9px;
+        font-weight: 900;
+
+        letter-spacing: 1.5px;
+    }
+
+    .stat-card strong {
+        color: #123d2d;
+
+        font-size: 30px;
+        font-weight: 900;
+
+        line-height: 1;
+    }
+
+
+    /* =====================================================
+       ORDERS SECTION
+    ===================================================== */
+
+    .orders-section {
+        width: 100%;
+
+        background: #ffffff;
+
+        border: 1px solid #e0e6df;
+
+        border-radius: 20px;
+
+        box-shadow:
+            0 10px 35px rgba(18, 61, 45, 0.07);
+
+        overflow: hidden;
+    }
+
+
+    .orders-heading {
+        padding: 25px 28px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 20px;
+
+        background: #ffffff;
+
+        border-bottom: 1px solid #e4e9e4;
+    }
+
+    .orders-heading h2 {
+        color: #123d2d;
+
+        font-size: 18px;
+        font-weight: 900;
+
+        letter-spacing: 1px;
+    }
+
+
+    /* SEARCH */
+
+    #searchOrders {
+        width: 330px;
+
+        min-height: 42px;
+
+        padding: 0 16px;
+
+        background: #f7f9f6;
+
+        color: #24352d;
+
+        border: 1px solid #d9e1da;
+
+        border-radius: 22px;
+
+        outline: none;
+
+        font-size: 12px;
+
+        transition: 0.2s ease;
+    }
+
+    #searchOrders::placeholder {
+        color: #9aa49e;
+    }
+
+    #searchOrders:focus {
+        background: #ffffff;
+
+        border-color: #527260;
+
+        box-shadow:
+            0 0 0 3px rgba(82, 114, 96, 0.10);
+    }
+
+
+    /* =====================================================
+       TABLE
+    ===================================================== */
+
+    .table-wrapper {
+        width: 100%;
+
+        overflow-x: auto;
+    }
+
+    #ordersTable {
+        width: 100%;
+
+        min-width: 1050px;
+
+        border-collapse: collapse;
+    }
+
+
+    #ordersTable thead {
+        background: #f1f5f1;
+    }
+
+
+    #ordersTable th {
+        padding: 15px 14px;
+
+        color: #496154;
+
+        font-size: 9px;
+        font-weight: 900;
+
+        letter-spacing: 1.2px;
+
+        text-align: left;
+
+        white-space: nowrap;
+
+        border-bottom: 1px solid #dfe6df;
+    }
+
+
+    #ordersTable td {
+        padding: 16px 14px;
+
+        color: #52615a;
+
+        font-size: 12px;
+
+        vertical-align: middle;
+
+        border-bottom: 1px solid #edf0ec;
+    }
+
+
+    #ordersTable tbody tr {
+        background: #ffffff;
+
+        transition: background 0.15s ease;
+    }
+
+    #ordersTable tbody tr:hover {
+        background: #f8faf7;
+    }
+
+
+    #ordersTable tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+
+    /* ORDER ID */
+
+    #ordersTable td.order-id {
+        color: #123d2d;
+
+        font-weight: 900;
+
+        white-space: nowrap;
+    }
+
+
+    /* CUSTOMER */
+
+    #ordersTable td strong {
+        color: #24352d;
+
+        font-size: 13px;
+    }
+
+    #ordersTable td small {
+        display: block;
+
+        max-width: 220px;
+
+        margin-top: 4px;
+
+        color: #89948e;
+
+        font-size: 10px;
+
+        line-height: 1.5;
+    }
+
+
+    /* PHONE */
+
+    #ordersTable td a {
+        color: #527260;
+
+        font-weight: 800;
+
+        text-decoration: none;
+    }
+
+    #ordersTable td a:hover {
+        color: #123d2d;
+
+        text-decoration: underline;
+    }
+
+
+    /* =====================================================
+       STATUS
+    ===================================================== */
+
+    .status {
+        min-width: 90px;
+
+        padding: 6px 10px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 20px;
+
+        font-size: 9px;
+        font-weight: 900;
+
+        letter-spacing: 0.8px;
+
+        white-space: nowrap;
+    }
+
+
+    .status-new {
+        background: #f5ead1;
+        color: #86651f;
+    }
+
+    .status-confirmed {
+        background: #e0eee5;
+        color: #34634b;
+    }
+
+    .status-shipped {
+        background: #e2e8f2;
+        color: #50647f;
+    }
+
+    .status-delivered {
+        background: #dceee3;
+        color: #2d6847;
+    }
+
+    .status-cancelled {
+        background: #f2dddd;
+        color: #8c4848;
+    }
+
+
+    /* =====================================================
+       STATUS SELECT
+    ===================================================== */
+
+    #ordersTable select {
+        min-height: 36px;
+
+        padding: 0 10px;
+
+        background: #ffffff;
+
+        color: #345243;
+
+        border: 1px solid #d4ddd5;
+
+        border-radius: 9px;
+
+        outline: none;
+
+        font-size: 10px;
+        font-weight: 800;
+
+        cursor: pointer;
+    }
+
+    #ordersTable select:focus {
+        border-color: #527260;
+
+        box-shadow:
+            0 0 0 3px rgba(82, 114, 96, 0.10);
+    }
+
+
+    /* =====================================================
+       NO ORDERS
+    ===================================================== */
+
+    .no-orders {
+        padding: 50px !important;
+
+        text-align: center;
+
+        color: #8a958e !important;
+
+        font-size: 12px !important;
+        font-weight: 900;
+
+        letter-spacing: 1.5px;
+    }
+
+
+    /* =====================================================
+       MOBILE
+    ===================================================== */
+
+    @media (max-width: 900px) {
+
+        .stats-grid {
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+        }
+
+        .dashboard-container {
+            padding: 30px 4% 50px;
+        }
+
+    }
+
+
+    @media (max-width: 650px) {
+
+        .dashboard-header {
+            padding: 12px 4%;
+        }
+
+        .logo {
+            font-size: 16px;
+        }
+
+        .logo small {
+            font-size: 8px;
+        }
+
+        .logout-button {
+            min-height: 36px;
+
+            padding: 0 14px;
+
+            font-size: 9px;
+        }
+
+
+        .dashboard-container {
+            padding: 25px 3% 45px;
+        }
+
+
+        .dashboard-title h1 {
+            font-size: 25px;
+        }
+
+
+        .stats-grid {
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+        }
+
+
+        .stat-card {
+            min-height: 105px;
+
+            padding: 18px 15px;
+        }
+
+
+        .stat-card strong {
+            font-size: 25px;
+        }
+
+
+        .orders-heading {
+            padding: 20px 16px;
+
+            align-items: stretch;
+
+            flex-direction: column;
+        }
+
+
+        #searchOrders {
+            width: 100%;
+        }
+
+
+        .orders-section {
+            border-radius: 15px;
+        }
+
+    }
+
+
+    @media (max-width: 400px) {
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-title h1 {
+            font-size: 22px;
+        }
+
+    }
+
+</style>
+```
 
 </head>
 
+<body>
 
-<body class="dashboard-page">
-
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
 <header class="dashboard-header">
 
-    <div class="logo">
-        <span>AYU</span> SAFA CARE
-        <small>ADMIN PANEL</small>
-    </div>
+```
+<div class="logo">
+    <span>AYU</span> SAFA CARE
+    <small>PRIVATE ADMIN PANEL</small>
+</div>
 
-    <a href="/admin/logout" class="logout-button">
-        LOGOUT
-    </a>
+
+<a
+    href="{{ url_for('admin_logout') }}"
+    class="logout-button">
+    LOGOUT
+</a>
+```
 
 </header>
 
+<!-- =====================================================
+     MAIN
+===================================================== -->
 
 <main class="dashboard-container">
 
+```
+<!-- TITLE -->
 
-    <div class="dashboard-title">
+<div class="dashboard-title">
 
-        <div>
-            <p class="admin-label">
-                PRIVATE ADMIN PANEL
-            </p>
+    <div>
 
-            <h1>
-                ORDERS DASHBOARD
-            </h1>
-        </div>
+        <p class="admin-label">
+            AYU SAFA CARE • ORDER MANAGEMENT
+        </p>
+
+        <h1>
+            ORDERS DASHBOARD
+        </h1>
+
+    </div>
+
+</div>
+
+
+
+<!-- =================================================
+     STATISTICS
+================================================== -->
+
+<div class="stats-grid">
+
+
+    <div class="stat-card">
+
+        <span>TOTAL ORDERS</span>
+
+        <strong>
+            {{ total_orders }}
+        </strong>
 
     </div>
 
 
-    <!-- STATISTICS -->
+    <div class="stat-card new">
 
-    <div class="stats-grid">
+        <span>NEW ORDERS</span>
 
+        <strong>
+            {{ new_orders }}
+        </strong>
 
-        <div class="stat-card">
-
-            <span>
-                TOTAL ORDERS
-            </span>
-
-            <strong>
-                {{ total_orders }}
-            </strong>
-
-        </div>
+    </div>
 
 
-        <div class="stat-card new">
+    <div class="stat-card confirmed">
 
-            <span>
-                NEW
-            </span>
+        <span>CONFIRMED</span>
 
-            <strong>
-                {{ new_orders }}
-            </strong>
+        <strong>
+            {{ confirmed_orders }}
+        </strong>
 
-        </div>
+    </div>
 
 
-        <div class="stat-card confirmed">
+    <div class="stat-card shipped">
 
-            <span>
-                CONFIRMED
-            </span>
+        <span>SHIPPED</span>
 
-            <strong>
-                {{ confirmed_orders }}
-            </strong>
+        <strong>
+            {{ shipped_orders }}
+        </strong>
 
-        </div>
+    </div>
 
 
-        <div class="stat-card shipped">
+    <div class="stat-card delivered">
 
-            <span>
-                SHIPPED
-            </span>
+        <span>DELIVERED</span>
 
-            <strong>
-                {{ shipped_orders }}
-            </strong>
+        <strong>
+            {{ delivered_orders }}
+        </strong>
 
-        </div>
+    </div>
 
 
-        <div class="stat-card delivered">
+    <div class="stat-card cancelled">
 
-            <span>
-                DELIVERED
-            </span>
+        <span>CANCELLED</span>
 
-            <strong>
-                {{ delivered_orders }}
-            </strong>
+        <strong>
+            {{ cancelled_orders }}
+        </strong>
 
-        </div>
+    </div>
+
+</div>
 
 
-        <div class="stat-card cancelled">
 
-            <span>
-                CANCELLED
-            </span>
+<!-- =================================================
+     ORDERS
+================================================== -->
 
-            <strong>
-                {{ cancelled_orders }}
-            </strong>
+<section class="orders-section">
 
-        </div>
+
+    <div class="orders-heading">
+
+        <h2>
+            CUSTOMER ORDERS
+        </h2>
+
+
+        <input
+            type="text"
+            id="searchOrders"
+            placeholder="Search customer / phone / order ID..."
+            onkeyup="searchOrders()">
 
     </div>
 
 
 
-    <!-- ORDERS -->
-
-    <section class="orders-section">
+    <div class="table-wrapper">
 
 
-        <div class="orders-heading">
-
-            <h2>
-                CUSTOMER ORDERS
-            </h2>
-
-            <input
-                type="text"
-                id="searchOrders"
-                placeholder="Search customer / phone / order ID..."
-                onkeyup="searchOrders()">
-
-        </div>
+        <table id="ordersTable">
 
 
-        <div class="table-wrapper">
+            <thead>
+
+                <tr>
+
+                    <th>ORDER ID</th>
+
+                    <th>DATE</th>
+
+                    <th>CUSTOMER</th>
+
+                    <th>PHONE</th>
+
+                    <th>PRODUCT</th>
+
+                    <th>QTY</th>
+
+                    <th>AMOUNT</th>
+
+                    <th>STATUS</th>
+
+                    <th>ACTION</th>
+
+                </tr>
+
+            </thead>
 
 
-            <table id="ordersTable">
 
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            ORDER ID
-                        </th>
-
-                        <th>
-                            DATE
-                        </th>
-
-                        <th>
-                            CUSTOMER
-                        </th>
-
-                        <th>
-                            PHONE
-                        </th>
-
-                        <th>
-                            PRODUCT
-                        </th>
-
-                        <th>
-                            QTY
-                        </th>
-
-                        <th>
-                            AMOUNT
-                        </th>
-
-                        <th>
-                            STATUS
-                        </th>
-
-                        <th>
-                            ACTION
-                        </th>
-
-                    </tr>
-
-                </thead>
+            <tbody>
 
 
-                <tbody>
+                {% for order in orders %}
+
+                <tr>
 
 
-                    {% for order in orders %}
-
-                    <tr>
-
-                        <td class="order-id">
-
-                            {{ order["order_id"] }}
-
-                        </td>
+                    <td class="order-id">
+                        {{ order["order_id"] }}
+                    </td>
 
 
-                        <td>
-
-                            {{ order["created_at"] }}
-
-                        </td>
+                    <td>
+                        {{ order["created_at"] }}
+                    </td>
 
 
-                        <td>
+                    <td>
 
-                            <strong>
-                                {{ order["customer_name"] }}
-                            </strong>
+                        <strong>
+                            {{ order["customer_name"] }}
+                        </strong>
 
-                            <br>
+                        <small>
+                            {{ order["address"] }}
+                        </small>
 
-                            <small>
-                                {{ order["address"] }}
-                            </small>
-
-                        </td>
+                    </td>
 
 
-                        <td>
+                    <td>
 
-                            <a
-                                href="tel:{{ order['phone'] }}">
+                        <a href="tel:{{ order['phone'] }}">
+                            {{ order["phone"] }}
+                        </a>
 
-                                {{ order["phone"] }}
-
-                            </a>
-
-                        </td>
+                    </td>
 
 
-                        <td>
-
-                            {{ order["product"] }}
-
-                        </td>
+                    <td>
+                        {{ order["product"] }}
+                    </td>
 
 
-                        <td>
-
-                            {{ order["quantity"] }}
-
-                        </td>
+                    <td>
+                        {{ order["quantity"] }}
+                    </td>
 
 
-                        <td>
+                    <td>
 
+                        <strong>
                             ₹{{ "%.2f"|format(order["amount"]) }}
+                        </strong>
 
-                        </td>
-
-
-                        <td>
-
-                            <span
-                                class="status status-{{ order['status']|lower }}">
-
-                                {{ order["status"] }}
-
-                            </span>
-
-                        </td>
+                    </td>
 
 
-                        <td>
+                    <td>
 
-                            <form
-                                action="/admin/update-status/{{ order['id'] }}"
-                                method="POST">
+                        <span
+                            class="status status-{{ order['status']|lower }}">
 
-                                <select
-                                    name="status"
-                                    onchange="this.form.submit()">
+                            {{ order["status"] }}
 
-                                    <option
-                                        value="NEW"
-                                        {% if order["status"] == "NEW" %}
-                                        selected
-                                        {% endif %}>
-                                        NEW
-                                    </option>
+                        </span>
 
-                                    <option
-                                        value="CONFIRMED"
-                                        {% if order["status"] == "CONFIRMED" %}
-                                        selected
-                                        {% endif %}>
-                                        CONFIRMED
-                                    </option>
-
-                                    <option
-                                        value="SHIPPED"
-                                        {% if order["status"] == "SHIPPED" %}
-                                        selected
-                                        {% endif %}>
-                                        SHIPPED
-                                    </option>
-
-                                    <option
-                                        value="DELIVERED"
-                                        {% if order["status"] == "DELIVERED" %}
-                                        selected
-                                        {% endif %}>
-                                        DELIVERED
-                                    </option>
-
-                                    <option
-                                        value="CANCELLED"
-                                        {% if order["status"] == "CANCELLED" %}
-                                        selected
-                                        {% endif %}>
-                                        CANCELLED
-                                    </option>
-
-                                </select>
-
-                            </form>
-
-                        </td>
-
-                    </tr>
-
-                    {% else %}
-
-                    <tr>
-
-                        <td colspan="9"
-                            class="no-orders">
-
-                            NO ORDERS YET
-
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
+                    </td>
 
 
-                </tbody>
+                    <td>
 
-            </table>
+                        <form
+                            action="{{ url_for('update_status', order_id=order['id']) }}"
+                            method="POST">
 
-        </div>
+                            <select
+                                name="status"
+                                onchange="this.form.submit()">
 
-    </section>
+                                <option
+                                    value="NEW"
+                                    {% if order["status"] == "NEW" %}
+                                    selected
+                                    {% endif %}>
+                                    NEW
+                                </option>
 
+                                <option
+                                    value="CONFIRMED"
+                                    {% if order["status"] == "CONFIRMED" %}
+                                    selected
+                                    {% endif %}>
+                                    CONFIRMED
+                                </option>
+
+                                <option
+                                    value="SHIPPED"
+                                    {% if order["status"] == "SHIPPED" %}
+                                    selected
+                                    {% endif %}>
+                                    SHIPPED
+                                </option>
+
+                                <option
+                                    value="DELIVERED"
+                                    {% if order["status"] == "DELIVERED" %}
+                                    selected
+                                    {% endif %}>
+                                    DELIVERED
+                                </option>
+
+                                <option
+                                    value="CANCELLED"
+                                    {% if order["status"] == "CANCELLED" %}
+                                    selected
+                                    {% endif %}>
+                                    CANCELLED
+                                </option>
+
+                            </select>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="9"
+                        class="no-orders">
+
+                        NO ORDERS YET
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+```
 
 </main>
-
 
 <script>
 
@@ -391,7 +1040,11 @@ function searchOrders() {
         table.getElementsByTagName("tr");
 
 
-    for (let i = 1; i < rows.length; i++) {
+    for (
+        let i = 1;
+        i < rows.length;
+        i++
+    ) {
 
         const text =
             rows[i].innerText.toLowerCase();
@@ -411,7 +1064,6 @@ function searchOrders() {
 }
 
 </script>
-
 
 </body>
 
