@@ -1665,10 +1665,9 @@ def place_order():
 
     )
 
-
-# =========================================================
+# ==================================================
 # TRACK ORDER
-# =========================================================
+# ==================================================
 
 @app.route(
     "/track-order",
@@ -1677,26 +1676,19 @@ def place_order():
 def track_order():
 
     order = None
-
     error = None
 
-    order_items = []
-
-
     if request.method == "POST":
-
 
         order_id = request.form.get(
             "order_id",
             ""
         ).strip()
 
-
         phone = request.form.get(
             "phone",
             ""
         ).strip()
-
 
         if not order_id or not phone:
 
@@ -1705,151 +1697,112 @@ def track_order():
                 "and phone number."
             )
 
-
         else:
 
             conn = None
             cursor = None
 
-
             try:
 
                 conn = get_db()
-
                 cursor = conn.cursor()
 
-
-                # =================================================
-                # FIND MAIN ORDER
-                # =================================================
+                # ----------------------------------
+                # POSTGRESQL
+                # ----------------------------------
 
                 if using_postgresql():
 
                     cursor.execute("""
                         SELECT
-
                             order_id,
                             customer_name,
                             phone,
+                            address,
                             product,
                             quantity,
                             amount,
                             status,
                             created_at
-
                         FROM orders
-
                         WHERE order_id = %s
-
                         AND phone = %s
-
+                        LIMIT 1
                     """, (
-
                         order_id,
-
                         phone
-
                     ))
 
+                    row = cursor.fetchone()
+
+                    if row:
+                        # Convert PostgreSQL dictionary
+                        # into a normal dictionary for template
+                        order = {
+                            "order_id": row["order_id"],
+                            "customer_name": row["customer_name"],
+                            "phone": row["phone"],
+                            "address": row["address"],
+                            "product": row["product"],
+                            "quantity": row["quantity"],
+                            "amount": row["amount"],
+                            "status": row["status"],
+                            "created_at": row["created_at"]
+                        }
+
+                # ----------------------------------
+                # SQLITE
+                # ----------------------------------
 
                 else:
 
                     cursor.execute("""
                         SELECT
-
                             order_id,
                             customer_name,
                             phone,
+                            address,
                             product,
                             quantity,
                             amount,
                             status,
                             created_at
-
                         FROM orders
-
                         WHERE order_id = ?
-
                         AND phone = ?
-
+                        LIMIT 1
                     """, (
-
                         order_id,
-
                         phone
-
                     ))
 
+                    row = cursor.fetchone()
 
-                order = cursor.fetchone()
+                    if row:
 
-
-                # =================================================
-                # FIND INDIVIDUAL PRODUCTS
-                # =================================================
-
-                if order:
-
-                    if using_postgresql():
-
-                        cursor.execute("""
-                            SELECT
-
-                                product,
-                                quantity,
-                                unit_price,
-                                total_price
-
-                            FROM order_items
-
-                            WHERE order_id = %s
-
-                            ORDER BY id ASC
-
-                        """, (
-                            order_id,
-                        ))
-
-
-                    else:
-
-                        cursor.execute("""
-                            SELECT
-
-                                product,
-                                quantity,
-                                unit_price,
-                                total_price
-
-                            FROM order_items
-
-                            WHERE order_id = ?
-
-                            ORDER BY id ASC
-
-                        """, (
-                            order_id,
-                        ))
-
-
-                    order_items = (
-                        cursor.fetchall()
-                    )
-
+                        order = {
+                            "order_id": row["order_id"],
+                            "customer_name": row["customer_name"],
+                            "phone": row["phone"],
+                            "address": row["address"],
+                            "product": row["product"],
+                            "quantity": row["quantity"],
+                            "amount": row["amount"],
+                            "status": row["status"],
+                            "created_at": row["created_at"]
+                        }
 
             except Exception as e:
 
-                print(
-                    "TRACK ORDER ERROR:",
-                    str(e)
-                )
-
+                print("======================================")
+                print("TRACK ORDER ERROR")
+                print(str(e))
+                print("======================================")
 
                 error = (
-                    "Unable to check order "
-                    "right now."
+                    "Unable to check your order "
+                    "right now. Please try again."
                 )
-
 
             finally:
 
@@ -1857,19 +1810,15 @@ def track_order():
 
                     try:
                         cursor.close()
-
                     except Exception:
                         pass
-
 
                 if conn:
 
                     try:
                         conn.close()
-
                     except Exception:
                         pass
-
 
             if not order and not error:
 
@@ -1879,18 +1828,12 @@ def track_order():
                     "and phone number."
                 )
 
-
     return render_template(
-
         "track_order.html",
-
         order=order,
-
-        order_items=order_items,
-
         error=error
-
     )
+
 
 
 # =========================================================
