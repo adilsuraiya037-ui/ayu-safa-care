@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,9 +12,7 @@
     <meta name="theme-color"
           content="#123d2d">
 
-    <title>
-        ADMIN DASHBOARD | AYU SAFA CARE
-    </title>
+    <title>ADMIN DASHBOARD | AYU SAFA CARE</title>
 
     <style>
 
@@ -30,25 +28,15 @@
 
 
         body {
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
 
-            background: #f4f6f2;
+            background: #f4f7f3;
 
-            color: #24352d;
+            color: #26382f;
 
             min-height: 100vh;
 
-            line-height: 1.5;
-        }
-
-
-        button,
-        input,
-        select {
-            font-family: inherit;
+            overflow-x: hidden;
         }
 
 
@@ -56,11 +44,10 @@
            TOP BAR
         ===================================================== */
 
-        .admin-header {
-
+        .topbar {
             width: 100%;
 
-            min-height: 76px;
+            min-height: 72px;
 
             padding: 12px 5%;
 
@@ -72,46 +59,25 @@
 
             gap: 20px;
 
-            background: #ffffff;
-
-            border-bottom:
-                1px solid #e0e6df;
-
-            position: sticky;
-
-            top: 0;
-
-            z-index: 1000;
+            background: #123d2d;
 
             box-shadow:
-                0 3px 15px
-                rgba(18,61,45,0.05);
+                0 5px 25px rgba(18,61,45,0.15);
         }
 
 
-        /* =====================================================
-           BRAND
-        ===================================================== */
-
-        .admin-brand {
-
+        .brand {
             display: flex;
 
             align-items: center;
 
             gap: 12px;
-
-            min-width: 0;
         }
 
 
         .brand-logo {
-
-            width: 48px;
-
-            height: 48px;
-
-            flex: 0 0 48px;
+            width: 46px;
+            height: 46px;
 
             border-radius: 50%;
 
@@ -123,54 +89,45 @@
 
             text-align: center;
 
-            background: #123d2d;
+            background: #ffffff;
 
-            color: #ffffff;
+            color: #123d2d;
 
             font-size: 7px;
 
             font-weight: 900;
 
             line-height: 1.2;
-
-            letter-spacing: 0.3px;
         }
 
 
-        .brand-info h1 {
+        .brand-text h1 {
+            color: #ffffff;
 
-            color: #123d2d;
-
-            font-size: 18px;
+            font-size: 17px;
 
             font-weight: 900;
 
             letter-spacing: 1.8px;
-
-            line-height: 1.2;
         }
 
 
-        .brand-info p {
+        .brand-text span {
+            display: block;
 
             margin-top: 3px;
 
-            color: #78847e;
+            color: #b9d0c1;
 
             font-size: 8px;
 
-            font-weight: 800;
+            font-weight: 700;
 
             letter-spacing: 1.5px;
         }
 
 
-        /* =====================================================
-           HEADER ACTIONS
-        ===================================================== */
-
-        .header-actions {
-
+        .top-actions {
             display: flex;
 
             align-items: center;
@@ -179,12 +136,10 @@
         }
 
 
-        .website-button,
-        .logout-button {
+        .top-button {
+            min-height: 38px;
 
-            min-height: 40px;
-
-            padding: 0 16px;
+            padding: 0 15px;
 
             display: inline-flex;
 
@@ -192,7 +147,7 @@
 
             justify-content: center;
 
-            border-radius: 22px;
+            border-radius: 20px;
 
             text-decoration: none;
 
@@ -202,47 +157,31 @@
 
             letter-spacing: 0.8px;
 
-            transition:
-                0.2s ease;
+            transition: 0.2s ease;
         }
 
 
         .website-button {
-
-            background: #f0eadc;
+            background: #ffffff;
 
             color: #123d2d;
-
-            border:
-                1px solid #ded6c5;
         }
 
 
         .website-button:hover {
-
-            background: #123d2d;
-
-            color: #ffffff;
+            background: #eaf0eb;
         }
 
 
         .logout-button {
+            background: #dce8df;
 
-            background: #123d2d;
-
-            color: #ffffff;
-
-            border:
-                1px solid #123d2d;
+            color: #123d2d;
         }
 
 
         .logout-button:hover {
-
-            background: #1e5b42;
-
-            transform:
-                translateY(-1px);
+            background: #ffffff;
         }
 
 
@@ -250,11 +189,10 @@
            MAIN
         ===================================================== */
 
-        .dashboard {
-
+        .container {
             width: 100%;
 
-            max-width: 1450px;
+            max-width: 1350px;
 
             margin: 0 auto;
 
@@ -262,23 +200,19 @@
         }
 
 
-        /* =====================================================
-           PAGE TITLE
-        ===================================================== */
-
-        .page-heading {
-
-            margin-bottom: 28px;
+        .page-title {
+            margin-bottom: 25px;
         }
 
 
-        .page-heading .small {
+        .page-title small {
+            display: block;
 
-            margin-bottom: 5px;
+            margin-bottom: 6px;
 
-            color: #6d806f;
+            color: #688071;
 
-            font-size: 9px;
+            font-size: 10px;
 
             font-weight: 900;
 
@@ -286,11 +220,10 @@
         }
 
 
-        .page-heading h2 {
-
+        .page-title h2 {
             color: #123d2d;
 
-            font-size: 32px;
+            font-size: 30px;
 
             font-weight: 900;
 
@@ -298,11 +231,10 @@
         }
 
 
-        .page-heading p {
-
+        .page-title p {
             margin-top: 7px;
 
-            color: #78847e;
+            color: #718078;
 
             font-size: 12px;
         }
@@ -313,7 +245,6 @@
         ===================================================== */
 
         .stats-grid {
-
             width: 100%;
 
             display: grid;
@@ -328,39 +259,36 @@
 
 
         .stat-card {
-
             min-width: 0;
 
-            padding: 20px 18px;
+            padding: 20px 16px;
 
             background: #ffffff;
 
-            border:
-                1px solid #e0e6df;
+            border: 1px solid #e1e8e2;
 
             border-radius: 16px;
 
             box-shadow:
-                0 7px 25px
-                rgba(18,61,45,0.05);
+                0 6px 25px rgba(18,61,45,0.06);
         }
 
 
         .stat-label {
-
-            color: #78847e;
+            color: #718078;
 
             font-size: 9px;
 
             font-weight: 900;
 
-            letter-spacing: 1.2px;
+            letter-spacing: 1.3px;
+
+            line-height: 1.3;
         }
 
 
         .stat-number {
-
-            margin-top: 7px;
+            margin-top: 9px;
 
             color: #123d2d;
 
@@ -368,79 +296,31 @@
 
             font-weight: 900;
 
-            line-height: 1.1;
-        }
-
-
-        .stat-card.new {
-
-            border-top:
-                4px solid #123d2d;
-        }
-
-
-        .stat-card.confirmed {
-
-            border-top:
-                4px solid #527260;
-        }
-
-
-        .stat-card.shipped {
-
-            border-top:
-                4px solid #718878;
-        }
-
-
-        .stat-card.delivered {
-
-            border-top:
-                4px solid #3f7658;
-        }
-
-
-        .stat-card.cancelled {
-
-            border-top:
-                4px solid #9b6b60;
-        }
-
-
-        .stat-card.total {
-
-            border-top:
-                4px solid #24352d;
+            line-height: 1;
         }
 
 
         /* =====================================================
-           ORDERS PANEL
+           ORDERS BOX
         ===================================================== */
 
-        .orders-panel {
+        .orders-box {
+            width: 100%;
 
             background: #ffffff;
 
-            border:
-                1px solid #e0e6df;
+            border: 1px solid #e1e8e2;
 
             border-radius: 20px;
 
-            box-shadow:
-                0 10px 35px
-                rgba(18,61,45,0.06);
-
             overflow: hidden;
+
+            box-shadow:
+                0 10px 35px rgba(18,61,45,0.07);
         }
 
 
-        /* =====================================================
-           PANEL HEADER
-        ===================================================== */
-
-        .panel-header {
-
+        .orders-header {
             padding: 22px 24px;
 
             display: flex;
@@ -451,13 +331,11 @@
 
             gap: 15px;
 
-            border-bottom:
-                1px solid #e7ebe5;
+            border-bottom: 1px solid #e7ece8;
         }
 
 
-        .panel-title h3 {
-
+        .orders-header h3 {
             color: #123d2d;
 
             font-size: 18px;
@@ -466,74 +344,12 @@
         }
 
 
-        .panel-title p {
-
-            margin-top: 3px;
-
-            color: #849089;
+        .orders-header span {
+            color: #78857e;
 
             font-size: 10px;
-        }
 
-
-        /* =====================================================
-           SEARCH + FILTER
-        ===================================================== */
-
-        .filters {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 8px;
-        }
-
-
-        .search-input,
-        .status-filter {
-
-            height: 40px;
-
-            border:
-                1px solid #d9dfda;
-
-            border-radius: 10px;
-
-            background: #fbfcfa;
-
-            color: #24352d;
-
-            outline: none;
-
-            font-size: 11px;
-        }
-
-
-        .search-input {
-
-            width: 230px;
-
-            padding: 0 13px;
-        }
-
-
-        .status-filter {
-
-            padding: 0 12px;
-
-            cursor: pointer;
-        }
-
-
-        .search-input:focus,
-        .status-filter:focus {
-
-            border-color: #527260;
-
-            box-shadow:
-                0 0 0 3px
-                rgba(82,114,96,0.10);
+            font-weight: 700;
         }
 
 
@@ -542,15 +358,13 @@
         ===================================================== */
 
         .table-wrapper {
-
             width: 100%;
 
             overflow-x: auto;
         }
 
 
-        .orders-table {
-
+        table {
             width: 100%;
 
             min-width: 1050px;
@@ -559,18 +373,17 @@
         }
 
 
-        .orders-table th {
+        thead {
+            background: #f4f7f3;
+        }
 
-            padding: 13px 15px;
+
+        th {
+            padding: 13px 14px;
 
             text-align: left;
 
-            background: #f7f8f5;
-
-            color: #65736b;
-
-            border-bottom:
-                1px solid #e1e6e0;
+            color: #53675d;
 
             font-size: 9px;
 
@@ -579,4 +392,944 @@
             letter-spacing: 1px;
 
             white-space: nowrap;
+
+            border-bottom: 1px solid #e1e8e2;
+        }
+
+
+        td {
+            padding: 16px 14px;
+
+            color: #43564d;
+
+            font-size: 12px;
+
+            vertical-align: top;
+
+            border-bottom: 1px solid #edf1ee;
+        }
+
+
+        tbody tr:hover {
+            background: #fafcf9;
+        }
+
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+
+        /* =====================================================
+           ORDER ID
+        ===================================================== */
+
+        .order-id {
+            color: #123d2d;
+
+            font-weight: 900;
+
+            white-space: nowrap;
+        }
+
+
+        .customer-name {
+            color: #26382f;
+
+            font-weight: 900;
+        }
+
+
+        .phone {
+            margin-top: 3px;
+
+            color: #7a8780;
+
+            font-size: 10px;
+        }
+
+
+        .address {
+            max-width: 220px;
+
+            color: #68756f;
+
+            line-height: 1.5;
+        }
+
+
+        .product-name {
+            color: #26382f;
+
+            font-weight: 800;
+
+            line-height: 1.4;
+        }
+
+
+        .quantity {
+            margin-top: 3px;
+
+            color: #7a8780;
+
+            font-size: 10px;
+        }
+
+
+        .amount {
+            color: #123d2d;
+
+            font-size: 14px;
+
+            font-weight: 900;
+
+            white-space: nowrap;
+        }
+
+
+        .date {
+            color: #68756f;
+
+            white-space: nowrap;
+
+            font-size: 10px;
+        }
+
+
+        /* =====================================================
+           STATUS
+        ===================================================== */
+
+        .status-badge {
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-width: 90px;
+
+            padding: 7px 10px;
+
+            border-radius: 20px;
+
+            font-size: 9px;
+
+            font-weight: 900;
+
+            letter-spacing: 0.7px;
+
+            white-space: nowrap;
+        }
+
+
+        .status-new {
+            background: #fff3cd;
+
+            color: #856404;
+        }
+
+
+        .status-confirmed {
+            background: #dbeafe;
+
+            color: #1e40af;
+        }
+
+
+        .status-shipped {
+            background: #e8def8;
+
+            color: #633f8c;
+        }
+
+
+        .status-delivered {
+            background: #d9f1df;
+
+            color: #176b3a;
+        }
+
+
+        .status-cancelled {
+            background: #f8dede;
+
+            color: #a52a2a;
+        }
+
+
+        /* =====================================================
+           STATUS FORM
+        ===================================================== */
+
+        .status-form {
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+        }
+
+
+        .status-select {
+            min-height: 36px;
+
+            padding: 0 9px;
+
+            border: 1px solid #d7e0da;
+
+            border-radius: 8px;
+
+            background: #ffffff;
+
+            color: #34483e;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            outline: none;
+
+            cursor: pointer;
+        }
+
+
+        .status-select:focus {
+            border-color: #527260;
+
+            box-shadow:
+                0 0 0 3px rgba(82,114,96,0.10);
+        }
+
+
+        .update-button {
+            min-height: 36px;
+
+            padding: 0 11px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #123d2d;
+
+            color: #ffffff;
+
+            font-size: 9px;
+
+            font-weight: 900;
+
+            letter-spacing: 0.6px;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+
+        .update-button:hover {
+            background: #1e5b42;
+        }
+
+
+        /* =====================================================
+           EMPTY
+        ===================================================== */
+
+        .empty-state {
+            padding: 60px 20px;
+
+            text-align: center;
+        }
+
+
+        .empty-state-icon {
+            font-size: 38px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .empty-state h3 {
+            color: #123d2d;
+
+            font-size: 18px;
+
+            font-weight: 900;
+        }
+
+
+        .empty-state p {
+            margin-top: 6px;
+
+            color: #7a8780;
+
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .footer {
+            margin-top: 35px;
+
+            text-align: center;
+
+            color: #87938d;
+
+            font-size: 9px;
+
+            letter-spacing: 1px;
+        }
+
+
+        /* =====================================================
+           TABLET
+        ===================================================== */
+
+        @media (max-width: 1100px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(3, minmax(0, 1fr));
+            }
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 650px) {
+
+            .topbar {
+                padding: 10px 4%;
+
+                align-items: center;
+            }
+
+
+            .brand-logo {
+                width: 40px;
+                height: 40px;
+
+                flex: 0 0 40px;
+
+                font-size: 6px;
+            }
+
+
+            .brand-text h1 {
+                font-size: 13px;
+
+                letter-spacing: 1px;
+            }
+
+
+            .brand-text span {
+                font-size: 7px;
+
+                letter-spacing: 1px;
+            }
+
+
+            .top-actions {
+                gap: 5px;
+            }
+
+
+            .top-button {
+                min-height: 34px;
+
+                padding: 0 9px;
+
+                font-size: 8px;
+            }
+
+
+            .container {
+                padding:
+                    28px 4% 45px;
+            }
+
+
+            .page-title h2 {
+                font-size: 25px;
+            }
+
+
+            .page-title p {
+                font-size: 11px;
+            }
+
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+
+                gap: 10px;
+            }
+
+
+            .stat-card {
+                padding: 17px 14px;
+            }
+
+
+            .stat-number {
+                font-size: 24px;
+            }
+
+
+            .orders-header {
+                padding: 18px;
+            }
+
+
+            .orders-header h3 {
+                font-size: 16px;
+            }
+
+
+            .orders-header span {
+                font-size: 8px;
+            }
+
+
+            .table-wrapper {
+                overflow-x: auto;
+
+                -webkit-overflow-scrolling: touch;
+            }
+
+
+            .footer {
+                margin-top: 25px;
+            }
+
+        }
+
+
+        /* =====================================================
+           VERY SMALL MOBILE
+        ===================================================== */
+
+        @media (max-width: 380px) {
+
+            .brand-text span {
+                display: none;
+            }
+
+
+            .top-button {
+                padding: 0 7px;
+
+                font-size: 7px;
+            }
+
+
+            .stats-grid {
+                gap: 8px;
+            }
+
+
+            .stat-number {
+                font-size: 22px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     TOP BAR
+===================================================== -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-logo">
+            DR.ADIL<br>SURAIYA
+        </div>
+
+        <div class="brand-text">
+
+            <h1>
+                AYU SAFA CARE
+            </h1>
+
+            <span>
+                PRIVATE ADMIN DASHBOARD
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="top-actions">
+
+        <a
+            href="{{ url_for('index') }}"
+            class="top-button website-button">
+            WEBSITE
+        </a>
+
+        <a
+            href="{{ url_for('admin_logout') }}"
+            class="top-button logout-button">
+            LOGOUT
+        </a>
+
+    </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="container">
+
+
+    <div class="page-title">
+
+        <small>
+            AYU SAFA CARE
+        </small>
+
+        <h2>
+            ORDER DASHBOARD
+        </h2>
+
+        <p>
+            Manage customer orders and update delivery status.
+        </p>
+
+    </div>
+
+
+
+    <!-- =================================================
+         STATISTICS
+    ================================================== -->
+
+    <section class="stats-grid">
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                TOTAL ORDERS
+            </div>
+
+            <div class="stat-number">
+                {{ total_orders }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                NEW
+            </div>
+
+            <div class="stat-number">
+                {{ new_orders }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                CONFIRMED
+            </div>
+
+            <div class="stat-number">
+                {{ confirmed_orders }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                SHIPPED
+            </div>
+
+            <div class="stat-number">
+                {{ shipped_orders }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                DELIVERED
+            </div>
+
+            <div class="stat-number">
+                {{ delivered_orders }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-label">
+                CANCELLED
+            </div>
+
+            <div class="stat-number">
+                {{ cancelled_orders }}
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         ORDERS
+    ================================================== -->
+
+    <section class="orders-box">
+
+
+        <div class="orders-header">
+
+            <h3>
+                CUSTOMER ORDERS
+            </h3>
+
+            <span>
+                {{ total_orders }} ORDER(S)
+            </span>
+
+        </div>
+
+
+
+        {% if orders %}
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ORDER ID
+                        </th>
+
+                        <th>
+                            CUSTOMER
+                        </th>
+
+                        <th>
+                            ADDRESS
+                        </th>
+
+                        <th>
+                            PRODUCT
+                        </th>
+
+                        <th>
+                            AMOUNT
+                        </th>
+
+                        <th>
+                            STATUS
+                        </th>
+
+                        <th>
+                            DATE
+                        </th>
+
+                        <th>
+                            UPDATE
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                {% for order in orders %}
+
+                    <tr>
+
+
+                        <!-- ORDER ID -->
+
+                        <td>
+
+                            <div class="order-id">
+                                {{ order['order_id'] }}
+                            </div>
+
+                        </td>
+
+
+
+                        <!-- CUSTOMER -->
+
+                        <td>
+
+                            <div class="customer-name">
+                                {{ order['customer_name'] }}
+                            </div>
+
+                            <div class="phone">
+                                {{ order['phone'] }}
+                            </div>
+
+                        </td>
+
+
+
+                        <!-- ADDRESS -->
+
+                        <td>
+
+                            <div class="address">
+                                {{ order['address'] }}
+                            </div>
+
+                        </td>
+
+
+
+                        <!-- PRODUCT -->
+
+                        <td>
+
+                            <div class="product-name">
+                                {{ order['product'] }}
+                            </div>
+
+                            <div class="quantity">
+                                Quantity:
+                                {{ order['quantity'] }}
+                            </div>
+
+                        </td>
+
+
+
+                        <!-- AMOUNT -->
+
+                        <td>
+
+                            <div class="amount">
+                                ₹{{ "%.2f"|format(order['amount']|float) }}
+                            </div>
+
+                        </td>
+
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if order['status'] == 'NEW' %}
+
+                                <span class="status-badge status-new">
+                                    NEW
+                                </span>
+
+                            {% elif order['status'] == 'CONFIRMED' %}
+
+                                <span class="status-badge status-confirmed">
+                                    CONFIRMED
+                                </span>
+
+                            {% elif order['status'] == 'SHIPPED' %}
+
+                                <span class="status-badge status-shipped">
+                                    SHIPPED
+                                </span>
+
+                            {% elif order['status'] == 'DELIVERED' %}
+
+                                <span class="status-badge status-delivered">
+                                    DELIVERED
+                                </span>
+
+                            {% elif order['status'] == 'CANCELLED' %}
+
+                                <span class="status-badge status-cancelled">
+                                    CANCELLED
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge">
+                                    {{ order['status'] }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+
+                        <!-- DATE -->
+
+                        <td>
+
+                            <div class="date">
+                                {{ order['created_at'] }}
+                            </div>
+
+                        </td>
+
+
+
+                        <!-- UPDATE -->
+
+                        <td>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('update_status', order_id=order['id']) }}"
+                                class="status-form"
+                            >
+
+                                <select
+                                    name="status"
+                                    class="status-select"
+                                    required
+                                >
+
+                                    <option
+                                        value="NEW"
+                                        {% if order['status'] == 'NEW' %}selected{% endif %}
+                                    >
+                                        NEW
+                                    </option>
+
+                                    <option
+                                        value="CONFIRMED"
+                                        {% if order['status'] == 'CONFIRMED' %}selected{% endif %}
+                                    >
+                                        CONFIRMED
+                                    </option>
+
+                                    <option
+                                        value="SHIPPED"
+                                        {% if order['status'] == 'SHIPPED' %}selected{% endif %}
+                                    >
+                                        SHIPPED
+                                    </option>
+
+                                    <option
+                                        value="DELIVERED"
+                                        {% if order['status'] == 'DELIVERED' %}selected{% endif %}
+                                    >
+                                        DELIVERED
+                                    </option>
+
+                                    <option
+                                        value="CANCELLED"
+                                        {% if order['status'] == 'CANCELLED' %}selected{% endif %}
+                                    >
+                                        CANCELLED
+                                    </option>
+
+                                </select>
+
+
+                                <button
+                                    type="submit"
+                                    class="update-button">
+                                    UPDATE
+                                </button>
+
+                            </form>
+
+                        </td>
+
+
+                    </tr>
+
+                {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+
+        <div class="empty-state">
+
+            <div class="empty-state-icon">
+                📦
+            </div>
+
+            <h3>
+                NO ORDERS YET
+            </h3>
+
+            <p>
+                Customer orders will appear here after they are placed.
+            </p>
+
+        </div>
+
+
+        {% endif %}
+
+
+    </section>
+
+
+
+    <div class="footer">
+
+        AYU SAFA CARE • PRIVATE ADMIN PANEL • © 2026
+
+    </div>
+
+
+</main>
+
+
+</body>
+
+</html>
 ```
