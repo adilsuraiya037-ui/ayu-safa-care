@@ -1,6 +1,6 @@
 /* =========================================================
    AYU SAFA CARE
-   COMPLETE WEBSITE CSS
+   COMPLETE WEBSITE + ADMIN PANEL CSS
    VERSION 2026-10-02
 ========================================================= */
 
@@ -385,7 +385,7 @@ select {
 
 
 /* =========================================================
-   PRODUCTS SECTION
+   PRODUCTS
 ========================================================= */
 
 .products-section {
@@ -395,11 +395,6 @@ select {
 
     background: #ffffff;
 }
-
-
-/* =========================================================
-   PRODUCT GRID
-========================================================= */
 
 .product-grid {
     width: 100%;
@@ -418,9 +413,7 @@ select {
 }
 
 
-/* =========================================================
-   PRODUCT CARD
-========================================================= */
+/* PRODUCT CARD */
 
 .product-card {
     width: 100%;
@@ -453,13 +446,7 @@ select {
 }
 
 
-/* =========================================================
-   PRODUCT IMAGE AREA
-
-   IMPORTANT:
-   The image itself is NOT allowed to control
-   the height of the card.
-========================================================= */
+/* PRODUCT IMAGE */
 
 .product-image {
     width: 100%;
@@ -479,13 +466,6 @@ select {
 
     flex: 0 0 210px;
 }
-
-
-/* =========================================================
-   PRODUCT IMAGE
-
-   SMALLER AND CONTROLLED
-========================================================= */
 
 .product-image img {
     display: block;
@@ -514,9 +494,7 @@ select {
 }
 
 
-/* =========================================================
-   PRODUCT CONTENT
-========================================================= */
+/* PRODUCT CONTENT */
 
 .product-content {
     width: 100%;
@@ -572,9 +550,7 @@ select {
 }
 
 
-/* =========================================================
-   PRODUCT BOTTOM
-========================================================= */
+/* PRODUCT BOTTOM */
 
 .product-bottom {
     width: 100%;
@@ -599,9 +575,7 @@ select {
 }
 
 
-/* =========================================================
-   PRODUCT BUTTONS
-========================================================= */
+/* PRODUCT BUTTONS */
 
 .card-button {
     width: 100%;
@@ -635,9 +609,6 @@ select {
         transform 0.2s ease;
 }
 
-
-/* VIEW DETAILS */
-
 .product-content button.card-button {
     border: none;
 
@@ -652,9 +623,6 @@ select {
 
     transform: translateY(-1px);
 }
-
-
-/* ORDER NOW */
 
 .secondary-button {
     background: #f0eadc;
@@ -671,7 +639,7 @@ select {
 
 
 /* =========================================================
-   TRACK ORDER PROMO
+   TRACK ORDER
 ========================================================= */
 
 .track-section {
@@ -806,9 +774,7 @@ select {
 }
 
 
-/* =========================================================
-   FORM
-========================================================= */
+/* FORM */
 
 .order-box form {
     width: 100%;
@@ -876,9 +842,7 @@ select {
 }
 
 
-/* =========================================================
-   TOTAL
-========================================================= */
+/* TOTAL */
 
 .total-box {
     width: 100%;
@@ -916,11 +880,7 @@ select {
 }
 
 
-/* =========================================================
-   PLACE ORDER BUTTON
-
-   KEEPING THE ORIGINAL DESIGN
-========================================================= */
+/* SUBMIT */
 
 .submit-button {
     width: 100%;
@@ -995,9 +955,6 @@ select {
     display: flex;
 }
 
-
-/* MODAL BOX */
-
 .product-modal-box {
     position: relative;
 
@@ -1025,9 +982,6 @@ select {
     box-shadow:
         0 25px 80px rgba(0, 0, 0, 0.25);
 }
-
-
-/* CLOSE */
 
 .modal-close {
     position: absolute;
@@ -1062,9 +1016,6 @@ select {
         0 4px 15px rgba(0, 0, 0, 0.10);
 }
 
-
-/* MODAL IMAGE AREA */
-
 .modal-image {
     min-height: 420px;
 
@@ -1092,9 +1043,6 @@ select {
 
     object-position: center;
 }
-
-
-/* MODAL CONTENT */
 
 .modal-content {
     padding: 45px 40px;
@@ -1214,7 +1162,935 @@ footer p {
 
 
 /* =========================================================
+   =========================================================
+   ADMIN LOGIN
+   =========================================================
+========================================================= */
+
+
+/* FULL LOGIN SCREEN */
+
+.admin-page {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px 20px;
+
+    background:
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(82, 114, 96, 0.18),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 85% 80%,
+            rgba(222, 214, 197, 0.35),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #eef3ee 0%,
+            #f8f8f4 50%,
+            #eee9dc 100%
+        );
+
+    position: relative;
+}
+
+
+/* DECORATIVE BACKGROUND */
+
+.admin-page::before {
+    content: "";
+
+    position: fixed;
+
+    width: 360px;
+    height: 360px;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(18, 61, 45, 0.08);
+
+    top: -150px;
+    left: -150px;
+
+    pointer-events: none;
+}
+
+.admin-page::after {
+    content: "";
+
+    position: fixed;
+
+    width: 300px;
+    height: 300px;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(18, 61, 45, 0.08);
+
+    bottom: -130px;
+    right: -120px;
+
+    pointer-events: none;
+}
+
+
+/* LOGIN CARD */
+
+.login-card {
+    position: relative;
+
+    z-index: 2;
+
+    width: 100%;
+    max-width: 440px;
+
+    padding: 45px 42px;
+
+    background: rgba(255, 255, 255, 0.96);
+
+    border: 1px solid #e0e6df;
+
+    border-radius: 26px;
+
+    box-shadow:
+        0 25px 70px rgba(18, 61, 45, 0.12);
+
+    text-align: center;
+}
+
+
+/* LOGIN LOGO */
+
+.login-card .logo {
+    margin-bottom: 12px;
+
+    color: #123d2d;
+
+    font-size: 27px;
+
+    font-weight: 900;
+
+    letter-spacing: 3px;
+
+    line-height: 1.2;
+}
+
+.login-card .logo span {
+    color: #527260;
+}
+
+
+/* LOGIN LABEL */
+
+.login-card .admin-label {
+    display: inline-block;
+
+    margin-bottom: 20px;
+
+    padding: 7px 13px;
+
+    border-radius: 20px;
+
+    background: #eef3ee;
+
+    color: #527260;
+
+    font-size: 8px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+}
+
+
+/* LOGIN HEADING */
+
+.login-card h1 {
+    margin-bottom: 27px;
+
+    color: #123d2d;
+
+    font-size: 29px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+}
+
+
+/* LOGIN FORM */
+
+.login-card form {
+    text-align: left;
+}
+
+.login-card label {
+    display: block;
+
+    margin: 17px 0 7px;
+
+    color: #345243;
+
+    font-size: 10px;
+
+    font-weight: 900;
+
+    letter-spacing: 1.5px;
+}
+
+.login-card input {
+    width: 100%;
+
+    min-height: 50px;
+
+    padding: 0 16px;
+
+    border: 1px solid #d7dfd8;
+
+    border-radius: 12px;
+
+    background: #f9fbf8;
+
+    color: #24352d;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.login-card input:focus {
+    background: #ffffff;
+
+    border-color: #527260;
+
+    box-shadow:
+        0 0 0 4px rgba(82, 114, 96, 0.10);
+}
+
+.login-card input::placeholder {
+    color: #9aa49e;
+}
+
+
+/* LOGIN BUTTON */
+
+.login-card .submit-button {
+    margin-top: 25px;
+
+    min-height: 54px;
+
+    background: #123d2d;
+
+    color: #ffffff;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 10px 25px rgba(18, 61, 45, 0.15);
+}
+
+.login-card .submit-button:hover {
+    background: #1e5b42;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 30px rgba(18, 61, 45, 0.20);
+}
+
+
+/* ERROR */
+
+.error-message {
+    margin-bottom: 18px;
+
+    padding: 12px 14px;
+
+    border-radius: 10px;
+
+    background: #fff0f0;
+
+    border: 1px solid #f0caca;
+
+    color: #a33a3a;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    text-align: center;
+}
+
+
+/* BACK LINK */
+
+.back-link {
+    display: inline-block;
+
+    margin-top: 23px;
+
+    color: #527260;
+
+    text-decoration: none;
+
+    font-size: 10px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    transition: color 0.2s ease;
+}
+
+.back-link:hover {
+    color: #123d2d;
+}
+
+
+/* =========================================================
+   ADMIN DASHBOARD
+========================================================= */
+
+.dashboard-page {
+    min-height: 100vh;
+
+    background:
+        linear-gradient(
+            180deg,
+            #eef3ee 0%,
+            #f7f7f4 300px
+        );
+
+    color: #24352d;
+}
+
+
+/* DASHBOARD HEADER */
+
+.dashboard-header {
+    width: 100%;
+
+    min-height: 76px;
+
+    padding: 12px 5%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    background: #123d2d;
+
+    box-shadow:
+        0 5px 25px rgba(18, 61, 45, 0.15);
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 9999;
+}
+
+
+/* DASHBOARD LOGO */
+
+.dashboard-header .logo {
+    display: flex;
+
+    flex-direction: column;
+
+    color: #ffffff;
+
+    font-size: 20px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    line-height: 1.2;
+}
+
+.dashboard-header .logo span {
+    color: #b8d0bf;
+}
+
+.dashboard-header .logo small {
+    margin-top: 3px;
+
+    color: #a9c0b0;
+
+    font-size: 7px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+}
+
+
+/* LOGOUT */
+
+.logout-button {
+    min-height: 40px;
+
+    padding: 0 18px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 1px solid rgba(255,255,255,0.35);
+
+    border-radius: 22px;
+
+    background: rgba(255,255,255,0.10);
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 10px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    transition: 0.25s ease;
+}
+
+.logout-button:hover {
+    background: #ffffff;
+
+    color: #123d2d;
+
+    transform: translateY(-1px);
+}
+
+
+/* DASHBOARD CONTAINER */
+
+.dashboard-container {
+    width: 100%;
+
+    max-width: 1450px;
+
+    margin: 0 auto;
+
+    padding: 45px 5% 70px;
+}
+
+
+/* DASHBOARD TITLE */
+
+.dashboard-title {
+    margin-bottom: 28px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+}
+
+.admin-label {
+    margin-bottom: 7px;
+
+    color: #668071;
+
+    font-size: 9px;
+
+    font-weight: 900;
+
+    letter-spacing: 2.5px;
+}
+
+.dashboard-title h1 {
+    color: #123d2d;
+
+    font-size: 32px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    line-height: 1.2;
+}
+
+
+/* =========================================================
+   DASHBOARD STATISTICS
+========================================================= */
+
+.stats-grid {
+    width: 100%;
+
+    margin-bottom: 32px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(6, minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+
+.stat-card {
+    min-height: 125px;
+
+    padding: 22px 18px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    background: #ffffff;
+
+    border: 1px solid #e0e6df;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 8px 25px rgba(18, 61, 45, 0.06);
+
+    position: relative;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.stat-card::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 4px;
+
+    background: #123d2d;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 13px 32px rgba(18, 61, 45, 0.10);
+}
+
+.stat-card span {
+    color: #718078;
+
+    font-size: 9px;
+
+    font-weight: 900;
+
+    letter-spacing: 1.2px;
+}
+
+.stat-card strong {
+    color: #123d2d;
+
+    font-size: 34px;
+
+    font-weight: 900;
+
+    line-height: 1;
+}
+
+
+/* DIFFERENT STAT ACCENTS */
+
+.stat-card.new::before {
+    background: #527260;
+}
+
+.stat-card.confirmed::before {
+    background: #397a59;
+}
+
+.stat-card.shipped::before {
+    background: #8b7650;
+}
+
+.stat-card.delivered::before {
+    background: #1d6843;
+}
+
+.stat-card.cancelled::before {
+    background: #a35b5b;
+}
+
+
+/* =========================================================
+   ORDERS SECTION
+========================================================= */
+
+.orders-section {
+    width: 100%;
+
+    background: #ffffff;
+
+    border: 1px solid #e0e6df;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 12px 40px rgba(18, 61, 45, 0.07);
+
+    overflow: hidden;
+}
+
+
+/* ORDERS HEADING */
+
+.orders-heading {
+    min-height: 82px;
+
+    padding: 18px 25px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ffffff,
+            #f6f9f5
+        );
+
+    border-bottom: 1px solid #e5e9e4;
+}
+
+.orders-heading h2 {
+    color: #123d2d;
+
+    font-size: 18px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+}
+
+
+/* SEARCH */
+
+#searchOrders {
+    width: 310px;
+
+    min-height: 42px;
+
+    padding: 0 15px;
+
+    border: 1px solid #d7dfd8;
+
+    border-radius: 22px;
+
+    background: #ffffff;
+
+    color: #24352d;
+
+    font-size: 12px;
+
+    outline: none;
+
+    transition:
+        border 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#searchOrders:focus {
+    border-color: #527260;
+
+    box-shadow:
+        0 0 0 3px rgba(82, 114, 96, 0.10);
+}
+
+#searchOrders::placeholder {
+    color: #9aa49e;
+}
+
+
+/* =========================================================
+   ORDER TABLE
+========================================================= */
+
+.table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+#ordersTable {
+    width: 100%;
+
+    min-width: 1050px;
+
+    border-collapse: collapse;
+}
+
+#ordersTable thead {
+    background: #123d2d;
+}
+
+#ordersTable th {
+    padding: 15px 13px;
+
+    color: #ffffff;
+
+    font-size: 9px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    text-align: left;
+
+    white-space: nowrap;
+}
+
+#ordersTable td {
+    padding: 15px 13px;
+
+    border-bottom: 1px solid #edf0ec;
+
+    color: #4f5f56;
+
+    font-size: 12px;
+
+    vertical-align: middle;
+}
+
+#ordersTable tbody tr {
+    background: #ffffff;
+
+    transition:
+        background 0.15s ease;
+}
+
+#ordersTable tbody tr:hover {
+    background: #f5f8f4;
+}
+
+#ordersTable td strong {
+    color: #243f31;
+
+    font-weight: 900;
+}
+
+#ordersTable td small {
+    display: inline-block;
+
+    max-width: 220px;
+
+    margin-top: 3px;
+
+    color: #87928c;
+
+    font-size: 10px;
+
+    line-height: 1.4;
+}
+
+
+/* ORDER ID */
+
+#ordersTable .order-id {
+    color: #123d2d;
+
+    font-weight: 900;
+
+    font-size: 10px;
+
+    letter-spacing: 0.5px;
+}
+
+
+/* PHONE */
+
+#ordersTable td a {
+    color: #527260;
+
+    font-weight: 800;
+
+    text-decoration: none;
+}
+
+#ordersTable td a:hover {
+    color: #123d2d;
+
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   STATUS BADGES
+========================================================= */
+
+.status {
+    display: inline-flex;
+
+    min-width: 82px;
+
+    min-height: 27px;
+
+    padding: 0 10px;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+
+    font-weight: 900;
+
+    letter-spacing: 0.8px;
+
+    white-space: nowrap;
+}
+
+.status-new {
+    background: #eef3ee;
+
+    color: #527260;
+
+    border: 1px solid #d7e2d8;
+}
+
+.status-confirmed {
+    background: #e8f3eb;
+
+    color: #28613f;
+
+    border: 1px solid #c9dfcf;
+}
+
+.status-shipped {
+    background: #f3eee3;
+
+    color: #806c43;
+
+    border: 1px solid #e4dac2;
+}
+
+.status-delivered {
+    background: #e6f4eb;
+
+    color: #17613b;
+
+    border: 1px solid #c3dfcc;
+}
+
+.status-cancelled {
+    background: #f9eded;
+
+    color: #9a4d4d;
+
+    border: 1px solid #edcece;
+}
+
+
+/* =========================================================
+   STATUS SELECT
+========================================================= */
+
+#ordersTable select {
+    min-height: 35px;
+
+    padding: 0 28px 0 10px;
+
+    border: 1px solid #d8e0d9;
+
+    border-radius: 9px;
+
+    background: #f8faf7;
+
+    color: #345243;
+
+    font-size: 9px;
+
+    font-weight: 900;
+
+    outline: none;
+
+    cursor: pointer;
+
+    appearance: auto;
+}
+
+#ordersTable select:focus {
+    border-color: #527260;
+
+    box-shadow:
+        0 0 0 3px rgba(82, 114, 96, 0.10);
+}
+
+
+/* NO ORDERS */
+
+.no-orders {
+    padding: 70px 20px !important;
+
+    color: #87928c !important;
+
+    font-size: 11px !important;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
    TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+    .product-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =========================================================
+   TABLET 900
 ========================================================= */
 
 @media (max-width: 900px) {
@@ -1238,9 +2114,6 @@ footer p {
     }
 
     .product-grid {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-
         max-width: 760px;
     }
 
@@ -1265,6 +2138,19 @@ footer p {
         max-width: 720px;
     }
 
+
+    /* ADMIN */
+
+    .dashboard-container {
+        padding-left: 4%;
+        padding-right: 4%;
+    }
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
 }
 
 
@@ -1273,6 +2159,7 @@ footer p {
 ========================================================= */
 
 @media (max-width: 650px) {
+
 
     /* NAVBAR */
 
@@ -1425,11 +2312,6 @@ footer p {
         border-radius: 18px;
     }
 
-    /*
-       Mobile image box remains controlled.
-       This prevents overlap.
-    */
-
     .product-image {
         height: 185px;
         min-height: 185px;
@@ -1548,6 +2430,7 @@ footer p {
         max-height: 94vh;
 
         display: flex;
+
         flex-direction: column;
 
         border-radius: 18px;
@@ -1594,6 +2477,135 @@ footer p {
             35px 5%;
     }
 
+
+    /* =====================================================
+       ADMIN MOBILE
+    ===================================================== */
+
+    .admin-page {
+        padding: 20px 15px;
+    }
+
+    .login-card {
+        max-width: 100%;
+
+        padding: 35px 24px;
+
+        border-radius: 22px;
+    }
+
+    .login-card .logo {
+        font-size: 22px;
+
+        letter-spacing: 2px;
+    }
+
+    .login-card h1 {
+        font-size: 25px;
+
+        margin-bottom: 22px;
+    }
+
+    .login-card input {
+        min-height: 48px;
+    }
+
+
+    /* DASHBOARD */
+
+    .dashboard-header {
+        min-height: 68px;
+
+        padding:
+            10px 4%;
+    }
+
+    .dashboard-header .logo {
+        font-size: 15px;
+
+        letter-spacing: 1.3px;
+    }
+
+    .dashboard-header .logo small {
+        font-size: 6px;
+
+        letter-spacing: 1.2px;
+    }
+
+    .logout-button {
+        min-height: 36px;
+
+        padding: 0 12px;
+
+        font-size: 8px;
+    }
+
+    .dashboard-container {
+        padding:
+            30px 4% 50px;
+    }
+
+    .dashboard-title {
+        margin-bottom: 22px;
+    }
+
+    .dashboard-title h1 {
+        font-size: 25px;
+    }
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 10px;
+
+        margin-bottom: 22px;
+    }
+
+    .stat-card {
+        min-height: 105px;
+
+        padding: 17px 14px;
+
+        border-radius: 14px;
+    }
+
+    .stat-card span {
+        font-size: 8px;
+    }
+
+    .stat-card strong {
+        font-size: 28px;
+    }
+
+    .orders-section {
+        border-radius: 16px;
+    }
+
+    .orders-heading {
+        padding: 17px;
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 13px;
+    }
+
+    .orders-heading h2 {
+        font-size: 15px;
+    }
+
+    #searchOrders {
+        width: 100%;
+
+        min-height: 40px;
+    }
+
+    #ordersTable {
+        min-width: 1000px;
+    }
+
 }
 
 
@@ -1635,11 +2647,43 @@ footer p {
         max-height: 145px !important;
     }
 
+
+    /* ADMIN */
+
+    .login-card {
+        padding:
+            30px 18px;
+    }
+
+    .login-card .logo {
+        font-size: 20px;
+    }
+
+    .login-card h1 {
+        font-size: 23px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+
+        gap: 8px;
+    }
+
+    .stat-card {
+        min-height: 95px;
+
+        padding: 14px 11px;
+    }
+
+    .stat-card strong {
+        font-size: 25px;
+    }
+
 }
 
 
 /* =========================================================
-   ACCESSIBILITY / SAFETY
+   ACCESSIBILITY
 ========================================================= */
 
 button:focus-visible,
@@ -1651,3 +2695,28 @@ select:focus-visible {
 
     outline-offset: 2px;
 }
+
+
+/* =========================================================
+   REMOVE UNWANTED TEXT / LINK ARTIFACTS
+========================================================= */
+
+/*
+   These rules prevent accidental visible HTML-like
+   fragments from appearing as positioned UI text.
+
+   NOTE:
+   If "...html" is actually written inside index.html,
+   it must also be removed from index.html itself.
+*/
+
+body > .html,
+body > .html-text,
+body > [class*="html"] {
+    display: none !important;
+}
+
+
+/* =========================================================
+   END
+========================================================= */
