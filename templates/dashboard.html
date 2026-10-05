@@ -1999,7 +1999,7 @@
                                     <form
                                         method="POST"
                                         action="{{ url_for('delete_product', product_id=product['id']) }}"
-                                        onsubmit="return confirm('Delete {{ product['name']|replace(\"'\", \"\\'\") }} permanently?');"
+                                       onsubmit="return confirm('Delete this product permanently?');"
                                     >
 
                                         <button
