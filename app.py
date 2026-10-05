@@ -6,7 +6,8 @@ from flask import (
     redirect,
     url_for,
     session,
-    flash
+    flash,
+    jsonify
 )
 
 from functools import wraps
@@ -51,21 +52,33 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 
 
 # =========================================================
-# PRODUCT PRICES
+# DEFAULT PRODUCTS
+# =========================================================
+#
+# These are used only to create the initial product list.
+#
+# After the products table is created, products can be
+# managed from the Admin page.
+#
 # =========================================================
 
-PRODUCT_PRICES = {
-
-    "Gold Herbal Hair Oil":
-        Decimal("299.00"),
-
-    "Herbal Hair Shampoo":
-        Decimal("149.00"),
-
-    "Ayu Safa Care Malam":
-        Decimal("149.00")
-
-}
+DEFAULT_PRODUCTS = [
+    {
+        "name": "Gold Herbal Hair Oil",
+        "price": Decimal("299.00"),
+        "image": "hair-oil.jpg"
+    },
+    {
+        "name": "Herbal Hair Shampoo",
+        "price": Decimal("149.00"),
+        "image": "shampoo.jpg"
+    },
+    {
+        "name": "Ayu Safa Care Malam",
+        "price": Decimal("149.00"),
+        "image": "Malam.jpg"
+    }
+]
 
 
 # =========================================================
@@ -109,7 +122,6 @@ def get_db():
 
         return conn
 
-
     # -----------------------------------------------------
     # SQLITE
     # -----------------------------------------------------
@@ -138,9 +150,8 @@ def init_db():
         conn = get_db()
         cursor = conn.cursor()
 
-
         # =================================================
-        # MAIN ORDERS TABLE
+        # ORDERS TABLE
         # =================================================
 
         if using_postgresql():
@@ -215,21 +226,8 @@ def init_db():
                 )
             """)
 
-
         # =================================================
-        # MULTIPLE ORDER ITEMS TABLE
-        # =================================================
-        #
-        # One order can now contain many products.
-        #
-        # Example:
-        #
-        # Order ASC123...
-        #
-        # Hair Oil       x 2
-        # Shampoo        x 1
-        # Malam          x 2
-        #
+        # ORDER ITEMS TABLE
         # =================================================
 
         if using_postgresql():
@@ -256,7 +254,6 @@ def init_db():
                 )
             """)
 
-            # Helpful index
             cursor.execute("""
                 CREATE INDEX IF NOT EXISTS
                 idx_order_items_order_id
@@ -293,9 +290,133 @@ def init_db():
                 ON order_items(order_id)
             """)
 
+        # =================================================
+        # PRODUCTS TABLE
+        # =================================================
+        #
+        # This is the new important part.
+        #
+        # Admin can add products.
+        #
+        # Product automatically becomes available to the
+        # website once added.
+        #
+        # =================================================
+
+        if using_postgresql():
+
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS products (
+
+                    id SERIAL PRIMARY KEY,
+
+                    name TEXT
+                        UNIQUE NOT NULL,
+
+                    price NUMERIC(10,2)
+                        NOT NULL,
+
+                    image TEXT,
+
+                    active BOOLEAN
+                        DEFAULT TRUE,
+
+                    created_at TEXT
+                        NOT NULL
+                )
+            """)
+
+        else:
+
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS products (
+
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+                    name TEXT
+                        UNIQUE NOT NULL,
+
+                    price REAL
+                        NOT NULL,
+
+                    image TEXT,
+
+                    active INTEGER
+                        DEFAULT 1,
+
+                    created_at TEXT
+                        NOT NULL
+                )
+            """)
+
+        # =================================================
+        # INSERT DEFAULT PRODUCTS IF TABLE IS EMPTY
+        # =================================================
+
+        cursor.execute("""
+            SELECT COUNT(*) AS count
+            FROM products
+        """)
+
+        product_count = cursor.fetchone()["count"]
+
+        if product_count == 0:
+
+            created_at = datetime.now().strftime(
+                "%d-%m-%Y %I:%M %p"
+            )
+
+            for product in DEFAULT_PRODUCTS:
+
+                if using_postgresql():
+
+                    cursor.execute("""
+                        INSERT INTO products (
+                            name,
+                            price,
+                            image,
+                            active,
+                            created_at
+                        )
+                        VALUES (
+                            %s,
+                            %s,
+                            %s,
+                            %s,
+                            %s
+                        )
+                        ON CONFLICT (name)
+                        DO NOTHING
+                    """, (
+                        product["name"],
+                        product["price"],
+                        product["image"],
+                        True,
+                        created_at
+                    ))
+
+                else:
+
+                    cursor.execute("""
+                        INSERT OR IGNORE INTO products (
+                            name,
+                            price,
+                            image,
+                            active,
+                            created_at
+                        )
+                        VALUES (
+                            ?, ?, ?, ?, ?
+                        )
+                    """, (
+                        product["name"],
+                        float(product["price"]),
+                        product["image"],
+                        1,
+                        created_at
+                    ))
 
         conn.commit()
-
 
         print("======================================")
         print("DATABASE INITIALIZATION: SUCCESS")
@@ -306,8 +427,8 @@ def init_db():
             else "SQLITE"
         )
         print("MULTI PRODUCT SYSTEM: ENABLED")
+        print("PRODUCT MANAGEMENT: ENABLED")
         print("======================================")
-
 
     except Exception as e:
 
@@ -324,7 +445,6 @@ def init_db():
         print("======================================")
 
         raise
-
 
     finally:
 
@@ -344,6 +464,101 @@ def init_db():
 
 
 # =========================================================
+# GET PRODUCTS
+# =========================================================
+
+def get_products():
+
+    conn = None
+    cursor = None
+
+    try:
+
+        conn = get_db()
+        cursor = conn.cursor()
+
+        if using_postgresql():
+
+            cursor.execute("""
+                SELECT
+                    id,
+                    name,
+                    price,
+                    image,
+                    active,
+                    created_at
+                FROM products
+                WHERE active = TRUE
+                ORDER BY id ASC
+            """)
+
+        else:
+
+            cursor.execute("""
+                SELECT
+                    id,
+                    name,
+                    price,
+                    image,
+                    active,
+                    created_at
+                FROM products
+                WHERE active = 1
+                ORDER BY id ASC
+            """)
+
+        products = cursor.fetchall()
+
+        return products
+
+    except Exception as e:
+
+        print(
+            "GET PRODUCTS ERROR:",
+            str(e)
+        )
+
+        return []
+
+    finally:
+
+        if cursor:
+
+            try:
+                cursor.close()
+            except Exception:
+                pass
+
+        if conn:
+
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+
+# =========================================================
+# PRODUCT PRICE LOOKUP
+# =========================================================
+
+def get_product_prices():
+
+    products = get_products()
+
+    prices = {}
+
+    for product in products:
+
+        prices[
+            product["name"]
+        ] = Decimal(
+            str(product["price"])
+        )
+
+    return prices
+
+
+# =========================================================
 # SAFE ORDER SUCCESS PAGE
 # =========================================================
 
@@ -357,13 +572,6 @@ def show_order_success(
     error=False,
     error_message=None
 ):
-
-    """
-    First tries to load order_success.html.
-
-    If the template is unavailable,
-    a built-in fallback page is displayed.
-    """
 
     try:
 
@@ -387,16 +595,14 @@ def show_order_success(
             error_message=error_message
         )
 
-
     except TemplateNotFound:
 
         print(
             "WARNING: order_success.html was not found."
         )
 
-
         # =================================================
-        # SUCCESS PAGE
+        # SUCCESS FALLBACK
         # =================================================
 
         if not error:
@@ -408,426 +614,236 @@ def show_order_success(
 
 <head>
 
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>
-        Order Successful - Ayu Safa Care
-    </title>
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-
-            margin: 0;
-
-            padding: 0;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            background: #f4f7f4;
-
-            color: #222;
-        }
-
-        .container {
-
-            max-width: 650px;
-
-            margin: 50px auto;
-
-            padding: 20px;
-        }
-
-        .card {
-
-            background: #ffffff;
-
-            border-radius: 20px;
-
-            padding: 35px 25px;
-
-            text-align: center;
-
-            box-shadow:
-                0 8px 30px
-                rgba(0,0,0,0.10);
-        }
-
-        .success-icon {
-
-            width: 70px;
-
-            height: 70px;
-
-            margin:
-                0 auto 20px;
-
-            border-radius: 50%;
-
-            background: #198754;
-
-            color: white;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 38px;
-
-            font-weight: bold;
-        }
-
-        h1 {
-
-            color: #176b3a;
-
-            margin-bottom: 10px;
-        }
-
-        .message {
-
-            color: #555;
-
-            margin-bottom: 25px;
-        }
-
-        .order-box {
-
-            text-align: left;
-
-            background: #f5f7f5;
-
-            border-radius: 12px;
-
-            padding: 20px;
-
-            margin-top: 20px;
-        }
-
-        .row {
-
-            display: flex;
-
-            justify-content:
-                space-between;
-
-            gap: 20px;
-
-            padding: 10px 0;
-
-            border-bottom:
-                1px solid #ddd;
-        }
-
-        .row:last-child {
-
-            border-bottom: none;
-        }
-
-        .label {
-
-            font-weight: bold;
-        }
-
-        .value {
-
-            text-align: right;
-        }
-
-        .order-id {
-
-            color: #176b3a;
-
-            font-weight: bold;
-
-            word-break: break-all;
-        }
-
-        .items {
-
-            margin-top: 20px;
-
-            padding-top: 10px;
-
-            border-top:
-                1px solid #ddd;
-        }
-
-        .item {
-
-            display: flex;
-
-            justify-content:
-                space-between;
-
-            gap: 15px;
-
-            padding: 8px 0;
-
-            font-size: 14px;
-        }
-
-        .buttons {
-
-            margin-top: 25px;
-        }
-
-        .btn {
-
-            display: inline-block;
-
-            padding: 13px 22px;
-
-            margin: 5px;
-
-            border-radius: 8px;
-
-            text-decoration: none;
-
-            font-weight: bold;
-        }
-
-        .home {
-
-            background: #176b3a;
-
-            color: white;
-        }
-
-        .track {
-
-            background: #222;
-
-            color: white;
-        }
-
-        @media(max-width:500px) {
-
-            .container {
-
-                margin:
-                    20px auto;
-            }
-
-            .row {
-
-                flex-direction:
-                    column;
-
-                gap: 3px;
-            }
-
-            .value {
-
-                text-align:
-                    left;
-            }
-
-            .item {
-
-                flex-direction:
-                    column;
-
-                gap: 2px;
-            }
-
-        }
-
-    </style>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Order Successful - Ayu Safa Care</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f7f4;
+    color: #222;
+}
+
+.container {
+    max-width: 650px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 35px 25px;
+    text-align: center;
+    box-shadow:
+        0 8px 30px rgba(0,0,0,0.10);
+}
+
+.success-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: #198754;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    font-weight: bold;
+}
+
+h1 {
+    color: #176b3a;
+}
+
+.message {
+    color: #555;
+}
+
+.order-box {
+    text-align: left;
+    background: #f5f7f5;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.row:last-child {
+    border-bottom: none;
+}
+
+.label {
+    font-weight: bold;
+}
+
+.value {
+    text-align: right;
+}
+
+.order-id {
+    color: #176b3a;
+    font-weight: bold;
+    word-break: break-all;
+}
+
+.items {
+    margin-top: 15px;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 9px 0;
+}
+
+.btn {
+    display: inline-block;
+    margin: 20px 5px 0;
+    padding: 13px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.home {
+    background: #176b3a;
+    color: white;
+}
+
+.track {
+    background: #222;
+    color: white;
+}
+
+</style>
 
 </head>
 
-
 <body>
-
 
 <div class="container">
 
+<div class="card">
 
-    <div class="card">
+<div class="success-icon">
+✓
+</div>
 
+<h1>
+Order Placed Successfully!
+</h1>
 
-        <div class="success-icon">
+<p class="message">
+Thank you, {{ customer_name }}.
+Your order has been received successfully.
+</p>
 
-            ✓
+<div class="order-box">
 
-        </div>
+<div class="row">
 
+<span class="label">
+Order ID
+</span>
 
-        <h1>
-
-            Order Placed Successfully!
-
-        </h1>
-
-
-        <p class="message">
-
-            Thank you,
-            {{ customer_name }}.
-
-            Your order has been
-            received successfully.
-
-        </p>
-
-
-        <div class="order-box">
-
-
-            <div class="row">
-
-                <span class="label">
-                    Order ID
-                </span>
-
-                <span class="value order-id">
-                    {{ order_id }}
-                </span>
-
-            </div>
-
-
-            {% if items %}
-
-            <div class="items">
-
-                {% for item in items %}
-
-                <div class="item">
-
-                    <span>
-
-                        {{ item.product }}
-
-                        × {{ item.quantity }}
-
-                    </span>
-
-                    <strong>
-
-                        ₹{{ "%.2f"|format(item.total_price) }}
-
-                    </strong>
-
-                </div>
-
-                {% endfor %}
-
-            </div>
-
-            {% else %}
-
-            <div class="row">
-
-                <span class="label">
-                    Product
-                </span>
-
-                <span class="value">
-                    {{ product }}
-                </span>
-
-            </div>
-
-            <div class="row">
-
-                <span class="label">
-                    Quantity
-                </span>
-
-                <span class="value">
-                    {{ quantity }}
-                </span>
-
-            </div>
-
-            {% endif %}
-
-
-            <div class="row">
-
-                <span class="label">
-                    Total Amount
-                </span>
-
-                <span class="value">
-
-                    ₹{{ "%.2f"|format(amount) }}
-
-                </span>
-
-            </div>
-
-
-        </div>
-
-
-        <div class="buttons">
-
-
-            <a
-                href="{{ url_for('index') }}"
-                class="btn home"
-            >
-
-                Continue Shopping
-
-            </a>
-
-
-            <a
-                href="{{ url_for('track_order') }}"
-                class="btn track"
-            >
-
-                Track Order
-
-            </a>
-
-
-        </div>
-
-
-    </div>
-
+<span class="value order-id">
+{{ order_id }}
+</span>
 
 </div>
 
+{% if items %}
+
+<div class="items">
+
+{% for item in items %}
+
+<div class="item">
+
+<span>
+{{ item.product }}
+× {{ item.quantity }}
+</span>
+
+<strong>
+₹{{ "%.2f"|format(item.total_price) }}
+</strong>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+<div class="row">
+
+<span class="label">
+Total Amount
+</span>
+
+<span class="value">
+₹{{ "%.2f"|format(amount) }}
+</span>
+
+</div>
+
+</div>
+
+<a
+href="{{ url_for('index') }}"
+class="btn home"
+>
+Continue Shopping
+</a>
+
+<a
+href="{{ url_for('track_order') }}"
+class="btn track"
+>
+Track Order
+</a>
+
+</div>
+
+</div>
 
 </body>
 
 </html>
             """,
-
                 customer_name=customer_name,
-
                 order_id=order_id,
-
                 product=product,
-
                 quantity=quantity,
-
                 amount=amount,
-
                 items=items
             )
 
-
         # =================================================
-        # ERROR PAGE
+        # ERROR FALLBACK
         # =================================================
 
         return render_template_string("""
@@ -837,114 +853,73 @@ def show_order_success(
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <title>
-        Order Error - Ayu Safa Care
-    </title>
+<title>Order Error</title>
 
-    <style>
+<style>
 
-        body {
+body {
+    margin: 0;
+    padding: 30px;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+}
 
-            margin: 0;
+.box {
+    max-width: 550px;
+    margin: 50px auto;
+    background: white;
+    padding: 35px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow:
+        0 5px 25px rgba(0,0,0,0.10);
+}
 
-            padding: 30px;
+h1 {
+    color: #b02a37;
+}
 
-            font-family:
-                Arial,
-                sans-serif;
+a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 22px;
+    background: #176b3a;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+}
 
-            background: #f5f5f5;
-        }
-
-        .box {
-
-            max-width: 550px;
-
-            margin: 50px auto;
-
-            background: white;
-
-            padding: 35px;
-
-            border-radius: 15px;
-
-            text-align: center;
-
-            box-shadow:
-                0 5px 25px
-                rgba(0,0,0,0.10);
-        }
-
-        h1 {
-
-            color: #b02a37;
-        }
-
-        p {
-
-            color: #555;
-
-            line-height: 1.6;
-        }
-
-        a {
-
-            display: inline-block;
-
-            margin-top: 20px;
-
-            padding: 12px 22px;
-
-            background: #176b3a;
-
-            color: white;
-
-            text-decoration: none;
-
-            border-radius: 8px;
-        }
-
-    </style>
+</style>
 
 </head>
 
-
 <body>
-
 
 <div class="box">
 
+<h1>
+Order Could Not Be Saved
+</h1>
 
-    <h1>
-        Order Could Not Be Saved
-    </h1>
+<p>
+{{ error_message }}
+</p>
 
-
-    <p>
-        {{ error_message }}
-    </p>
-
-
-    <a href="{{ url_for('index') }}">
-
-        Return to Website
-
-    </a>
-
+<a href="{{ url_for('index') }}">
+Return to Website
+</a>
 
 </div>
-
 
 </body>
 
 </html>
         """,
-
             error_message=error_message
         )
 
@@ -981,8 +956,11 @@ def admin_required(function):
 @app.route("/")
 def index():
 
+    products = get_products()
+
     return render_template(
-        "index.html"
+        "index.html",
+        products=products
     )
 
 
@@ -992,65 +970,35 @@ def index():
 
 def get_order_items_from_form():
 
-    """
-    Reads multiple products from the customer form.
-
-    Expected format:
-
-        product_1
-        quantity_1
-
-        product_2
-        quantity_2
-
-        product_3
-        quantity_3
-
-    etc.
-
-    Also supports the old single-product form:
-
-        product
-        quantity
-    """
-
     items = []
 
+    product_prices = get_product_prices()
 
     # =====================================================
-    # NEW MULTIPLE PRODUCT FORMAT
+    # MULTIPLE PRODUCT FORMAT
     # =====================================================
 
-    for i in range(1, 21):
+    for i in range(1, 51):
 
         product = request.form.get(
             f"product_{i}",
             ""
         ).strip()
 
-
         quantity_raw = request.form.get(
             f"quantity_{i}",
             ""
         ).strip()
 
-
-        # Empty product slot
         if not product:
 
             continue
 
-
-        # Validate product
-
-        if product not in PRODUCT_PRICES:
+        if product not in product_prices:
 
             raise ValueError(
                 f"Invalid product selected: {product}"
             )
-
-
-        # Quantity
 
         if not quantity_raw:
 
@@ -1073,13 +1021,11 @@ def get_order_items_from_form():
                     "Invalid quantity."
                 )
 
-
         if quantity < 1:
 
             raise ValueError(
                 "Quantity must be at least 1."
             )
-
 
         if quantity > 100:
 
@@ -1087,16 +1033,13 @@ def get_order_items_from_form():
                 "Maximum quantity per product is 100."
             )
 
-
-        unit_price = PRODUCT_PRICES[
+        unit_price = product_prices[
             product
         ]
-
 
         total_price = (
             unit_price * quantity
         )
-
 
         items.append({
 
@@ -1110,7 +1053,6 @@ def get_order_items_from_form():
 
         })
 
-
     # =====================================================
     # OLD SINGLE PRODUCT FORMAT
     # =====================================================
@@ -1122,15 +1064,13 @@ def get_order_items_from_form():
             ""
         ).strip()
 
-
         if old_product:
 
-            if old_product not in PRODUCT_PRICES:
+            if old_product not in product_prices:
 
                 raise ValueError(
                     "Invalid product selected."
                 )
-
 
             try:
 
@@ -1150,13 +1090,11 @@ def get_order_items_from_form():
                     "Invalid quantity."
                 )
 
-
             if old_quantity < 1:
 
                 raise ValueError(
                     "Invalid quantity."
                 )
-
 
             if old_quantity > 100:
 
@@ -1164,16 +1102,13 @@ def get_order_items_from_form():
                     "Maximum quantity allowed is 100."
                 )
 
-
-            unit_price = PRODUCT_PRICES[
+            unit_price = product_prices[
                 old_product
             ]
-
 
             total_price = (
                 unit_price * old_quantity
             )
-
 
             items.append({
 
@@ -1186,7 +1121,6 @@ def get_order_items_from_form():
                 "total_price": total_price
 
             })
-
 
     return items
 
@@ -1201,31 +1135,20 @@ def get_order_items_from_form():
 )
 def place_order():
 
-    # -----------------------------------------------------
-    # CUSTOMER INFORMATION
-    # -----------------------------------------------------
-
     customer_name = request.form.get(
         "customer_name",
         ""
     ).strip()
-
 
     phone = request.form.get(
         "phone",
         ""
     ).strip()
 
-
     address = request.form.get(
         "address",
         ""
     ).strip()
-
-
-    # -----------------------------------------------------
-    # BASIC VALIDATION
-    # -----------------------------------------------------
 
     if not customer_name:
 
@@ -1234,7 +1157,6 @@ def place_order():
             400
         )
 
-
     if not phone:
 
         return (
@@ -1242,18 +1164,12 @@ def place_order():
             400
         )
 
-
     if not address:
 
         return (
             "Please enter your delivery address.",
             400
         )
-
-
-    # -----------------------------------------------------
-    # READ PRODUCTS
-    # -----------------------------------------------------
 
     try:
 
@@ -1266,7 +1182,6 @@ def place_order():
             400
         )
 
-
     if not items:
 
         return (
@@ -1274,33 +1189,29 @@ def place_order():
             400
         )
 
-
-    # -----------------------------------------------------
+    # =====================================================
     # CALCULATE TOTAL
-    # -----------------------------------------------------
+    # =====================================================
 
     total_amount = Decimal("0.00")
 
     total_quantity = 0
 
-
     for item in items:
 
-        total_amount += (
-            item["total_price"]
-        )
+        total_amount += item[
+            "total_price"
+        ]
 
-        total_quantity += (
-            item["quantity"]
-        )
+        total_quantity += item[
+            "quantity"
+        ]
 
-
-    # -----------------------------------------------------
-    # CREATE PRODUCT SUMMARY
-    # -----------------------------------------------------
+    # =====================================================
+    # PRODUCT SUMMARY
+    # =====================================================
 
     product_summary_parts = []
-
 
     for item in items:
 
@@ -1311,18 +1222,15 @@ def place_order():
             )
         )
 
-
     product_summary = ", ".join(
         product_summary_parts
     )
 
-
-    # -----------------------------------------------------
-    # CREATE ORDER ID
-    # -----------------------------------------------------
+    # =====================================================
+    # ORDER ID
+    # =====================================================
 
     now = datetime.now()
-
 
     order_id = (
         "ASC"
@@ -1334,19 +1242,12 @@ def place_order():
         )[:3]
     )
 
-
     created_at = now.strftime(
         "%d-%m-%Y %I:%M %p"
     )
 
-
-    # -----------------------------------------------------
-    # DATABASE
-    # -----------------------------------------------------
-
     conn = None
     cursor = None
-
 
     try:
 
@@ -1358,24 +1259,14 @@ def place_order():
         print("Total Quantity:", total_quantity)
         print("Amount:", total_amount)
         print("Order ID:", order_id)
-
-        print(
-            "Database:",
-            "POSTGRESQL"
-            if using_postgresql()
-            else "SQLITE"
-        )
-
         print("======================================")
-
 
         conn = get_db()
 
         cursor = conn.cursor()
 
-
         # =================================================
-        # INSERT MAIN ORDER
+        # MAIN ORDER
         # =================================================
 
         if using_postgresql():
@@ -1414,28 +1305,18 @@ def place_order():
             """, (
 
                 order_id,
-
                 customer_name,
-
                 phone,
-
                 address,
-
                 product_summary,
-
                 total_quantity,
-
                 total_amount,
-
                 "NEW",
-
                 created_at
 
             ))
 
-
             inserted_row = cursor.fetchone()
-
 
         else:
 
@@ -1463,40 +1344,26 @@ def place_order():
             """, (
 
                 order_id,
-
                 customer_name,
-
                 phone,
-
                 address,
-
                 product_summary,
-
                 total_quantity,
-
                 float(total_amount),
-
                 "NEW",
-
                 created_at
 
             ))
 
-
             inserted_row = {
-
-                "id":
-                    cursor.lastrowid
-
+                "id": cursor.lastrowid
             }
 
-
         # =================================================
-        # INSERT INDIVIDUAL ORDER ITEMS
+        # ORDER ITEMS
         # =================================================
 
         for item in items:
-
 
             if using_postgresql():
 
@@ -1524,17 +1391,12 @@ def place_order():
                 """, (
 
                     order_id,
-
                     item["product"],
-
                     item["quantity"],
-
                     item["unit_price"],
-
                     item["total_price"]
 
                 ))
-
 
             else:
 
@@ -1558,28 +1420,18 @@ def place_order():
                 """, (
 
                     order_id,
-
                     item["product"],
-
                     item["quantity"],
-
                     float(
                         item["unit_price"]
                     ),
-
                     float(
                         item["total_price"]
                     )
 
                 ))
 
-
-        # =================================================
-        # COMMIT EVERYTHING TOGETHER
-        # =================================================
-
         conn.commit()
-
 
         print(
             "ORDER SAVED SUCCESSFULLY"
@@ -1595,35 +1447,27 @@ def place_order():
             len(items)
         )
 
-
     except Exception as e:
 
         if conn:
 
             try:
                 conn.rollback()
-
             except Exception:
                 pass
-
 
         print("======================================")
         print("ORDER DATABASE ERROR")
         print(str(e))
         print("======================================")
 
-
         return show_order_success(
-
             error=True,
-
             error_message=(
                 "We could not save your order. "
                 "Please try again."
             )
-
         ), 500
-
 
     finally:
 
@@ -1631,43 +1475,29 @@ def place_order():
 
             try:
                 cursor.close()
-
             except Exception:
                 pass
-
 
         if conn:
 
             try:
                 conn.close()
-
             except Exception:
                 pass
 
-
-    # -----------------------------------------------------
-    # SUCCESS
-    # -----------------------------------------------------
-
     return show_order_success(
-
         customer_name=customer_name,
-
         order_id=order_id,
-
         product=product_summary,
-
         quantity=total_quantity,
-
         amount=float(total_amount),
-
         items=items
-
     )
 
-# ==================================================
+
+# =========================================================
 # TRACK ORDER
-# ==================================================
+# =========================================================
 
 @app.route(
     "/track-order",
@@ -1676,6 +1506,7 @@ def place_order():
 def track_order():
 
     order = None
+    order_items = []
     error = None
 
     if request.method == "POST":
@@ -1707,14 +1538,15 @@ def track_order():
                 conn = get_db()
                 cursor = conn.cursor()
 
-                # ----------------------------------
-                # POSTGRESQL
-                # ----------------------------------
+                # =================================================
+                # FIND MAIN ORDER
+                # =================================================
 
                 if using_postgresql():
 
                     cursor.execute("""
                         SELECT
+
                             order_id,
                             customer_name,
                             phone,
@@ -1724,40 +1556,24 @@ def track_order():
                             amount,
                             status,
                             created_at
+
                         FROM orders
+
                         WHERE order_id = %s
                         AND phone = %s
+
                         LIMIT 1
+
                     """, (
                         order_id,
                         phone
                     ))
-
-                    row = cursor.fetchone()
-
-                    if row:
-                        # Convert PostgreSQL dictionary
-                        # into a normal dictionary for template
-                        order = {
-                            "order_id": row["order_id"],
-                            "customer_name": row["customer_name"],
-                            "phone": row["phone"],
-                            "address": row["address"],
-                            "product": row["product"],
-                            "quantity": row["quantity"],
-                            "amount": row["amount"],
-                            "status": row["status"],
-                            "created_at": row["created_at"]
-                        }
-
-                # ----------------------------------
-                # SQLITE
-                # ----------------------------------
 
                 else:
 
                     cursor.execute("""
                         SELECT
+
                             order_id,
                             customer_name,
                             phone,
@@ -1767,30 +1583,117 @@ def track_order():
                             amount,
                             status,
                             created_at
+
                         FROM orders
+
                         WHERE order_id = ?
                         AND phone = ?
+
                         LIMIT 1
+
                     """, (
                         order_id,
                         phone
                     ))
 
-                    row = cursor.fetchone()
+                row = cursor.fetchone()
 
-                    if row:
+                if row:
 
-                        order = {
-                            "order_id": row["order_id"],
-                            "customer_name": row["customer_name"],
-                            "phone": row["phone"],
-                            "address": row["address"],
-                            "product": row["product"],
-                            "quantity": row["quantity"],
-                            "amount": row["amount"],
-                            "status": row["status"],
-                            "created_at": row["created_at"]
-                        }
+                    order = {
+
+                        "order_id":
+                            row["order_id"],
+
+                        "customer_name":
+                            row["customer_name"],
+
+                        "phone":
+                            row["phone"],
+
+                        "address":
+                            row["address"],
+
+                        "product":
+                            row["product"],
+
+                        "quantity":
+                            row["quantity"],
+
+                        "amount":
+                            row["amount"],
+
+                        "status":
+                            row["status"],
+
+                        "created_at":
+                            row["created_at"]
+
+                    }
+
+                    # =================================================
+                    # FIND ALL ITEMS
+                    # =================================================
+
+                    if using_postgresql():
+
+                        cursor.execute("""
+                            SELECT
+
+                                product,
+                                quantity,
+                                unit_price,
+                                total_price
+
+                            FROM order_items
+
+                            WHERE order_id = %s
+
+                            ORDER BY id ASC
+
+                        """, (
+                            order_id,
+                        ))
+
+                    else:
+
+                        cursor.execute("""
+                            SELECT
+
+                                product,
+                                quantity,
+                                unit_price,
+                                total_price
+
+                            FROM order_items
+
+                            WHERE order_id = ?
+
+                            ORDER BY id ASC
+
+                        """, (
+                            order_id,
+                        ))
+
+                    rows = cursor.fetchall()
+
+                    for item in rows:
+
+                        order_items.append({
+
+                            "product":
+                                item["product"],
+
+                            "quantity":
+                                item["quantity"],
+
+                            "unit_price":
+                                item["unit_price"],
+
+                            "total_price":
+                                item["total_price"]
+
+                        })
 
             except Exception as e:
 
@@ -1831,9 +1734,9 @@ def track_order():
     return render_template(
         "track_order.html",
         order=order,
+        order_items=order_items,
         error=error
     )
-
 
 
 # =========================================================
@@ -1854,46 +1757,34 @@ def admin_login():
             url_for("dashboard")
         )
 
-
     if request.method == "POST":
-
 
         username = request.form.get(
             "username",
             ""
         ).strip()
 
-
         password = request.form.get(
             "password",
             ""
         )
 
-
         if (
-
             username == ADMIN_USERNAME
-
-            and
-
-            password == ADMIN_PASSWORD
-
+            and password == ADMIN_PASSWORD
         ):
 
             session[
                 "admin_logged_in"
             ] = True
 
-
             return redirect(
                 url_for("dashboard")
             )
 
-
         flash(
             "Invalid username or password."
         )
-
 
     return render_template(
         "admin_login.html"
@@ -1913,16 +1804,13 @@ def dashboard():
     conn = None
     cursor = None
 
-
     try:
 
         conn = get_db()
-
         cursor = conn.cursor()
 
-
         # =================================================
-        # ALL ORDERS
+        # ORDERS
         # =================================================
 
         cursor.execute("""
@@ -1942,124 +1830,81 @@ def dashboard():
             FROM orders
 
             ORDER BY id DESC
-
         """)
-
 
         orders = cursor.fetchall()
 
-
         # =================================================
-        # TOTAL
+        # PRODUCT LIST
         # =================================================
 
         cursor.execute("""
             SELECT
-                COUNT(*) AS count
 
+                id,
+                name,
+                price,
+                image,
+                active,
+                created_at
+
+            FROM products
+
+            ORDER BY id ASC
+        """)
+
+        products = cursor.fetchall()
+
+        # =================================================
+        # ORDER COUNTS
+        # =================================================
+
+        cursor.execute("""
+            SELECT COUNT(*) AS count
             FROM orders
         """)
 
-
-        total_orders = (
-            cursor.fetchone()["count"]
-        )
-
-
-        # =================================================
-        # NEW
-        # =================================================
+        total_orders = cursor.fetchone()["count"]
 
         cursor.execute("""
-            SELECT
-                COUNT(*) AS count
-
+            SELECT COUNT(*) AS count
             FROM orders
-
             WHERE status = 'NEW'
         """)
 
-
-        new_orders = (
-            cursor.fetchone()["count"]
-        )
-
-
-        # =================================================
-        # CONFIRMED
-        # =================================================
+        new_orders = cursor.fetchone()["count"]
 
         cursor.execute("""
-            SELECT
-                COUNT(*) AS count
-
+            SELECT COUNT(*) AS count
             FROM orders
-
             WHERE status = 'CONFIRMED'
         """)
 
-
-        confirmed_orders = (
-            cursor.fetchone()["count"]
-        )
-
-
-        # =================================================
-        # SHIPPED
-        # =================================================
+        confirmed_orders = cursor.fetchone()["count"]
 
         cursor.execute("""
-            SELECT
-                COUNT(*) AS count
-
+            SELECT COUNT(*) AS count
             FROM orders
-
             WHERE status = 'SHIPPED'
         """)
 
-
-        shipped_orders = (
-            cursor.fetchone()["count"]
-        )
-
-
-        # =================================================
-        # DELIVERED
-        # =================================================
+        shipped_orders = cursor.fetchone()["count"]
 
         cursor.execute("""
-            SELECT
-                COUNT(*) AS count
-
+            SELECT COUNT(*) AS count
             FROM orders
-
             WHERE status = 'DELIVERED'
         """)
 
-
-        delivered_orders = (
-            cursor.fetchone()["count"]
-        )
-
-
-        # =================================================
-        # CANCELLED
-        # =================================================
+        delivered_orders = cursor.fetchone()["count"]
 
         cursor.execute("""
-            SELECT
-                COUNT(*) AS count
-
+            SELECT COUNT(*) AS count
             FROM orders
-
             WHERE status = 'CANCELLED'
         """)
 
-
-        cancelled_orders = (
-            cursor.fetchone()["count"]
-        )
-
+        cancelled_orders = cursor.fetchone()["count"]
 
     except Exception as e:
 
@@ -2068,13 +1913,11 @@ def dashboard():
         print(str(e))
         print("======================================")
 
-
         return (
-            "Unable to load orders. "
+            "Unable to load dashboard. "
             "Please check the database connection.",
             500
         )
-
 
     finally:
 
@@ -2082,25 +1925,22 @@ def dashboard():
 
             try:
                 cursor.close()
-
             except Exception:
                 pass
-
 
         if conn:
 
             try:
                 conn.close()
-
             except Exception:
                 pass
 
-
     return render_template(
-
         "dashboard.html",
 
         orders=orders,
+
+        products=products,
 
         total_orders=total_orders,
 
@@ -2113,7 +1953,441 @@ def dashboard():
         delivered_orders=delivered_orders,
 
         cancelled_orders=cancelled_orders
+    )
 
+
+# =========================================================
+# ADD PRODUCT - ADMIN
+# =========================================================
+
+@app.route(
+    "/admin/add-product",
+    methods=["POST"]
+)
+@admin_required
+def add_product():
+
+    name = request.form.get(
+        "name",
+        ""
+    ).strip()
+
+    price_raw = request.form.get(
+        "price",
+        ""
+    ).strip()
+
+    image = request.form.get(
+        "image",
+        ""
+    ).strip()
+
+    # -----------------------------------------------------
+    # VALIDATION
+    # -----------------------------------------------------
+
+    if not name:
+
+        flash(
+            "Please enter product name."
+        )
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+    if not price_raw:
+
+        flash(
+            "Please enter product price."
+        )
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+    try:
+
+        price = Decimal(
+            price_raw
+        )
+
+    except Exception:
+
+        flash(
+            "Invalid product price."
+        )
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+    if price <= 0:
+
+        flash(
+            "Product price must be greater than zero."
+        )
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+    if price > Decimal("999999.99"):
+
+        flash(
+            "Product price is too high."
+        )
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+    # Default image
+    if not image:
+
+        image = "product-placeholder.jpg"
+
+    created_at = datetime.now().strftime(
+        "%d-%m-%Y %I:%M %p"
+    )
+
+    conn = None
+    cursor = None
+
+    try:
+
+        conn = get_db()
+        cursor = conn.cursor()
+
+        # =================================================
+        # POSTGRESQL
+        # =================================================
+
+        if using_postgresql():
+
+            cursor.execute("""
+                INSERT INTO products (
+                    name,
+                    price,
+                    image,
+                    active,
+                    created_at
+                )
+
+                VALUES (
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s
+                )
+            """, (
+                name,
+                price,
+                image,
+                True,
+                created_at
+            ))
+
+        # =================================================
+        # SQLITE
+        # =================================================
+
+        else:
+
+            cursor.execute("""
+                INSERT INTO products (
+                    name,
+                    price,
+                    image,
+                    active,
+                    created_at
+                )
+
+                VALUES (
+                    ?, ?, ?, ?, ?
+                )
+            """, (
+                name,
+                float(price),
+                image,
+                1,
+                created_at
+            ))
+
+        conn.commit()
+
+        flash(
+            f"{name} added successfully."
+        )
+
+    except Exception as e:
+
+        if conn:
+
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+
+        print(
+            "ADD PRODUCT ERROR:",
+            str(e)
+        )
+
+        # Duplicate product
+        if "unique" in str(e).lower():
+
+            flash(
+                "This product already exists."
+            )
+
+        else:
+
+            flash(
+                "Unable to add product."
+            )
+
+    finally:
+
+        if cursor:
+
+            try:
+                cursor.close()
+            except Exception:
+                pass
+
+        if conn:
+
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+    return redirect(
+        url_for("dashboard")
+    )
+
+
+# =========================================================
+# TOGGLE PRODUCT
+# =========================================================
+#
+# This lets admin hide/show a product without deleting it.
+#
+# =========================================================
+
+@app.route(
+    "/admin/toggle-product/<int:product_id>",
+    methods=["POST"]
+)
+@admin_required
+def toggle_product(product_id):
+
+    conn = None
+    cursor = None
+
+    try:
+
+        conn = get_db()
+        cursor = conn.cursor()
+
+        # -------------------------------------------------
+        # GET CURRENT STATE
+        # -------------------------------------------------
+
+        if using_postgresql():
+
+            cursor.execute("""
+                SELECT active
+                FROM products
+                WHERE id = %s
+            """, (
+                product_id,
+            ))
+
+        else:
+
+            cursor.execute("""
+                SELECT active
+                FROM products
+                WHERE id = ?
+            """, (
+                product_id,
+            ))
+
+        product = cursor.fetchone()
+
+        if not product:
+
+            flash(
+                "Product not found."
+            )
+
+            return redirect(
+                url_for("dashboard")
+            )
+
+        current_active = product["active"]
+
+        # -------------------------------------------------
+        # TOGGLE
+        # -------------------------------------------------
+
+        new_active = not bool(
+            current_active
+        )
+
+        if using_postgresql():
+
+            cursor.execute("""
+                UPDATE products
+
+                SET active = %s
+
+                WHERE id = %s
+            """, (
+                new_active,
+                product_id
+            ))
+
+        else:
+
+            cursor.execute("""
+                UPDATE products
+
+                SET active = ?
+
+                WHERE id = ?
+            """, (
+                1 if new_active else 0,
+                product_id
+            ))
+
+        conn.commit()
+
+        flash(
+            "Product visibility updated."
+        )
+
+    except Exception as e:
+
+        if conn:
+
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+
+        print(
+            "TOGGLE PRODUCT ERROR:",
+            str(e)
+        )
+
+        flash(
+            "Unable to update product."
+        )
+
+    finally:
+
+        if cursor:
+
+            try:
+                cursor.close()
+            except Exception:
+                pass
+
+        if conn:
+
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+    return redirect(
+        url_for("dashboard")
+    )
+
+
+# =========================================================
+# DELETE PRODUCT
+# =========================================================
+
+@app.route(
+    "/admin/delete-product/<int:product_id>",
+    methods=["POST"]
+)
+@admin_required
+def delete_product(product_id):
+
+    conn = None
+    cursor = None
+
+    try:
+
+        conn = get_db()
+        cursor = conn.cursor()
+
+        if using_postgresql():
+
+            cursor.execute("""
+                DELETE FROM products
+                WHERE id = %s
+            """, (
+                product_id,
+            ))
+
+        else:
+
+            cursor.execute("""
+                DELETE FROM products
+                WHERE id = ?
+            """, (
+                product_id,
+            ))
+
+        conn.commit()
+
+        flash(
+            "Product deleted successfully."
+        )
+
+    except Exception as e:
+
+        if conn:
+
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+
+        print(
+            "DELETE PRODUCT ERROR:",
+            str(e)
+        )
+
+        flash(
+            "Unable to delete product."
+        )
+
+    finally:
+
+        if cursor:
+
+            try:
+                cursor.close()
+            except Exception:
+                pass
+
+        if conn:
+
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+    return redirect(
+        url_for("dashboard")
     )
 
 
@@ -2130,13 +2404,10 @@ def admin_order_items(order_id):
     conn = None
     cursor = None
 
-
     try:
 
         conn = get_db()
-
         cursor = conn.cursor()
-
 
         if using_postgresql():
 
@@ -2158,7 +2429,6 @@ def admin_order_items(order_id):
                 order_id,
             ))
 
-
         else:
 
             cursor.execute("""
@@ -2179,16 +2449,9 @@ def admin_order_items(order_id):
                 order_id,
             ))
 
-
         items = cursor.fetchall()
 
-
-        # -------------------------------------------------
-        # Return JSON manually
-        # -------------------------------------------------
-
         result = []
-
 
         for item in items:
 
@@ -2212,11 +2475,7 @@ def admin_order_items(order_id):
 
             })
 
-
-        from flask import jsonify
-
         return jsonify(result)
-
 
     except Exception as e:
 
@@ -2225,9 +2484,6 @@ def admin_order_items(order_id):
             str(e)
         )
 
-
-        from flask import jsonify
-
         return jsonify({
 
             "error":
@@ -2235,23 +2491,19 @@ def admin_order_items(order_id):
 
         }), 500
 
-
     finally:
 
         if cursor:
 
             try:
                 cursor.close()
-
             except Exception:
                 pass
-
 
         if conn:
 
             try:
                 conn.close()
-
             except Exception:
                 pass
 
@@ -2272,7 +2524,6 @@ def update_status(order_id):
         "NEW"
     ).strip().upper()
 
-
     allowed = [
 
         "NEW",
@@ -2287,7 +2538,6 @@ def update_status(order_id):
 
     ]
 
-
     if status not in allowed:
 
         return (
@@ -2295,17 +2545,13 @@ def update_status(order_id):
             400
         )
 
-
     conn = None
     cursor = None
-
 
     try:
 
         conn = get_db()
-
         cursor = conn.cursor()
-
 
         if using_postgresql():
 
@@ -2317,13 +2563,9 @@ def update_status(order_id):
                 WHERE id = %s
 
             """, (
-
                 status,
-
                 order_id
-
             ))
-
 
         else:
 
@@ -2335,16 +2577,11 @@ def update_status(order_id):
                 WHERE id = ?
 
             """, (
-
                 status,
-
                 order_id
-
             ))
 
-
         conn.commit()
-
 
     except Exception as e:
 
@@ -2352,22 +2589,18 @@ def update_status(order_id):
 
             try:
                 conn.rollback()
-
             except Exception:
                 pass
-
 
         print(
             "STATUS UPDATE ERROR:",
             str(e)
         )
 
-
         return (
             "Unable to update order status.",
             500
         )
-
 
     finally:
 
@@ -2375,19 +2608,15 @@ def update_status(order_id):
 
             try:
                 cursor.close()
-
             except Exception:
                 pass
-
 
         if conn:
 
             try:
                 conn.close()
-
             except Exception:
                 pass
-
 
     return redirect(
         url_for("dashboard")
@@ -2404,7 +2633,6 @@ def update_status(order_id):
 def admin_logout():
 
     session.clear()
-
 
     return redirect(
         url_for("admin_login")
@@ -2431,13 +2659,8 @@ if __name__ == "__main__":
         )
     )
 
-
     app.run(
-
         host="0.0.0.0",
-
         port=port,
-
         debug=False
-
     )
