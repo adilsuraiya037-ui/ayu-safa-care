@@ -16,29 +16,19 @@
 
     <style>
 
-        /* =====================================================
-           RESET
-        ===================================================== */
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-
         body {
             font-family: Arial, Helvetica, sans-serif;
-
             background: #f4f7f3;
-
             color: #26382f;
-
             min-height: 100vh;
-
             overflow-x: hidden;
         }
-
 
         /* =====================================================
            TOP BAR
@@ -46,144 +36,102 @@
 
         .topbar {
             width: 100%;
-
             min-height: 72px;
-
             padding: 12px 5%;
-
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
-
             gap: 20px;
-
             background: #123d2d;
-
-            box-shadow:
-                0 5px 25px rgba(18,61,45,0.15);
+            box-shadow: 0 5px 25px rgba(18,61,45,0.15);
         }
-
 
         .brand {
             display: flex;
-
             align-items: center;
-
             gap: 12px;
         }
-
 
         .brand-logo {
             width: 46px;
             height: 46px;
-
             border-radius: 50%;
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             text-align: center;
-
             background: #ffffff;
-
             color: #123d2d;
-
             font-size: 7px;
-
             font-weight: 900;
-
             line-height: 1.2;
         }
 
-
         .brand-text h1 {
             color: #ffffff;
-
             font-size: 17px;
-
             font-weight: 900;
-
             letter-spacing: 1.8px;
         }
 
-
         .brand-text span {
             display: block;
-
             margin-top: 3px;
-
             color: #b9d0c1;
-
             font-size: 8px;
-
             font-weight: 700;
-
             letter-spacing: 1.5px;
         }
 
-
         .top-actions {
             display: flex;
-
             align-items: center;
-
             gap: 8px;
+            flex-wrap: wrap;
         }
-
 
         .top-button {
             min-height: 38px;
-
             padding: 0 15px;
-
             display: inline-flex;
-
             align-items: center;
-
             justify-content: center;
-
             border-radius: 20px;
-
             text-decoration: none;
-
             font-size: 10px;
-
             font-weight: 900;
-
             letter-spacing: 0.8px;
-
             transition: 0.2s ease;
+            border: none;
+            cursor: pointer;
         }
-
 
         .website-button {
             background: #ffffff;
-
             color: #123d2d;
         }
-
 
         .website-button:hover {
             background: #eaf0eb;
         }
 
-
         .logout-button {
             background: #dce8df;
-
             color: #123d2d;
         }
-
 
         .logout-button:hover {
             background: #ffffff;
         }
 
+        .add-item-button {
+            background: #b18c39;
+            color: #ffffff;
+        }
+
+        .add-item-button:hover {
+            background: #96752e;
+        }
 
         /* =====================================================
            MAIN
@@ -191,54 +139,36 @@
 
         .container {
             width: 100%;
-
             max-width: 1350px;
-
             margin: 0 auto;
-
             padding: 38px 5% 60px;
         }
-
 
         .page-title {
             margin-bottom: 25px;
         }
 
-
         .page-title small {
             display: block;
-
             margin-bottom: 6px;
-
             color: #688071;
-
             font-size: 10px;
-
             font-weight: 900;
-
             letter-spacing: 2.5px;
         }
 
-
         .page-title h2 {
             color: #123d2d;
-
             font-size: 30px;
-
             font-weight: 900;
-
             line-height: 1.2;
         }
 
-
         .page-title p {
             margin-top: 7px;
-
             color: #718078;
-
             font-size: 12px;
         }
-
 
         /* =====================================================
            STAT CARDS
@@ -246,59 +176,299 @@
 
         .stats-grid {
             width: 100%;
-
             display: grid;
-
-            grid-template-columns:
-                repeat(6, minmax(0, 1fr));
-
+            grid-template-columns: repeat(6, minmax(0, 1fr));
             gap: 14px;
-
             margin-bottom: 30px;
         }
 
-
         .stat-card {
             min-width: 0;
-
             padding: 20px 16px;
-
             background: #ffffff;
-
             border: 1px solid #e1e8e2;
-
             border-radius: 16px;
-
-            box-shadow:
-                0 6px 25px rgba(18,61,45,0.06);
+            box-shadow: 0 6px 25px rgba(18,61,45,0.06);
         }
-
 
         .stat-label {
             color: #718078;
-
             font-size: 9px;
-
             font-weight: 900;
-
             letter-spacing: 1.3px;
-
             line-height: 1.3;
         }
 
-
         .stat-number {
             margin-top: 9px;
-
             color: #123d2d;
-
             font-size: 27px;
-
             font-weight: 900;
-
             line-height: 1;
         }
 
+        /* =====================================================
+           ADD ITEM BOX
+        ===================================================== */
+
+        .add-item-box {
+            display: none;
+            width: 100%;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #ffffff;
+            border: 1px solid #e1e8e2;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(18,61,45,0.07);
+        }
+
+        .add-item-box.show {
+            display: block;
+        }
+
+        .add-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .add-item-header h3 {
+            color: #123d2d;
+            font-size: 19px;
+            font-weight: 900;
+        }
+
+        .close-add-item {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 50%;
+            background: #f1f4f1;
+            color: #123d2d;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .close-add-item:hover {
+            background: #e4ebe5;
+        }
+
+        .add-item-subtitle {
+            margin-bottom: 20px;
+            color: #78857e;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .product-form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            margin-bottom: 7px;
+            color: #53675d;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #d7e0da;
+            border-radius: 9px;
+            background: #fbfcfa;
+            color: #26382f;
+            font-family: inherit;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #527260;
+            box-shadow: 0 0 0 3px rgba(82,114,96,0.10);
+        }
+
+        .form-help {
+            margin-top: 5px;
+            color: #87938d;
+            font-size: 9px;
+        }
+
+        .product-form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .save-product-button {
+            min-height: 42px;
+            padding: 0 20px;
+            border: none;
+            border-radius: 22px;
+            background: #123d2d;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+        }
+
+        .save-product-button:hover {
+            background: #1e5b42;
+        }
+
+        .cancel-product-button {
+            min-height: 42px;
+            padding: 0 20px;
+            border: 1px solid #d7e0da;
+            border-radius: 22px;
+            background: #ffffff;
+            color: #53675d;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+        }
+
+        .cancel-product-button:hover {
+            background: #f4f7f3;
+        }
+
+        /* =====================================================
+           PRODUCT MANAGEMENT
+        ===================================================== */
+
+        .products-admin-box {
+            width: 100%;
+            margin-bottom: 30px;
+            background: #ffffff;
+            border: 1px solid #e1e8e2;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 35px rgba(18,61,45,0.07);
+        }
+
+        .products-admin-header {
+            padding: 22px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            border-bottom: 1px solid #e7ece8;
+        }
+
+        .products-admin-header h3 {
+            color: #123d2d;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .products-admin-header span {
+            color: #78857e;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .admin-products-list {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .admin-product-card {
+            padding: 16px;
+            border: 1px solid #e1e8e2;
+            border-radius: 14px;
+            background: #fafcf9;
+        }
+
+        .admin-product-card h4 {
+            color: #123d2d;
+            font-size: 13px;
+            font-weight: 900;
+            line-height: 1.4;
+        }
+
+        .admin-product-card .admin-product-category {
+            display: block;
+            margin-top: 4px;
+            color: #7a8780;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+        }
+
+        .admin-product-price {
+            margin-top: 10px;
+            color: #123d2d;
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .admin-product-actions {
+            display: flex;
+            gap: 7px;
+            margin-top: 12px;
+        }
+
+        .admin-product-actions a,
+        .admin-product-actions button {
+            min-height: 32px;
+            padding: 0 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 7px;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .edit-product {
+            border: 1px solid #d7e0da;
+            background: #ffffff;
+            color: #123d2d;
+        }
+
+        .delete-product {
+            border: none;
+            background: #f8dede;
+            color: #a52a2a;
+        }
+
+        .no-products {
+            padding: 25px;
+            color: #78857e;
+            text-align: center;
+            font-size: 11px;
+        }
 
         /* =====================================================
            ORDERS BOX
@@ -306,52 +476,33 @@
 
         .orders-box {
             width: 100%;
-
             background: #ffffff;
-
             border: 1px solid #e1e8e2;
-
             border-radius: 20px;
-
             overflow: hidden;
-
-            box-shadow:
-                0 10px 35px rgba(18,61,45,0.07);
+            box-shadow: 0 10px 35px rgba(18,61,45,0.07);
         }
-
 
         .orders-header {
             padding: 22px 24px;
-
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
-
             gap: 15px;
-
             border-bottom: 1px solid #e7ece8;
         }
 
-
         .orders-header h3 {
             color: #123d2d;
-
             font-size: 18px;
-
             font-weight: 900;
         }
 
-
         .orders-header span {
             color: #78857e;
-
             font-size: 10px;
-
             font-weight: 700;
         }
-
 
         /* =====================================================
            TABLE
@@ -359,142 +510,93 @@
 
         .table-wrapper {
             width: 100%;
-
             overflow-x: auto;
         }
 
-
         table {
             width: 100%;
-
             min-width: 1050px;
-
             border-collapse: collapse;
         }
-
 
         thead {
             background: #f4f7f3;
         }
 
-
         th {
             padding: 13px 14px;
-
             text-align: left;
-
             color: #53675d;
-
             font-size: 9px;
-
             font-weight: 900;
-
             letter-spacing: 1px;
-
             white-space: nowrap;
-
             border-bottom: 1px solid #e1e8e2;
         }
 
-
         td {
             padding: 16px 14px;
-
             color: #43564d;
-
             font-size: 12px;
-
             vertical-align: top;
-
             border-bottom: 1px solid #edf1ee;
         }
-
 
         tbody tr:hover {
             background: #fafcf9;
         }
 
-
         tbody tr:last-child td {
             border-bottom: none;
         }
 
-
-        /* =====================================================
-           ORDER ID
-        ===================================================== */
-
         .order-id {
             color: #123d2d;
-
             font-weight: 900;
-
             white-space: nowrap;
         }
-
 
         .customer-name {
             color: #26382f;
-
             font-weight: 900;
         }
-
 
         .phone {
             margin-top: 3px;
-
             color: #7a8780;
-
             font-size: 10px;
         }
-
 
         .address {
             max-width: 220px;
-
             color: #68756f;
-
             line-height: 1.5;
         }
 
-
         .product-name {
             color: #26382f;
-
             font-weight: 800;
-
             line-height: 1.4;
         }
 
-
         .quantity {
             margin-top: 3px;
-
             color: #7a8780;
-
             font-size: 10px;
         }
-
 
         .amount {
             color: #123d2d;
-
             font-size: 14px;
-
             font-weight: 900;
-
             white-space: nowrap;
         }
-
 
         .date {
             color: #68756f;
-
             white-space: nowrap;
-
             font-size: 10px;
         }
-
 
         /* =====================================================
            STATUS
@@ -502,61 +604,41 @@
 
         .status-badge {
             display: inline-flex;
-
             align-items: center;
-
             justify-content: center;
-
             min-width: 90px;
-
             padding: 7px 10px;
-
             border-radius: 20px;
-
             font-size: 9px;
-
             font-weight: 900;
-
             letter-spacing: 0.7px;
-
             white-space: nowrap;
         }
 
-
         .status-new {
             background: #fff3cd;
-
             color: #856404;
         }
 
-
         .status-confirmed {
             background: #dbeafe;
-
             color: #1e40af;
         }
 
-
         .status-shipped {
             background: #e8def8;
-
             color: #633f8c;
         }
 
-
         .status-delivered {
             background: #d9f1df;
-
             color: #176b3a;
         }
 
-
         .status-cancelled {
             background: #f8dede;
-
             color: #a52a2a;
         }
-
 
         /* =====================================================
            STATUS FORM
@@ -564,73 +646,45 @@
 
         .status-form {
             display: flex;
-
             align-items: center;
-
             gap: 7px;
         }
 
-
         .status-select {
             min-height: 36px;
-
             padding: 0 9px;
-
             border: 1px solid #d7e0da;
-
             border-radius: 8px;
-
             background: #ffffff;
-
             color: #34483e;
-
             font-size: 10px;
-
             font-weight: 700;
-
             outline: none;
-
             cursor: pointer;
         }
-
 
         .status-select:focus {
             border-color: #527260;
-
-            box-shadow:
-                0 0 0 3px rgba(82,114,96,0.10);
+            box-shadow: 0 0 0 3px rgba(82,114,96,0.10);
         }
-
 
         .update-button {
             min-height: 36px;
-
             padding: 0 11px;
-
             border: none;
-
             border-radius: 8px;
-
             background: #123d2d;
-
             color: #ffffff;
-
             font-size: 9px;
-
             font-weight: 900;
-
             letter-spacing: 0.6px;
-
             cursor: pointer;
-
             transition: 0.2s ease;
         }
-
 
         .update-button:hover {
             background: #1e5b42;
         }
-
 
         /* =====================================================
            EMPTY
@@ -638,35 +692,25 @@
 
         .empty-state {
             padding: 60px 20px;
-
             text-align: center;
         }
 
-
         .empty-state-icon {
             font-size: 38px;
-
             margin-bottom: 12px;
         }
 
-
         .empty-state h3 {
             color: #123d2d;
-
             font-size: 18px;
-
             font-weight: 900;
         }
 
-
         .empty-state p {
             margin-top: 6px;
-
             color: #7a8780;
-
             font-size: 12px;
         }
-
 
         /* =====================================================
            FOOTER
@@ -674,16 +718,11 @@
 
         .footer {
             margin-top: 35px;
-
             text-align: center;
-
             color: #87938d;
-
             font-size: 9px;
-
             letter-spacing: 1px;
         }
-
 
         /* =====================================================
            TABLET
@@ -692,12 +731,14 @@
         @media (max-width: 1100px) {
 
             .stats-grid {
-                grid-template-columns:
-                    repeat(3, minmax(0, 1fr));
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .admin-products-list {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
         }
-
 
         /* =====================================================
            MOBILE
@@ -707,111 +748,103 @@
 
             .topbar {
                 padding: 10px 4%;
-
                 align-items: center;
             }
-
 
             .brand-logo {
                 width: 40px;
                 height: 40px;
-
                 flex: 0 0 40px;
-
                 font-size: 6px;
             }
 
-
             .brand-text h1 {
                 font-size: 13px;
-
                 letter-spacing: 1px;
             }
-
 
             .brand-text span {
                 font-size: 7px;
-
                 letter-spacing: 1px;
             }
-
 
             .top-actions {
                 gap: 5px;
             }
 
-
             .top-button {
                 min-height: 34px;
-
                 padding: 0 9px;
-
                 font-size: 8px;
             }
 
-
             .container {
-                padding:
-                    28px 4% 45px;
+                padding: 28px 4% 45px;
             }
-
 
             .page-title h2 {
                 font-size: 25px;
             }
 
-
             .page-title p {
                 font-size: 11px;
             }
 
-
             .stats-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-
+                grid-template-columns: repeat(2, minmax(0, 1fr));
                 gap: 10px;
             }
-
 
             .stat-card {
                 padding: 17px 14px;
             }
 
-
             .stat-number {
                 font-size: 24px;
             }
 
-
-            .orders-header {
+            .orders-header,
+            .products-admin-header {
                 padding: 18px;
             }
 
-
-            .orders-header h3 {
+            .orders-header h3,
+            .products-admin-header h3 {
                 font-size: 16px;
             }
 
-
-            .orders-header span {
+            .orders-header span,
+            .products-admin-header span {
                 font-size: 8px;
             }
 
-
             .table-wrapper {
                 overflow-x: auto;
-
                 -webkit-overflow-scrolling: touch;
             }
 
+            .product-form {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .product-form-actions {
+                grid-column: auto;
+                flex-direction: column;
+            }
+
+            .admin-products-list {
+                grid-template-columns: 1fr;
+            }
 
             .footer {
                 margin-top: 25px;
             }
 
         }
-
 
         /* =====================================================
            VERY SMALL MOBILE
@@ -823,18 +856,14 @@
                 display: none;
             }
 
-
             .top-button {
                 padding: 0 7px;
-
                 font-size: 7px;
             }
-
 
             .stats-grid {
                 gap: 8px;
             }
-
 
             .stat-number {
                 font-size: 22px;
@@ -879,6 +908,13 @@
 
     <div class="top-actions">
 
+        <button
+            type="button"
+            class="top-button add-item-button"
+            onclick="toggleAddItem()">
+            + ADD ITEM
+        </button>
+
         <a
             href="{{ url_for('index') }}"
             class="top-button website-button">
@@ -915,7 +951,7 @@
         </h2>
 
         <p>
-            Manage customer orders and update delivery status.
+            Manage customer orders, products and delivery status.
         </p>
 
     </div>
@@ -1012,6 +1048,284 @@
 
 
     <!-- =================================================
+         ADD ITEM
+    ================================================== -->
+
+    <section
+        id="addItemBox"
+        class="add-item-box">
+
+
+        <div class="add-item-header">
+
+            <h3>
+                ADD NEW PRODUCT
+            </h3>
+
+            <button
+                type="button"
+                class="close-add-item"
+                onclick="toggleAddItem()">
+                ×
+            </button>
+
+        </div>
+
+
+        <p class="add-item-subtitle">
+
+            Add a new product to your AYU SAFA CARE website.
+            Once saved, the product can appear with the existing
+            products on the main website.
+
+        </p>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('add_product') }}"
+            class="product-form"
+            enctype="multipart/form-data"
+        >
+
+
+            <div class="form-group">
+
+                <label for="product_name">
+                    PRODUCT NAME
+                </label>
+
+                <input
+                    type="text"
+                    id="product_name"
+                    name="product_name"
+                    placeholder="ENTER PRODUCT NAME"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="product_price">
+                    PRICE
+                </label>
+
+                <input
+                    type="number"
+                    id="product_price"
+                    name="price"
+                    placeholder="ENTER PRICE"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="product_category">
+                    CATEGORY
+                </label>
+
+                <input
+                    type="text"
+                    id="product_category"
+                    name="category"
+                    placeholder="E.G. HAIR CARE"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="product_image">
+                    PRODUCT IMAGE
+                </label>
+
+                <input
+                    type="text"
+                    id="product_image"
+                    name="image"
+                    placeholder="E.G. images/new-product.jpg"
+                >
+
+                <span class="form-help">
+                    Enter the image path inside static/images.
+                </span>
+
+            </div>
+
+
+            <div class="form-group full">
+
+                <label for="product_description">
+                    DESCRIPTION
+                </label>
+
+                <textarea
+                    id="product_description"
+                    name="description"
+                    placeholder="ENTER PRODUCT DESCRIPTION"
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group full">
+
+                <label for="product_benefits">
+                    BENEFITS
+                </label>
+
+                <textarea
+                    id="product_benefits"
+                    name="benefits"
+                    placeholder="ENTER BENEFITS, ONE PER LINE"
+                ></textarea>
+
+                <span class="form-help">
+                    Example: Helps support healthy-looking hair
+                </span>
+
+            </div>
+
+
+            <div class="product-form-actions">
+
+                <button
+                    type="submit"
+                    class="save-product-button">
+                    SAVE PRODUCT
+                </button>
+
+                <button
+                    type="button"
+                    class="cancel-product-button"
+                    onclick="toggleAddItem()">
+                    CANCEL
+                </button>
+
+            </div>
+
+
+        </form>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         PRODUCT MANAGEMENT
+    ================================================== -->
+
+    <section class="products-admin-box">
+
+
+        <div class="products-admin-header">
+
+            <h3>
+                WEBSITE PRODUCTS
+            </h3>
+
+            <span>
+                {% if products %}
+                    {{ products|length }} PRODUCT(S)
+                {% else %}
+                    0 PRODUCT(S)
+                {% endif %}
+            </span>
+
+        </div>
+
+
+        {% if products %}
+
+        <div class="admin-products-list">
+
+
+            {% for product in products %}
+
+            <div class="admin-product-card">
+
+
+                <h4>
+                    {{ product['name'] }}
+                </h4>
+
+
+                <span class="admin-product-category">
+                    {{ product['category'] }}
+                </span>
+
+
+                <div class="admin-product-price">
+
+                    ₹{{ "%.2f"|format(product['price']|float) }}
+
+                </div>
+
+
+                <div class="admin-product-actions">
+
+                    {% if product['id'] is defined %}
+
+                    <a
+                        href="{{ url_for('edit_product', product_id=product['id']) }}"
+                        class="edit-product">
+                        EDIT
+                    </a>
+
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('delete_product', product_id=product['id']) }}"
+                        style="display:inline;"
+                        onsubmit="return confirm('Delete this product?');"
+                    >
+
+                        <button
+                            type="submit"
+                            class="delete-product">
+                            DELETE
+                        </button>
+
+                    </form>
+
+                    {% endif %}
+
+                </div>
+
+
+            </div>
+
+            {% endfor %}
+
+
+        </div>
+
+        {% else %}
+
+        <div class="no-products">
+
+            No additional products have been added yet.
+
+        </div>
+
+        {% endif %}
+
+
+    </section>
+
+
+
+    <!-- =================================================
          ORDERS
     ================================================== -->
 
@@ -1088,8 +1402,6 @@
                     <tr>
 
 
-                        <!-- ORDER ID -->
-
                         <td>
 
                             <div class="order-id">
@@ -1098,9 +1410,6 @@
 
                         </td>
 
-
-
-                        <!-- CUSTOMER -->
 
                         <td>
 
@@ -1115,9 +1424,6 @@
                         </td>
 
 
-
-                        <!-- ADDRESS -->
-
                         <td>
 
                             <div class="address">
@@ -1126,9 +1432,6 @@
 
                         </td>
 
-
-
-                        <!-- PRODUCT -->
 
                         <td>
 
@@ -1144,9 +1447,6 @@
                         </td>
 
 
-
-                        <!-- AMOUNT -->
-
                         <td>
 
                             <div class="amount">
@@ -1155,9 +1455,6 @@
 
                         </td>
 
-
-
-                        <!-- STATUS -->
 
                         <td>
 
@@ -1202,9 +1499,6 @@
                         </td>
 
 
-
-                        <!-- DATE -->
-
                         <td>
 
                             <div class="date">
@@ -1213,9 +1507,6 @@
 
                         </td>
 
-
-
-                        <!-- UPDATE -->
 
                         <td>
 
@@ -1327,6 +1618,34 @@
 
 
 </main>
+
+
+
+<script>
+
+function toggleAddItem() {
+
+    const box =
+        document.getElementById("addItemBox");
+
+    if (!box) {
+        return;
+    }
+
+    box.classList.toggle("show");
+
+    if (box.classList.contains("show")) {
+
+        box.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+}
+
+</script>
 
 
 </body>
