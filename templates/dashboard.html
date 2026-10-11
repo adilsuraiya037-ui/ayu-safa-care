@@ -2203,11 +2203,13 @@
                             </div>
 
 
-                            <button
+                            <button>
                                 type="button"
                                 class="view-items-button"
-                                onclick="viewOrderItems('{{ order['order_id']|replace(\"'\", \"\\'\") }}')"
-                            >
+                                onclick="viewOrderItems({{ order['order_id']|tojson }})">
+    
+                        
+                        
 
                                 VIEW ITEMS
 
