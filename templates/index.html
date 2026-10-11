@@ -1,393 +1,146 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <meta name="theme-color"
-          content="#123d2d">
-
-    <title>
-        AYU SAFA CARE | HERBAL WELLNESS
-    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#123d2d">
+    <meta name="description" content="Discover herbal personal care products from AYU SAFA CARE.">
+    <title>AYU SAFA CARE | HERBAL WELLNESS</title>
 
     <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}?v=20261005">
-
+          href="{{ url_for('static', filename='style.css') }}?v=20261011">
 </head>
-
 
 <body>
 
-
-<!-- =========================================================
-     NAVBAR
-========================================================= -->
-
+<!-- NAVBAR -->
 <header class="navbar">
-
     <div class="brand">
-
-        <div class="brand-mark">
-            DR.ADIL<br>SURAIYA
-        </div>
-
+        <div class="brand-mark">DR.ADIL<br>SURAIYA</div>
         <div class="brand-text">
-
-            <h1>
-                AYU SAFA CARE
-            </h1>
-
-            <span>
-                HERBAL WELLNESS
-            </span>
-
+            <h1>AYU SAFA CARE</h1>
+            <span>HERBAL WELLNESS</span>
         </div>
-
     </div>
-
 
     <div class="nav-actions">
-
-        <a href="{{ url_for('track_order') }}"
-           class="track-nav-button">
-
+        <a href="{{ url_for('track_order') }}" class="track-nav-button">
             TRACK ORDER
-
         </a>
-
-
-        <a href="#order"
-           class="nav-button">
-
-            ORDER NOW
-
-        </a>
-
+        <a href="#order" class="nav-button">ORDER NOW</a>
     </div>
-
 </header>
 
-
-
-<!-- =========================================================
-     HERO
-========================================================= -->
-
+<!-- HERO -->
 <section class="hero">
-
     <div class="hero-content">
+        <p class="small-title">AYURVEDIC • HERBAL • CARE</p>
 
-        <p class="small-title">
-
-            AYURVEDIC • HERBAL • CARE
-
-        </p>
-
-
-        <h2>
-
-            NATURAL CARE<br>
-            FOR EVERYDAY YOU
-
-        </h2>
-
+        <h2>NATURAL CARE<br>FOR EVERYDAY YOU</h2>
 
         <p class="hero-description">
-
             Discover thoughtfully prepared herbal products
             designed for your everyday wellness and personal care.
-
         </p>
-
 
         <div class="hero-buttons">
-
-            <a href="#products"
-               class="primary-button">
-
-                EXPLORE PRODUCTS
-
-            </a>
-
-
-            <a href="{{ url_for('track_order') }}"
-               class="track-order-button">
-
+            <a href="#products" class="primary-button">EXPLORE PRODUCTS</a>
+            <a href="{{ url_for('track_order') }}" class="track-order-button">
                 TRACK MY ORDER
-
             </a>
-
         </div>
-
     </div>
-
 </section>
 
-
-
-<!-- =========================================================
-     PRODUCTS
-========================================================= -->
-
-<section id="products"
-         class="products-section">
-
-
+<!-- PRODUCTS -->
+<section id="products" class="products-section">
     <div class="section-heading">
-
-        <p>
-            OUR PRODUCTS
-        </p>
-
-
-        <h2>
-            SIMPLE HERBAL CARE
-        </h2>
-
-
-        <span>
-            QUALITY PRODUCTS FROM AYU SAFA CARE
-        </span>
-
+        <p>OUR PRODUCTS</p>
+        <h2>SIMPLE HERBAL CARE</h2>
+        <span>QUALITY PRODUCTS FROM AYU SAFA CARE</span>
     </div>
-
-
 
     <div class="product-grid">
-
-
         {% if products %}
-
-
             {% for product in products %}
-
-            <!-- =================================================
-                 DYNAMIC PRODUCT CARD
-            ================================================== -->
-
-            <article class="product-card">
-
-
-                <div class="product-image">
-
-                    <img
-                        src="{{ url_for(
-                            'static',
-                            filename='images/' + (
-                                product['image']
-                                if product['image']
-                                else 'product-placeholder.jpg'
-                            )
-                        ) }}"
-                        alt="{{ product['name'] }}"
-                        loading="lazy"
-                        onerror="this.src='{{ url_for(
-                            'static',
-                            filename='images/product-placeholder.jpg'
-                        ) }}';"
-                    >
-
-                </div>
-
-
-
-                <div class="product-content">
-
-
-                    <span class="product-category">
-
-                        HERBAL CARE
-
-                    </span>
-
-
-                    <h3>
-
-                        {{ product['name'] }}
-
-                    </h3>
-
-
-                    <p>
-
-                        Carefully selected herbal
-                        product from AYU SAFA CARE
-                        for everyday personal care.
-
-                    </p>
-
-
-
-                    <div class="product-bottom">
-
-
-                        <div class="price">
-
-                            ₹{{ "%.0f"|format(product['price']|float) }}
-
-                        </div>
-
-
-
-                        <!-- VIEW DETAILS -->
-
-                        <button
-                            type="button"
-                            class="card-button"
-                            onclick="openProduct(
-                                {{ product['id']|tojson }}
-                            )">
-
-                            VIEW DETAILS
-
-                        </button>
-
-
-
-                        <!-- ADD TO ORDER -->
-
-                        <button
-                            type="button"
-                            class="card-button secondary-button"
-                            onclick="addToCart(
-                                {{ product['name']|tojson }},
-                                {{ product['price']|float }},
-                                {{ product['id']|tojson }}
-                            )">
-
-                            ADD TO ORDER
-
-                        </button>
-
-
+                <article class="product-card">
+                    <div class="product-image">
+                        <img
+                            src="{{ url_for('static', filename='images/' + (product['image'] if product['image'] else 'product-placeholder.jpg')) }}"
+                            alt="{{ product['name'] }}"
+                            loading="lazy"
+                            onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/product-placeholder.jpg') }}';"
+                        >
                     </div>
 
-                </div>
+                    <div class="product-content">
+                        <span class="product-category">HERBAL CARE</span>
 
-            </article>
+                        <h3>{{ product['name'] }}</h3>
 
+                        <p>
+                            Carefully selected herbal product from
+                            AYU SAFA CARE for everyday personal care.
+                        </p>
 
+                        <div class="product-bottom">
+                            <div class="price">
+                                ₹{{ "%.0f"|format(product['price']|float) }}
+                            </div>
+
+                            <button
+                                type="button"
+                                class="card-button"
+                                data-product-id="{{ product['id'] }}"
+                                onclick="openProduct(this.dataset.productId)">
+                                VIEW DETAILS
+                            </button>
+
+                            <!-- FIXED HOMEPAGE ADD-TO-ORDER BUTTON -->
+                            <button
+                                type="button"
+                                class="card-button secondary-button"
+                                data-product-id="{{ product['id'] }}"
+                                onclick="addHomepageProduct(this)">
+                                ADD TO ORDER
+                            </button>
+                        </div>
+                    </div>
+                </article>
             {% endfor %}
-
-
         {% else %}
-
-
-            <!-- =================================================
-                 NO PRODUCTS
-            ================================================== -->
-
             <div class="empty-products">
-
-                <strong>
-                    PRODUCTS COMING SOON
-                </strong>
-
-                <span>
-                    Please check back shortly.
-                </span>
-
+                <strong>PRODUCTS COMING SOON</strong>
+                <span>Please check back shortly.</span>
             </div>
-
-
         {% endif %}
-
-
     </div>
-
 </section>
 
-
-
-<!-- =========================================================
-     ORDER SECTION
-========================================================= -->
-
-<section id="order"
-         class="order-section">
-
-
+<!-- ORDER SECTION -->
+<section id="order" class="order-section">
     <div class="order-box">
-
-
         <div class="section-heading">
-
-            <p>
-                AYU SAFA CARE
-            </p>
-
-
-            <h2>
-                YOUR ORDER
-            </h2>
-
-
-            <span>
-                SELECT ONE OR MORE PRODUCTS
-            </span>
-
+            <p>AYU SAFA CARE</p>
+            <h2>YOUR ORDER</h2>
+            <span>SELECT ONE OR MORE PRODUCTS</span>
         </div>
 
-
-
-        <!-- =================================================
-             CART
-        ================================================== -->
-
-        <div id="cartContainer"
-             class="cart-container">
-
-
-            <div id="emptyCart"
-                 class="empty-cart">
-
-
-                <strong>
-                    YOUR ORDER IS EMPTY
-                </strong>
-
-
-                <span>
-                    Click "ADD TO ORDER"
-                    on any product above.
-                </span>
-
-
+        <div id="cartContainer" class="cart-container">
+            <div id="emptyCart" class="empty-cart">
+                <strong>YOUR ORDER IS EMPTY</strong>
+                <span>Click "ADD TO ORDER" on any product above.</span>
             </div>
 
-
-            <div id="cartItems">
-            </div>
-
-
+            <div id="cartItems"></div>
         </div>
 
+        <form action="{{ url_for('place_order') }}"
+              method="POST"
+              id="orderForm">
 
-
-        <!-- =================================================
-             CUSTOMER DETAILS
-        ================================================== -->
-
-        <form
-            action="{{ url_for('place_order') }}"
-            method="POST"
-            id="orderForm"
-        >
-
-
-            <label for="customer_name">
-
-                FULL NAME
-
-            </label>
-
-
+            <label for="customer_name">FULL NAME</label>
             <input
                 type="text"
                 id="customer_name"
@@ -397,15 +150,7 @@
                 required
             >
 
-
-
-            <label for="phone">
-
-                MOBILE NUMBER
-
-            </label>
-
-
+            <label for="phone">MOBILE NUMBER</label>
             <input
                 type="tel"
                 id="phone"
@@ -416,15 +161,7 @@
                 required
             >
 
-
-
-            <label for="address">
-
-                DELIVERY ADDRESS
-
-            </label>
-
-
+            <label for="address">DELIVERY ADDRESS</label>
             <textarea
                 id="address"
                 name="address"
@@ -433,1551 +170,590 @@
                 required
             ></textarea>
 
-
-
-            <!-- =================================================
-                 HIDDEN CART FIELDS
-            ================================================== -->
-
-            <div id="hiddenCartFields">
-            </div>
-
-
-
-            <!-- =================================================
-                 TOTAL
-            ================================================== -->
+            <div id="hiddenCartFields"></div>
 
             <div class="total-box">
-
-                <span>
-                    TOTAL
-                </span>
-
-
-                <strong id="cartTotal">
-
-                    ₹0
-
-                </strong>
-
+                <span>TOTAL</span>
+                <strong id="cartTotal">₹0</strong>
             </div>
-
-
-
-            <!-- =================================================
-                 PLACE ORDER
-            ================================================== -->
 
             <button
                 type="submit"
                 class="submit-button"
                 id="placeOrderButton"
                 disabled>
-
                 PLACE ORDER
-
             </button>
-
-
         </form>
-
-
     </div>
-
 </section>
 
-
-
-<!-- =========================================================
-     TRACK ORDER PROMO
-========================================================= -->
-
+<!-- TRACK ORDER PROMO -->
 <section class="track-section">
-
-
     <div class="track-box">
-
-
         <div>
-
-            <p class="track-small">
-
-                AYU SAFA CARE
-
-            </p>
-
-
-            <h2>
-
-                ALREADY PLACED AN ORDER?
-
-            </h2>
-
-
+            <p class="track-small">AYU SAFA CARE</p>
+            <h2>ALREADY PLACED AN ORDER?</h2>
             <p>
-
-                Check your order status using your
-                Order ID and mobile number.
-
+                Check your order status using your Order ID
+                and mobile number.
             </p>
-
         </div>
 
-
-
-        <a href="{{ url_for('track_order') }}"
-           class="track-large-button">
-
+        <a href="{{ url_for('track_order') }}" class="track-large-button">
             TRACK ORDER
-
         </a>
-
-
     </div>
-
 </section>
 
-
-
-<!-- =========================================================
-     PRODUCT DETAILS MODAL
-========================================================= -->
-
-<div
-    id="productModal"
-    class="product-modal"
-    aria-hidden="true"
->
-
-
+<!-- PRODUCT DETAILS MODAL -->
+<div id="productModal" class="product-modal" aria-hidden="true">
     <div class="product-modal-box">
-
-
         <button
             type="button"
             class="modal-close"
             onclick="closeProduct()"
             aria-label="Close">
-
             ×
-
         </button>
 
-
-
         <div class="modal-image">
-
-            <img
-                id="modalProductImage"
-                src=""
-                alt=""
-            >
-
+            <img id="modalProductImage" src="" alt="">
         </div>
 
-
-
         <div class="modal-content">
+            <span id="modalCategory" class="product-category"></span>
+            <h2 id="modalProductName"></h2>
+            <div id="modalPrice" class="price"></div>
+            <p id="modalDescription"></p>
 
-
-            <span
-                id="modalCategory"
-                class="product-category">
-
-            </span>
-
-
-
-            <h2 id="modalProductName">
-            </h2>
-
-
-
-            <div
-                id="modalPrice"
-                class="price">
-
-            </div>
-
-
-
-            <p id="modalDescription">
-            </p>
-
-
-
-            <h4>
-                PRODUCT INFORMATION
-            </h4>
-
-
-
+            <h4>PRODUCT INFORMATION</h4>
             <ul id="modalBenefits">
-
-                <li>
-                    Herbal care formulation
-                </li>
-
-                <li>
-                    Designed for everyday use
-                </li>
-
-                <li>
-                    From AYU SAFA CARE
-                </li>
-
+                <li>Herbal care formulation</li>
+                <li>Designed for everyday use</li>
+                <li>From AYU SAFA CARE</li>
             </ul>
-
-
 
             <button
                 type="button"
                 class="modal-order-button"
                 id="modalAddButton">
-
                 ADD TO ORDER
-
             </button>
-
-
         </div>
-
     </div>
-
 </div>
 
-
-
-<!-- =========================================================
-     FOOTER
-========================================================= -->
-
+<!-- FOOTER -->
 <footer>
-
-
-    <h3>
-        AYU SAFA CARE
-    </h3>
-
-
-    <p>
-        HERBAL CARE • EVERYDAY WELLNESS
-    </p>
-
-
-    <p>
-        © 2026 AYU SAFA CARE
-    </p>
-
-
+    <h3>AYU SAFA CARE</h3>
+    <p>HERBAL CARE • EVERYDAY WELLNESS</p>
+    <p>© 2026 AYU SAFA CARE</p>
 </footer>
 
-
-
-<!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
-
 <script>
+"use strict";
 
-
-/* =========================================================
-   DYNAMIC PRODUCT DATA FROM FLASK
-========================================================= */
-
+/* PRODUCT DATA FROM FLASK */
 const products = {
-
-{% for product in products %}
-
+    {% for product in products %}
     {{ product['id']|tojson }}: {
-
-        id:
-            {{ product['id']|tojson }},
-
-        name:
-            {{ product['name']|tojson }},
-
-        price:
-            {{ product['price']|float }},
-
-        image:
-            "{{ url_for(
-                'static',
-                filename='images/' + (
-                    product['image']
-                    if product['image']
-                    else 'product-placeholder.jpg'
-                )
-            ) }}",
-
-        cartName:
-            {{ product['name']|tojson }},
-
-        description:
-            "Carefully prepared herbal product from AYU SAFA CARE for everyday personal care."
-
-    },
-
-{% endfor %}
-
+        id: {{ product['id']|tojson }},
+        name: {{ product['name']|tojson }},
+        price: {{ product['price']|float }},
+        image: {{ url_for('static', filename='images/' + (product['image'] if product['image'] else 'product-placeholder.jpg'))|tojson }},
+        cartName: {{ product['name']|tojson }},
+        description: "Carefully prepared herbal product from AYU SAFA CARE for everyday personal care."
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
 };
 
-
-
-/* =========================================================
-   CART
-========================================================= */
-
+/* CART STATE */
 let cart = {};
 
-
-
-/* =========================================================
-   ADD TO CART
-========================================================= */
-
-function addToCart(
-    productName,
-    productPrice,
-    productId
-) {
-
-
-    if (!productName) {
-
-        return;
-
-    }
-
-
-    if (!cart[productName]) {
-
-        cart[productName] = {
-
-            id:
-                productId,
-
-            price:
-                Number(productPrice),
-
-            quantity:
-                1
-
-        };
-
-    }
-
-    else {
-
-        cart[productName].quantity++;
-
-    }
-
-
-    renderCart();
-
-
-    /* Scroll to order */
-
-    const orderSection =
-        document.getElementById("order");
-
-
-    if (orderSection) {
-
-        orderSection.scrollIntoView({
-
-            behavior:
-                "smooth",
-
-            block:
-                "start"
-
-        });
-
-    }
-
+/* LOOK UP A PRODUCT BY ID */
+function getProduct(productId) {
+    return products[String(productId)] || null;
 }
 
-
-
-/* =========================================================
-   CHANGE QUANTITY
-========================================================= */
-
-function changeQuantity(
-    productName,
-    change
-) {
-
-
-    if (!cart[productName]) {
-
-        return;
-
-    }
-
-
-    cart[productName].quantity +=
-        change;
-
-
-    if (
-        cart[productName].quantity <= 0
-    ) {
-
-        delete cart[productName];
-
-    }
-
-
-    renderCart();
-
-}
-
-
-
-/* =========================================================
-   REMOVE PRODUCT
-========================================================= */
-
-function removeFromCart(
-    productName
-) {
-
-
-    if (cart[productName]) {
-
-        delete cart[productName];
-
-    }
-
-
-    renderCart();
-
-}
-
-
-
-/* =========================================================
-   RENDER CART
-========================================================= */
-
-function renderCart() {
-
-
-    const cartItems =
-        document.getElementById(
-            "cartItems"
-        );
-
-
-    const emptyCart =
-        document.getElementById(
-            "emptyCart"
-        );
-
-
-    const hiddenFields =
-        document.getElementById(
-            "hiddenCartFields"
-        );
-
-
-    const totalElement =
-        document.getElementById(
-            "cartTotal"
-        );
-
-
-    const placeButton =
-        document.getElementById(
-            "placeOrderButton"
-        );
-
-
-    if (
-
-        !cartItems ||
-
-        !emptyCart ||
-
-        !hiddenFields ||
-
-        !totalElement ||
-
-        !placeButton
-
-    ) {
-
-        return;
-
-    }
-
-
-    cartItems.innerHTML =
-        "";
-
-    hiddenFields.innerHTML =
-        "";
-
-
-    let total =
-        0;
-
-
-    let itemIndex =
-        0;
-
-
-    const productNames =
-        Object.keys(cart);
-
-
-    /* =====================================================
-       EMPTY CART
-    ===================================================== */
-
-    if (
-        productNames.length === 0
-    ) {
-
-
-        emptyCart.style.display =
-            "flex";
-
-
-        placeButton.disabled =
-            true;
-
-
-        totalElement.textContent =
-            "₹0";
-
-
-        return;
-
-    }
-
-
-    emptyCart.style.display =
-        "none";
-
-
-
-    /* =====================================================
-       PRODUCTS
-    ===================================================== */
-
-    productNames.forEach(
-        function(productName) {
-
-
-            const item =
-                cart[productName];
-
-
-            const price =
-                Number(item.price);
-
-
-            const itemTotal =
-                price *
-                item.quantity;
-
-
-            total +=
-                itemTotal;
-
-
-
-            /* =================================================
-               CART ROW
-            ================================================= */
-
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-
-            row.className =
-                "cart-item";
-
-
-            row.innerHTML = `
-
-                <div class="cart-item-info">
-
-                    <strong>
-                        ${escapeHtml(productName)}
-                    </strong>
-
-                    <span>
-                        ₹${formatPrice(price)}
-                        each
-                    </span>
-
-                </div>
-
-
-                <div class="cart-item-actions">
-
-
-                    <button
-                        type="button"
-                        onclick="changeQuantity(
-                            ${JSON.stringify(productName)},
-                            -1
-                        )">
-
-                        −
-
-                    </button>
-
-
-                    <strong>
-
-                        ${item.quantity}
-
-                    </strong>
-
-
-                    <button
-                        type="button"
-                        onclick="changeQuantity(
-                            ${JSON.stringify(productName)},
-                            1
-                        )">
-
-                        +
-
-                    </button>
-
-
-                    <span class="cart-item-total">
-
-                        ₹${formatPrice(itemTotal)}
-
-                    </span>
-
-
-                    <button
-                        type="button"
-                        class="remove-cart"
-                        onclick="removeFromCart(
-                            ${JSON.stringify(productName)}
-                        )">
-
-                        ×
-
-                    </button>
-
-
-                </div>
-
-            `;
-
-
-            cartItems.appendChild(
-                row
-            );
-
-
-
-            /* =================================================
-               HIDDEN PRODUCT FIELD
-            ================================================= */
-
-            itemIndex++;
-
-
-            const productInput =
-                document.createElement(
-                    "input"
-                );
-
-
-            productInput.type =
-                "hidden";
-
-
-            productInput.name =
-                "product_" +
-                itemIndex;
-
-
-            productInput.value =
-                productName;
-
-
-            hiddenFields.appendChild(
-                productInput
-            );
-
-
-
-            /* =================================================
-               HIDDEN QUANTITY FIELD
-            ================================================= */
-
-            const quantityInput =
-                document.createElement(
-                    "input"
-                );
-
-
-            quantityInput.type =
-                "hidden";
-
-
-            quantityInput.name =
-                "quantity_" +
-                itemIndex;
-
-
-            quantityInput.value =
-                item.quantity;
-
-
-            hiddenFields.appendChild(
-                quantityInput
-            );
-
-
-        }
-    );
-
-
-
-    /* =====================================================
-       TOTAL
-    ===================================================== */
-
-    totalElement.textContent =
-        "₹" +
-        formatPrice(total);
-
-
-    placeButton.disabled =
-        false;
-
-}
-
-
-
-/* =========================================================
-   FORMAT PRICE
-========================================================= */
-
-function formatPrice(
-    value
-) {
-
-
-    return Number(
-        value
-    ).toLocaleString(
-        "en-IN",
-        {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2
-        }
-    );
-
-}
-
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHtml(
-    value
-) {
-
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-
-/* =========================================================
-   OPEN PRODUCT MODAL
-========================================================= */
-
-function openProduct(
-    productId
-) {
-
-
-    const product =
-        products[productId];
-
+/* ADD FROM HOMEPAGE — FIXED */
+function addHomepageProduct(button) {
+    if (!button) return;
+
+    const product = getProduct(button.dataset.productId);
 
     if (!product) {
-
+        console.error(
+            "AYU SAFA CARE: Product ID not found:",
+            button.dataset.productId
+        );
+        alert("Unable to find this product. Please refresh the page.");
         return;
-
     }
 
+    addToCart(product.name, product.price, product.id);
+}
 
-    const modal =
-        document.getElementById(
-            "productModal"
-        );
-
-
-    const image =
-        document.getElementById(
-            "modalProductImage"
-        );
-
-
-    const category =
-        document.getElementById(
-            "modalCategory"
-        );
-
-
-    const name =
-        document.getElementById(
-            "modalProductName"
-        );
-
-
-    const price =
-        document.getElementById(
-            "modalPrice"
-        );
-
-
-    const description =
-        document.getElementById(
-            "modalDescription"
-        );
-
-
-    const benefits =
-        document.getElementById(
-            "modalBenefits"
-        );
-
-
-    const addButton =
-        document.getElementById(
-            "modalAddButton"
-        );
-
-
-    if (
-
-        !modal ||
-
-        !image ||
-
-        !category ||
-
-        !name ||
-
-        !price ||
-
-        !description ||
-
-        !benefits ||
-
-        !addButton
-
-    ) {
-
+/* ADD TO CART */
+function addToCart(productName, productPrice, productId) {
+    if (!productName || productId === undefined || productId === null) {
+        console.error("Invalid product details.", {
+            productName,
+            productPrice,
+            productId
+        });
+        alert("Unable to add this product. Please try again.");
         return;
-
     }
 
+    const key = String(productId);
+    const price = Number(productPrice);
 
+    if (!Number.isFinite(price) || price < 0) {
+        alert("The product price is invalid. Please refresh the page.");
+        return;
+    }
 
-    /* =====================================================
-       FILL MODAL
-    ===================================================== */
-
-    image.src =
-        product.image;
-
-
-    image.alt =
-        product.name;
-
-
-    category.textContent =
-        "HERBAL CARE";
-
-
-    name.textContent =
-        product.name;
-
-
-    price.textContent =
-        "₹" +
-        formatPrice(
-            product.price
-        );
-
-
-    description.textContent =
-        product.description;
-
-
-
-    /* =====================================================
-       INFORMATION
-    ===================================================== */
-
-    benefits.innerHTML = "";
-
-
-    const information = [
-
-        "Herbal care formulation",
-
-        "Designed for everyday personal care",
-
-        "Quality product from AYU SAFA CARE"
-
-    ];
-
-
-    information.forEach(
-        function(text) {
-
-
-            const li =
-                document.createElement(
-                    "li"
-                );
-
-
-            li.textContent =
-                text;
-
-
-            benefits.appendChild(
-                li
-            );
-
-        }
-    );
-
-
-
-    /* =====================================================
-       MODAL ADD BUTTON
-    ===================================================== */
-
-    addButton.onclick =
-        function() {
-
-
-            addToCart(
-
-                product.name,
-
-                product.price,
-
-                product.id
-
-            );
-
-
-            closeProduct();
-
+    if (!cart[key]) {
+        cart[key] = {
+            id: productId,
+            name: String(productName),
+            price: price,
+            quantity: 1
         };
+    } else {
+        cart[key].quantity += 1;
+    }
 
+    renderCart();
 
-
-    /* =====================================================
-       SHOW
-    ===================================================== */
-
-    modal.classList.add(
-        "show"
-    );
-
-
-    modal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
-
-
-    document.body.style.overflow =
-        "hidden";
-
+    const orderSection = document.getElementById("order");
+    if (orderSection) {
+        orderSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
 }
 
+/* CHANGE QUANTITY */
+function changeQuantity(productId, change) {
+    const key = String(productId);
+    if (!cart[key]) return;
 
+    cart[key].quantity += change;
 
-/* =========================================================
-   CLOSE PRODUCT MODAL
-========================================================= */
+    if (cart[key].quantity <= 0) {
+        delete cart[key];
+    }
 
-function closeProduct()
-{
+    renderCart();
+}
 
-    const modal =
-        document.getElementById(
-            "productModal"
-        );
+/* REMOVE PRODUCT */
+function removeFromCart(productId) {
+    delete cart[String(productId)];
+    renderCart();
+}
 
+/* FORMAT PRICE */
+function formatPrice(value) {
+    return Number(value).toLocaleString("en-IN", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    });
+}
 
-    if (!modal) {
+/* SAFE HTML TEXT */
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
+/* RENDER CART */
+function renderCart() {
+    const cartItems = document.getElementById("cartItems");
+    const emptyCart = document.getElementById("emptyCart");
+    const hiddenFields = document.getElementById("hiddenCartFields");
+    const totalElement = document.getElementById("cartTotal");
+    const placeButton = document.getElementById("placeOrderButton");
+
+    if (!cartItems || !emptyCart || !hiddenFields ||
+        !totalElement || !placeButton) {
         return;
-
     }
 
+    cartItems.replaceChildren();
+    hiddenFields.replaceChildren();
 
-    modal.classList.remove(
-        "show"
-    );
+    let total = 0;
+    let itemIndex = 0;
+    const entries = Object.entries(cart);
 
+    if (entries.length === 0) {
+        emptyCart.style.display = "flex";
+        totalElement.textContent = "₹0";
+        placeButton.disabled = true;
+        return;
+    }
 
-    modal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
+    emptyCart.style.display = "none";
 
+    entries.forEach(([key, item]) => {
+        const price = Number(item.price);
+        const quantity = Number(item.quantity);
+        const itemTotal = price * quantity;
 
-    document.body.style.overflow =
-        "";
+        total += itemTotal;
 
+        const row = document.createElement("div");
+        row.className = "cart-item";
+
+        const info = document.createElement("div");
+        info.className = "cart-item-info";
+
+        const name = document.createElement("strong");
+        name.textContent = item.name;
+
+        const unitPrice = document.createElement("span");
+        unitPrice.textContent = "₹" + formatPrice(price) + " each";
+
+        info.append(name, unitPrice);
+
+        const actions = document.createElement("div");
+        actions.className = "cart-item-actions";
+
+        const minus = document.createElement("button");
+        minus.type = "button";
+        minus.textContent = "−";
+        minus.setAttribute("aria-label", "Decrease quantity");
+        minus.addEventListener("click", () => changeQuantity(key, -1));
+
+        const qty = document.createElement("strong");
+        qty.textContent = String(quantity);
+
+        const plus = document.createElement("button");
+        plus.type = "button";
+        plus.textContent = "+";
+        plus.setAttribute("aria-label", "Increase quantity");
+        plus.addEventListener("click", () => changeQuantity(key, 1));
+
+        const subtotal = document.createElement("span");
+        subtotal.className = "cart-item-total";
+        subtotal.textContent = "₹" + formatPrice(itemTotal);
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "remove-cart";
+        remove.textContent = "×";
+        remove.setAttribute("aria-label", "Remove " + item.name);
+        remove.addEventListener("click", () => removeFromCart(key));
+
+        actions.append(minus, qty, plus, subtotal, remove);
+        row.append(info, actions);
+        cartItems.appendChild(row);
+
+        /* Hidden fields keep the existing Flask form convention */
+        itemIndex += 1;
+
+        const productInput = document.createElement("input");
+        productInput.type = "hidden";
+        productInput.name = "product_" + itemIndex;
+        productInput.value = item.name;
+        hiddenFields.appendChild(productInput);
+
+        const quantityInput = document.createElement("input");
+        quantityInput.type = "hidden";
+        quantityInput.name = "quantity_" + itemIndex;
+        quantityInput.value = String(quantity);
+        hiddenFields.appendChild(quantityInput);
+    });
+
+    totalElement.textContent = "₹" + formatPrice(total);
+    placeButton.disabled = false;
 }
 
+/* OPEN PRODUCT DETAILS */
+function openProduct(productId) {
+    const product = getProduct(productId);
 
-
-/* =========================================================
-   MODAL BACKDROP
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function()
-    {
-
-
-        renderCart();
-
-
-
-        const modal =
-            document.getElementById(
-                "productModal"
-            );
-
-
-        if (modal) {
-
-
-            modal.addEventListener(
-                "click",
-                function(event)
-                {
-
-
-                    if (
-                        event.target ===
-                        modal
-                    ) {
-
-                        closeProduct();
-
-                    }
-
-                }
-            );
-
-        }
-
-
-
-        /* =================================================
-           ORDER FORM
-        ================================================= */
-
-        const orderForm =
-            document.getElementById(
-                "orderForm"
-            );
-
-
-        if (orderForm) {
-
-
-            orderForm.addEventListener(
-                "submit",
-                function(event)
-                {
-
-
-                    if (
-                        Object.keys(cart)
-                            .length === 0
-                    ) {
-
-
-                        event.preventDefault();
-
-
-                        alert(
-                            "Please add at least one product to your order."
-                        );
-
-
-                        return;
-
-                    }
-
-
-                    /* -----------------------------------------
-                       Prevent accidental duplicate clicks
-                    ----------------------------------------- */
-
-                    const button =
-                        document.getElementById(
-                            "placeOrderButton"
-                        );
-
-
-                    if (button) {
-
-
-                        button.disabled =
-                            true;
-
-
-                        button.textContent =
-                            "PLACING ORDER...";
-
-                    }
-
-                }
-            );
-
-        }
-
+    if (!product) {
+        console.error("Product not found:", productId);
+        alert("Unable to open this product. Please refresh the page.");
+        return;
     }
-);
 
+    const modal = document.getElementById("productModal");
+    const image = document.getElementById("modalProductImage");
+    const category = document.getElementById("modalCategory");
+    const name = document.getElementById("modalProductName");
+    const price = document.getElementById("modalPrice");
+    const description = document.getElementById("modalDescription");
+    const benefits = document.getElementById("modalBenefits");
+    const addButton = document.getElementById("modalAddButton");
 
+    if (!modal || !image || !category || !name ||
+        !price || !description || !benefits || !addButton) {
+        return;
+    }
 
-/* =========================================================
-   ESC KEY
-========================================================= */
+    image.src = product.image;
+    image.alt = product.name;
+    category.textContent = "HERBAL CARE";
+    name.textContent = product.name;
+    price.textContent = "₹" + formatPrice(product.price);
+    description.textContent = product.description;
 
-document.addEventListener(
-    "keydown",
-    function(event)
-    {
+    benefits.replaceChildren();
 
+    [
+        "Herbal care formulation",
+        "Designed for everyday personal care",
+        "Quality product from AYU SAFA CARE"
+    ].forEach(text => {
+        const li = document.createElement("li");
+        li.textContent = text;
+        benefits.appendChild(li);
+    });
 
-        if (
-            event.key ===
-            "Escape"
-        ) {
+    /* Modal button uses the same cart function */
+    addButton.onclick = function () {
+        addToCart(product.name, product.price, product.id);
+        closeProduct();
+    };
 
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+}
+
+/* CLOSE MODAL */
+function closeProduct() {
+    const modal = document.getElementById("productModal");
+    if (!modal) return;
+
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+}
+
+/* INITIALIZE PAGE */
+document.addEventListener("DOMContentLoaded", function () {
+    renderCart();
+
+    const modal = document.getElementById("productModal");
+
+    if (modal) {
+        modal.addEventListener("click", function (event) {
+            if (event.target === modal) {
+                closeProduct();
+            }
+        });
+    }
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
             closeProduct();
-
         }
+    });
 
+    const orderForm = document.getElementById("orderForm");
+
+    if (orderForm) {
+        orderForm.addEventListener("submit", function (event) {
+            if (Object.keys(cart).length === 0) {
+                event.preventDefault();
+                alert("Please add at least one product to your order.");
+                return;
+            }
+
+            const button = document.getElementById("placeOrderButton");
+
+            if (button) {
+                button.disabled = true;
+                button.textContent = "PLACING ORDER...";
+            }
+        });
     }
-);
-
-
+});
 </script>
 
-
-
-<!-- =========================================================
-     CART CSS
-========================================================= -->
-
+<!-- CART AND EMPTY-STATE STYLES -->
 <style>
-
-
 .cart-container {
-
     width: 100%;
-
     margin-bottom: 25px;
-
 }
-
-
 
 .empty-cart {
-
     width: 100%;
-
     padding: 22px;
-
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
-
     justify-content: center;
-
     gap: 5px;
-
     background: #f7f7f4;
-
     border: 1px dashed #d7ddd8;
-
     border-radius: 14px;
-
     text-align: center;
-
 }
-
-
 
 .empty-cart strong {
-
     color: #123d2d;
-
     font-size: 12px;
-
     letter-spacing: 1px;
-
 }
-
-
 
 .empty-cart span {
-
     color: #7b8781;
-
     font-size: 11px;
-
 }
-
-
 
 .cart-item {
-
     width: 100%;
-
     padding: 15px;
-
     margin-bottom: 10px;
-
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
     gap: 15px;
-
     background: #f7f7f4;
-
     border: 1px solid #e0e5e0;
-
     border-radius: 14px;
-
 }
-
-
 
 .cart-item-info {
-
     min-width: 0;
-
     display: flex;
-
     flex-direction: column;
-
     gap: 3px;
-
 }
-
-
 
 .cart-item-info strong {
-
     color: #123d2d;
-
     font-size: 13px;
-
+    overflow-wrap: anywhere;
 }
-
-
 
 .cart-item-info span {
-
     color: #78847e;
-
     font-size: 10px;
-
 }
-
-
 
 .cart-item-actions {
-
     display: flex;
-
     align-items: center;
-
     gap: 8px;
-
     flex-shrink: 0;
-
 }
-
-
 
 .cart-item-actions button {
-
     width: 30px;
-
     height: 30px;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     border: 1px solid #cfd7d1;
-
     border-radius: 50%;
-
-    background: #ffffff;
-
+    background: #fff;
     color: #123d2d;
-
     font-size: 17px;
-
     font-weight: 900;
-
     cursor: pointer;
-
 }
-
-
 
 .cart-item-actions button:hover {
-
     background: #123d2d;
-
-    color: #ffffff;
-
+    color: #fff;
 }
-
-
 
 .cart-item-actions > strong {
-
     min-width: 20px;
-
     text-align: center;
-
     color: #24352d;
-
     font-size: 13px;
-
 }
-
-
 
 .cart-item-total {
-
     min-width: 70px;
-
     text-align: right;
-
     color: #123d2d;
-
     font-size: 13px;
-
     font-weight: 900;
-
 }
-
-
 
 .cart-item-actions .remove-cart {
-
     margin-left: 5px;
-
     border: none;
-
     background: transparent;
-
     color: #a34b4b;
-
     font-size: 20px;
-
 }
-
-
 
 .cart-item-actions .remove-cart:hover {
-
     background: transparent;
-
     color: #d00000;
-
 }
-
-
 
 .submit-button:disabled {
-
     opacity: 0.45;
-
     cursor: not-allowed;
-
     transform: none;
-
     box-shadow: none;
-
 }
-
-
-
-/* =========================================================
-   EMPTY PRODUCTS
-========================================================= */
 
 .empty-products {
-
     width: 100%;
-
     padding: 50px 20px;
-
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
-
     justify-content: center;
-
     gap: 8px;
-
     background: #f7f7f4;
-
     border-radius: 16px;
-
     border: 1px dashed #d7ddd8;
-
     text-align: center;
-
 }
-
-
 
 .empty-products strong {
-
     color: #123d2d;
-
     font-size: 14px;
-
     letter-spacing: 1px;
-
 }
-
-
 
 .empty-products span {
-
     color: #78847e;
-
     font-size: 12px;
-
 }
-
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
 
 @media (max-width: 650px) {
-
-
     .cart-item {
-
         align-items: flex-start;
-
         flex-direction: column;
-
         gap: 12px;
-
     }
-
 
     .cart-item-info {
-
         width: 100%;
-
     }
-
 
     .cart-item-actions {
-
         width: 100%;
-
         justify-content: flex-start;
-
         flex-wrap: wrap;
-
     }
-
 
     .cart-item-total {
-
         margin-left: auto;
-
     }
-
 }
-
-
 </style>
 
-
 </body>
-
 </html>
-```
