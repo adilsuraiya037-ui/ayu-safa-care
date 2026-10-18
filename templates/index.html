@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,7 +96,6 @@
                                 VIEW DETAILS
                             </button>
 
-                            <!-- FIXED HOMEPAGE ADD-TO-ORDER BUTTON -->
                             <button
                                 type="button"
                                 class="card-button secondary-button"
@@ -169,6 +167,39 @@
                 autocomplete="street-address"
                 required
             ></textarea>
+
+            <!-- PAYMENT METHOD: UPI OR CASH ON DELIVERY -->
+            <fieldset class="payment-section">
+                <legend>SELECT PAYMENT METHOD</legend>
+
+                <label class="payment-option" for="payment_upi">
+                    <input
+                        type="radio"
+                        id="payment_upi"
+                        name="payment_method"
+                        value="UPI"
+                        required
+                    >
+                    <span class="payment-option-text">
+                        <strong>Pay using UPI</strong>
+                        <small>Pay online using your UPI app</small>
+                    </span>
+                </label>
+
+                <label class="payment-option" for="payment_cod">
+                    <input
+                        type="radio"
+                        id="payment_cod"
+                        name="payment_method"
+                        value="COD"
+                        required
+                    >
+                    <span class="payment-option-text">
+                        <strong>Cash on Delivery (COD)</strong>
+                        <small>Pay when your order is delivered</small>
+                    </span>
+                </label>
+            </fieldset>
 
             <div id="hiddenCartFields"></div>
 
@@ -276,7 +307,7 @@ function getProduct(productId) {
     return products[String(productId)] || null;
 }
 
-/* ADD FROM HOMEPAGE — FIXED */
+/* ADD FROM HOMEPAGE */
 function addHomepageProduct(button) {
     if (!button) return;
 
@@ -457,7 +488,7 @@ function renderCart() {
         row.append(info, actions);
         cartItems.appendChild(row);
 
-        /* Hidden fields keep the existing Flask form convention */
+        /* Hidden fields preserve the existing Flask form convention */
         itemIndex += 1;
 
         const productInput = document.createElement("input");
@@ -571,6 +602,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            const selectedPayment = orderForm.querySelector(
+                'input[name="payment_method"]:checked'
+            );
+
+            if (!selectedPayment) {
+                event.preventDefault();
+                alert("Please select UPI or Cash on Delivery.");
+                return;
+            }
+
             const button = document.getElementById("placeOrderButton");
 
             if (button) {
@@ -582,7 +623,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<!-- CART AND EMPTY-STATE STYLES -->
+<!-- CART, PAYMENT AND EMPTY-STATE STYLES -->
 <style>
 .cart-container {
     width: 100%;
@@ -621,139 +662,4 @@ document.addEventListener("DOMContentLoaded", function () {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 15px;
-    background: #f7f7f4;
-    border: 1px solid #e0e5e0;
-    border-radius: 14px;
-}
-
-.cart-item-info {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.cart-item-info strong {
-    color: #123d2d;
-    font-size: 13px;
-    overflow-wrap: anywhere;
-}
-
-.cart-item-info span {
-    color: #78847e;
-    font-size: 10px;
-}
-
-.cart-item-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.cart-item-actions button {
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #cfd7d1;
-    border-radius: 50%;
-    background: #fff;
-    color: #123d2d;
-    font-size: 17px;
-    font-weight: 900;
-    cursor: pointer;
-}
-
-.cart-item-actions button:hover {
-    background: #123d2d;
-    color: #fff;
-}
-
-.cart-item-actions > strong {
-    min-width: 20px;
-    text-align: center;
-    color: #24352d;
-    font-size: 13px;
-}
-
-.cart-item-total {
-    min-width: 70px;
-    text-align: right;
-    color: #123d2d;
-    font-size: 13px;
-    font-weight: 900;
-}
-
-.cart-item-actions .remove-cart {
-    margin-left: 5px;
-    border: none;
-    background: transparent;
-    color: #a34b4b;
-    font-size: 20px;
-}
-
-.cart-item-actions .remove-cart:hover {
-    background: transparent;
-    color: #d00000;
-}
-
-.submit-button:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.empty-products {
-    width: 100%;
-    padding: 50px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: #f7f7f4;
-    border-radius: 16px;
-    border: 1px dashed #d7ddd8;
-    text-align: center;
-}
-
-.empty-products strong {
-    color: #123d2d;
-    font-size: 14px;
-    letter-spacing: 1px;
-}
-
-.empty-products span {
-    color: #78847e;
-    font-size: 12px;
-}
-
-@media (max-width: 650px) {
-    .cart-item {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .cart-item-info {
-        width: 100%;
-    }
-
-    .cart-item-actions {
-        width: 100%;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-    }
-
-    .cart-item-total {
-        margin-left: auto;
-    }
-}
-</style>
-
-</body>
-</html>
+    gap
