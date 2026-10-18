@@ -49,7 +49,8 @@ ADMIN_PASSWORD = os.environ.get(
 )
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
-
+UPI_ID = "6355074854@okicici"
+UPI_NAME = "AYU SAFA CARE"
 
 # =========================================================
 # DEFAULT PRODUCTS
