@@ -226,7 +226,31 @@ def init_db():
                         NOT NULL
                 )
             """)
+# Add payment columns to existing orders table
+if DATABASE_URL:
+    cur.execute("""
+        ALTER TABLE orders
+        ADD COLUMN IF NOT EXISTS payment_method VARCHAR(30) DEFAULT 'COD'
+    """)
+    cur.execute("""
+        ALTER TABLE orders
+        ADD COLUMN IF NOT EXISTS payment_status VARCHAR(30) DEFAULT 'PENDING'
+    """)
+else:
+    cur.execute("PRAGMA table_info(orders)")
+    columns = [row[1] for row in cur.fetchall()]
 
+    if "payment_method" not in columns:
+        cur.execute("""
+            ALTER TABLE orders
+            ADD COLUMN payment_method TEXT DEFAULT 'COD'
+        """)
+
+    if "payment_status" not in columns:
+        cur.execute("""
+            ALTER TABLE orders
+            ADD COLUMN payment_status TEXT DEFAULT 'PENDING'
+        """)
         # =================================================
         # ORDER ITEMS TABLE
         # =================================================
