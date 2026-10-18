@@ -15,6 +15,7 @@ from datetime import datetime
 from decimal import Decimal
 import os
 import sqlite3
+from urllib.parse import urlencode
 
 try:
     import psycopg2
@@ -226,31 +227,44 @@ def init_db():
                         NOT NULL
                 )
             """)
-# Add payment columns to existing orders table
-if DATABASE_URL:
-    cur.execute("""
-        ALTER TABLE orders
-        ADD COLUMN IF NOT EXISTS payment_method VARCHAR(30) DEFAULT 'COD'
-    """)
-    cur.execute("""
-        ALTER TABLE orders
-        ADD COLUMN IF NOT EXISTS payment_status VARCHAR(30) DEFAULT 'PENDING'
-    """)
-else:
-    cur.execute("PRAGMA table_info(orders)")
-    columns = [row[1] for row in cur.fetchall()]
+        # =================================================
+        # PAYMENT COLUMNS (also migrate existing databases)
+        # =================================================
 
-    if "payment_method" not in columns:
-        cur.execute("""
-            ALTER TABLE orders
-            ADD COLUMN payment_method TEXT DEFAULT 'COD'
-        """)
+        if using_postgresql():
 
-    if "payment_status" not in columns:
-        cur.execute("""
-            ALTER TABLE orders
-            ADD COLUMN payment_status TEXT DEFAULT 'PENDING'
-        """)
+            cursor.execute("""
+                ALTER TABLE orders
+                ADD COLUMN IF NOT EXISTS payment_method
+                VARCHAR(30) DEFAULT 'COD'
+            """)
+
+            cursor.execute("""
+                ALTER TABLE orders
+                ADD COLUMN IF NOT EXISTS payment_status
+                VARCHAR(30) DEFAULT 'PENDING'
+            """)
+
+        else:
+
+            cursor.execute("PRAGMA table_info(orders)")
+            order_columns = [
+                row["name"] for row in cursor.fetchall()
+            ]
+
+            if "payment_method" not in order_columns:
+                cursor.execute("""
+                    ALTER TABLE orders
+                    ADD COLUMN payment_method
+                    TEXT DEFAULT 'COD'
+                """)
+
+            if "payment_status" not in order_columns:
+                cursor.execute("""
+                    ALTER TABLE orders
+                    ADD COLUMN payment_status
+                    TEXT DEFAULT 'PENDING'
+                """)
         # =================================================
         # ORDER ITEMS TABLE
         # =================================================
@@ -594,6 +608,8 @@ def show_order_success(
     quantity=None,
     amount=None,
     items=None,
+    payment_method=None,
+    payment_status=None,
     error=False,
     error_message=None
 ):
@@ -614,6 +630,10 @@ def show_order_success(
             amount=amount,
 
             items=items,
+
+            payment_method=payment_method,
+
+            payment_status=payment_status,
 
             error=error,
 
@@ -835,6 +855,25 @@ Total Amount
 
 </div>
 
+<div class="row">
+<span class="label">Payment Method</span>
+<span class="value">
+{% if payment_method == "UPI" %}UPI{% elif payment_method == "COD" %}Cash on Delivery{% else %}Not specified{% endif %}
+</span>
+</div>
+
+{% if payment_method == "COD" %}
+<div class="row">
+<span class="label">Payment Status</span>
+<span class="value">Pay on delivery</span>
+</div>
+{% elif payment_method == "UPI" %}
+<div class="row">
+<span class="label">Payment Status</span>
+<span class="value">Pending verification</span>
+</div>
+{% endif %}
+
 </div>
 
 <a
@@ -864,7 +903,9 @@ Track Order
                 product=product,
                 quantity=quantity,
                 amount=amount,
-                items=items
+                items=items,
+                payment_method=payment_method,
+                payment_status=payment_status
             )
 
         # =================================================
@@ -1196,6 +1237,24 @@ def place_order():
             400
         )
 
+    payment_method = request.form.get(
+        "payment_method",
+        ""
+    ).strip().upper()
+
+    if payment_method not in ("UPI", "COD"):
+
+        return (
+            "Please select UPI or Cash on Delivery.",
+            400
+        )
+
+    payment_status = (
+        "PENDING"
+        if payment_method == "UPI"
+        else "PAY_ON_DELIVERY"
+    )
+
     try:
 
         items = get_order_items_from_form()
@@ -1283,6 +1342,8 @@ def place_order():
         print("Products:", product_summary)
         print("Total Quantity:", total_quantity)
         print("Amount:", total_amount)
+        print("Payment Method:", payment_method)
+        print("Payment Status:", payment_status)
         print("Order ID:", order_id)
         print("======================================")
 
@@ -1307,12 +1368,16 @@ def place_order():
                     quantity,
                     amount,
                     status,
-                    created_at
+                    created_at,
+                    payment_method,
+                    payment_status
 
                 )
 
                 VALUES (
 
+                    %s,
+                    %s,
                     %s,
                     %s,
                     %s,
@@ -1337,7 +1402,9 @@ def place_order():
                 total_quantity,
                 total_amount,
                 "NEW",
-                created_at
+                created_at,
+                payment_method,
+                payment_status
 
             ))
 
@@ -1356,13 +1423,15 @@ def place_order():
                     quantity,
                     amount,
                     status,
-                    created_at
+                    created_at,
+                    payment_method,
+                    payment_status
 
                 )
 
                 VALUES (
 
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 
                 )
 
@@ -1376,7 +1445,9 @@ def place_order():
                 total_quantity,
                 float(total_amount),
                 "NEW",
-                created_at
+                created_at,
+                payment_method,
+                payment_status
 
             ))
 
@@ -1510,14 +1581,142 @@ def place_order():
             except Exception:
                 pass
 
+    if payment_method == "UPI":
+        return redirect(
+            url_for("upi_payment", order_id=order_id)
+        )
+
     return show_order_success(
         customer_name=customer_name,
         order_id=order_id,
         product=product_summary,
         quantity=total_quantity,
         amount=float(total_amount),
-        items=items
+        items=items,
+        payment_method=payment_method,
+        payment_status=payment_status
     )
+
+
+# =========================================================
+# UPI PAYMENT PAGE
+# =========================================================
+
+@app.route("/upi-payment/<order_id>")
+def upi_payment(order_id):
+
+    conn = None
+    cursor = None
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+
+        if using_postgresql():
+            cursor.execute("""
+                SELECT order_id, amount, payment_method, payment_status
+                FROM orders
+                WHERE order_id = %s
+                LIMIT 1
+            """, (order_id,))
+        else:
+            cursor.execute("""
+                SELECT order_id, amount, payment_method, payment_status
+                FROM orders
+                WHERE order_id = ?
+                LIMIT 1
+            """, (order_id,))
+
+        order = cursor.fetchone()
+
+        if not order:
+            return "Order not found.", 404
+
+        if order["payment_method"] != "UPI":
+            return "This order is not marked for UPI payment.", 400
+
+        amount = Decimal(str(order["amount"])).quantize(Decimal("0.01"))
+        upi_link = "upi://pay?" + urlencode({
+            "pa": UPI_ID,
+            "pn": UPI_NAME,
+            "am": format(amount, ".2f"),
+            "cu": "INR",
+            "tn": "AYU SAFA CARE Order " + order_id
+        })
+
+    except Exception as e:
+        print("UPI PAYMENT PAGE ERROR:", str(e))
+        return "Unable to load payment details. Please contact AYU SAFA CARE.", 500
+
+    finally:
+        if cursor:
+            try:
+                cursor.close()
+            except Exception:
+                pass
+        if conn:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+    return render_template_string("""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#123d2d">
+    <title>UPI Payment | AYU SAFA CARE</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 22px; font-family: Arial, sans-serif;
+            background: #f3f7f3; color: #20352a;
+        }
+        .card {
+            max-width: 520px; margin: 35px auto; padding: 28px;
+            background: #fff; border-radius: 18px;
+            box-shadow: 0 8px 28px rgba(0,0,0,.08);
+        }
+        h1 { color: #123d2d; margin-top: 0; }
+        .amount { font-size: 30px; font-weight: 800; color: #123d2d; }
+        .detail { padding: 12px 0; border-bottom: 1px solid #e4e9e4; overflow-wrap: anywhere; }
+        .button {
+            display: block; text-align: center; margin-top: 22px;
+            padding: 15px 18px; border-radius: 10px;
+            background: #123d2d; color: white; font-weight: 700;
+            text-decoration: none;
+        }
+        .note { font-size: 13px; color: #5c6b61; line-height: 1.6; }
+        .warning {
+            padding: 12px; border-radius: 10px; background: #fff7df;
+            color: #654c00; font-size: 13px; line-height: 1.5;
+        }
+        .secondary { color: #123d2d; background: #edf3ee; }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <h1>AYU SAFA CARE</h1>
+        <p>Complete your UPI payment</p>
+        <div class="detail"><strong>Order ID:</strong> {{ order_id }}</div>
+        <div class="detail"><strong>UPI ID:</strong> {{ upi_id }}</div>
+        <p>Total amount</p>
+        <div class="amount">₹{{ "%.2f"|format(amount) }}</div>
+        <a class="button" href="{{ upi_link }}">OPEN UPI APP TO PAY</a>
+        <a class="button secondary" href="{{ url_for('track_order') }}">TRACK ORDER</a>
+        <p class="note">If the button does not open your UPI app, open your UPI app manually and pay the amount above to the UPI ID shown.</p>
+        <div class="warning">
+            Your order is saved, but payment is not automatically verified by this website.
+            Keep your UPI transaction reference and contact the seller if needed.
+            Do not treat this page as proof of successful payment.
+        </div>
+    </main>
+</body>
+</html>
+    """, order_id=order["order_id"], upi_id=UPI_ID,
+        amount=float(amount), upi_link=upi_link)
 
 
 # =========================================================
@@ -1580,7 +1779,9 @@ def track_order():
                             quantity,
                             amount,
                             status,
-                            created_at
+                            created_at,
+                            payment_method,
+                            payment_status
 
                         FROM orders
 
@@ -1607,7 +1808,9 @@ def track_order():
                             quantity,
                             amount,
                             status,
-                            created_at
+                            created_at,
+                            payment_method,
+                            payment_status
 
                         FROM orders
 
@@ -1652,7 +1855,13 @@ def track_order():
                             row["status"],
 
                         "created_at":
-                            row["created_at"]
+                            row["created_at"],
+
+                        "payment_method":
+                            row["payment_method"],
+
+                        "payment_status":
+                            row["payment_status"]
 
                     }
 
@@ -1850,7 +2059,9 @@ def dashboard():
                 quantity,
                 amount,
                 status,
-                created_at
+                created_at,
+                payment_method,
+                payment_status
 
             FROM orders
 
