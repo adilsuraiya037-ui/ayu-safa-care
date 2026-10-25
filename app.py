@@ -8,6 +8,7 @@ from flask import (
     session,
     flash,
     jsonify
+    send_from_directory
 )
 
 from functools import wraps
@@ -28,7 +29,18 @@ from jinja2 import TemplateNotFound
 
 
 app = Flask(__name__)
+# =========================================================
+# PWA SERVICE WORKER
+# =========================================================
 
+@app.route("/service-worker.js")
+def service_worker():
+    return send_from_directory(
+        os.path.dirname(os.path.abspath(__file__)),
+        "service-worker.js",
+        mimetype="application/javascript",
+        max_age=0
+    )
 
 # =========================================================
 # CONFIGURATION
